@@ -1,5 +1,5 @@
 {
-  "name": "abstract/plugin_name",
+  "name": "abstract/hcf-core",
   "description": "Description",
   "minimum-stability": "dev",
   "license": "Apache-2.0",
@@ -10,7 +10,8 @@
     "ext-pthreads": "*",
     "ext-json": "*",
     "ext-mysqli": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-igbinary": "*"
   },
 
   "require-dev": {
