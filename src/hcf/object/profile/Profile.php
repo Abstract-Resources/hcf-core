@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
+use hcf\object\profile\query\SaveProfileQuery;
+use hcf\thread\ThreadPool;
+
 final class Profile {
+
+    /** @var bool */
+    private bool $alreadySaving = false;
 
     /**
      * @param string $xuid
@@ -54,5 +60,35 @@ final class Profile {
      */
     public function getDeaths(): int {
         return $this->deaths;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAlreadySaving(): bool {
+        return $this->alreadySaving;
+    }
+
+    /**
+     * @param bool $alreadySaving
+     */
+    public function setAlreadySaving(bool $alreadySaving): void {
+        $this->alreadySaving = $alreadySaving;
+    }
+
+    /**
+     * @param bool $joinedBefore
+     */
+    public function forceSave(bool $joinedBefore): void {
+        $this->alreadySaving = true;
+
+        ThreadPool::getInstance()->submit(new SaveProfileQuery(new ProfileData(
+            $this->xuid,
+            $this->name,
+            $this->factionId,
+            $this->kills,
+            $this->deaths,
+            $joinedBefore
+        )));
     }
 }

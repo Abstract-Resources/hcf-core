@@ -24,6 +24,15 @@ final class ProfileFactory {
 
     /**
      * @param string $xuid
+     *
+     * @return Profile|null
+     */
+    public function getProfile(string $xuid): ?Profile {
+        return $this->profiles[$xuid] ?? null;
+    }
+
+    /**
+     * @param string $xuid
      */
     public function unregisterProfile(string $xuid): void {
         unset($this->profiles[$xuid]);

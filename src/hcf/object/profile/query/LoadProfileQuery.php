@@ -6,9 +6,7 @@ namespace hcf\object\profile\query;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
-use hcf\object\profile\ProfileData;
 use hcf\thread\query\Query;
-use hcf\thread\ThreadPool;
 use hcf\utils\MySQL;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
@@ -54,17 +52,11 @@ final class LoadProfileQuery extends Query {
     }
 
     public function onComplete(): void {
-        ProfileFactory::getInstance()->registerNewProfile($this->profile ?? new Profile($this->xuid, $this->name));
+        if ($this->profile === null) {
+            $this->profile = new Profile($this->xuid, $this->name);
+            $this->profile->forceSave(false);
+        }
 
-        if ($this->profile !== null) return;
-
-        ThreadPool::getInstance()->submit(new SaveProfileQuery(new ProfileData(
-            $this->xuid,
-            $this->name,
-            -1,
-            0,
-            0,
-            false
-        )));
+        ProfileFactory::getInstance()->registerNewProfile($this->profile);
     }
 }

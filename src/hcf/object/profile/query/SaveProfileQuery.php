@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\object\profile\query;
 
+use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileData;
 use hcf\thread\query\Query;
 use hcf\utils\MySQL;
@@ -47,6 +48,8 @@ final class SaveProfileQuery extends Query {
     }
 
     public function onComplete(): void {
-        // TODO: Implement onComplete() method.
+        if (($profile = ProfileFactory::getInstance()->getProfile($this->profileData->getXuid())) === null) return;
+
+        $profile->setAlreadySaving(false);
     }
 }
