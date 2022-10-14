@@ -8,7 +8,7 @@ use mysqli;
 use mysqli_stmt;
 use RuntimeException;
 
-class MySQL extends mysqli {
+final class MySQL extends mysqli {
 
     /** @var string */
     private string $queryPrepare;
