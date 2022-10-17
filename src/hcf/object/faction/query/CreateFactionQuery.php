@@ -19,6 +19,8 @@ final class CreateFactionQuery extends Query {
 
     /**
      * @param MySQL $provider
+     *
+     * This function is executed on other Thread to prevent lag spike on Main thread
      */
     public function run(MySQL $provider): void {
         //$unserialized = (array) unserialize($this->serialized);
@@ -29,6 +31,9 @@ final class CreateFactionQuery extends Query {
         // TODO: Do the sql query with the faction data unserialized
     }
 
+    /**
+     * This function is executed on the Main Thread because need use some function of pmmp
+     */
     public function onComplete(): void {
         echo 'completed with value ' . $this->serialized . PHP_EOL;
     }

@@ -27,6 +27,8 @@ final class LoadProfileQuery extends Query {
 
     /**
      * @param MySQL $provider
+     *
+     * This function is executed on other Thread to prevent lag spike on Main thread
      */
     public function run(MySQL $provider): void {
         $provider->prepareStatement('SELECT * FROM profiles WHERE xuid = ?');
@@ -51,6 +53,9 @@ final class LoadProfileQuery extends Query {
         $stmt->close();
     }
 
+    /**
+     * This function is executed on the Main Thread because need use some function of pmmp
+     */
     public function onComplete(): void {
         if ($this->profile === null) {
             $this->profile = new Profile($this->xuid, $this->name);

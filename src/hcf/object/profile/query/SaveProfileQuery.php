@@ -18,6 +18,8 @@ final class SaveProfileQuery extends Query {
 
     /**
      * @param MySQL $provider
+     *
+     * This function is executed on other Thread to prevent lag spike on Main thread
      */
     public function run(MySQL $provider): void {
         if (!$this->profileData->hasJoinedBefore()) {
@@ -47,6 +49,9 @@ final class SaveProfileQuery extends Query {
         $provider->executeStatement()->close();
     }
 
+    /**
+     * This function is executed on the Main Thread because need use some function of pmmp
+     */
     public function onComplete(): void {
         if (($profile = ProfileFactory::getInstance()->getProfile($this->profileData->getXuid())) === null) return;
 
