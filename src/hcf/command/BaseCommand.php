@@ -6,6 +6,7 @@ namespace hcf\command;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\utils\TextFormat;
 
 abstract class BaseCommand extends Command implements ParentCommand {
 
@@ -48,5 +49,24 @@ abstract class BaseCommand extends Command implements ParentCommand {
      * @param array         $args
      */
     public function execute(CommandSender $sender, string $commandLabel, array $args): void {
+        if (($argumentName = array_shift($args)) === null) {
+            $sender->sendMessage(TextFormat::RED . 'Usage: \'/' . $commandLabel . ' help\'');
+
+            return;
+        }
+
+        if (($parent = $this->getParent($argumentName)) === null) {
+            $sender->sendMessage(TextFormat::RED . 'Usage: \'/' . $commandLabel . ' help\'');
+
+            return;
+        }
+
+        if (($permission = $parent->getPermission()) !== null && !$sender->hasPermission($permission)) {
+            $sender->sendMessage(TextFormat::RED . 'You don\'t have permissions to use this command.');
+
+            return;
+        }
+
+        $parent->execute($sender, $commandLabel, $args);
     }
 }
