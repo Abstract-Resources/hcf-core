@@ -11,50 +11,42 @@ use hcf\utils\MySQL;
 
 final class SaveProfileQuery extends Query {
 
-    /**
-     * @param ProfileData $profileData
-     */
-    public function __construct(private ProfileData $profileData) {}
+	/**
+	 * @param ProfileData $profileData
+	 */
+	public function __construct(private ProfileData $profileData) {}
 
-    /**
-     * @param MySQL $provider
-     *
-     * This function is executed on other Thread to prevent lag spike on Main thread
-     */
-    public function run(MySQL $provider): void {
-        if (!$this->profileData->hasJoinedBefore()) {
-            $provider->prepareStatement('INSERT INTO profiles (xuid, username, faction_id, kills, deaths, first_seen, last_seen) VALUES (?, ?, ?, ?, ?, ?, ?)');
-            $provider->set(
-                $this->profileData->getXuid(),
-                $this->profileData->getName(),
-                $this->profileData->getFactionId(),
-                $this->profileData->getKills(),
-                $this->profileData->getDeaths(),
-                0,
-                0
-            );
-        } else {
-            $provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
-            $provider->set(
-                $this->profileData->getName(),
-                $this->profileData->getFactionId(),
-                $this->profileData->getKills(),
-                $this->profileData->getDeaths(),
-                0,
-                0,
-                $this->profileData->getXuid()
-            );
-        }
+	/**
+	 * @param MySQL $provider
+	 *
+	 * This function is executed on other Thread to prevent lag spike on Main thread
+	 */
+	public function run(MySQL $provider): void {
+		if ($this->profileData->hasJoinedBefore()) {
+			$provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
+		} else {
+			$provider->prepareStatement('INSERT INTO profiles (username, faction_id, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?)');
+		}
 
-        $provider->executeStatement()->close();
-    }
+		$provider->set(
+			$this->profileData->getName(),
+			$this->profileData->getFactionId(),
+			$this->profileData->getKills(),
+			$this->profileData->getDeaths(),
+			0,
+			0,
+			$this->profileData->getXuid()
+		);
 
-    /**
-     * This function is executed on the Main Thread because need use some function of pmmp
-     */
-    public function onComplete(): void {
-        if (($profile = ProfileFactory::getInstance()->getProfile($this->profileData->getXuid())) === null) return;
+		$provider->executeStatement()->close();
+	}
 
-        $profile->setAlreadySaving(false);
-    }
+	/**
+	 * This function is executed on the Main Thread because need use some function of pmmp
+	 */
+	public function onComplete(): void {
+		if (($profile = ProfileFactory::getInstance()->getIfLoaded($this->profileData->getXuid())) === null) return;
+
+		$profile->setAlreadySaving(false);
+	}
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf;
 
+use hcf\factory\FactionFactory;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\thread\ThreadPool;
@@ -15,6 +16,8 @@ final class HCFCore extends PluginBase {
 
     public function onEnable(): void {
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
+
+        FactionFactory::getInstance()->init();
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);

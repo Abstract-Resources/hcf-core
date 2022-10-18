@@ -27,7 +27,7 @@ final class ProfileFactory {
      *
      * @return Profile|null
      */
-    public function getProfile(string $xuid): ?Profile {
+    public function getIfLoaded(string $xuid): ?Profile {
         return $this->profiles[$xuid] ?? null;
     }
 
