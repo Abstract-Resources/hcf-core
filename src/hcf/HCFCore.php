@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace hcf;
 
-use hcf\factory\FactionFactory;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
+use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\thread\ThreadPool;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
+use function is_int;
+use function is_string;
 
 final class HCFCore extends PluginBase {
     use SingletonTrait;
@@ -17,7 +19,10 @@ final class HCFCore extends PluginBase {
     public function onEnable(): void {
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
-        FactionFactory::getInstance()->init();
+        // TODO: Initialize all factions
+        if (!ThreadPool::getInstance()->submit(new LoadFactionsQuery())) {
+            $this->getLogger()->warning('An error occurred while trying load all factions stored.');
+        }
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
@@ -31,6 +36,16 @@ final class HCFCore extends PluginBase {
      */
     public static function getConfigInt(string $key, int $defaultValue = 0): int {
         return is_int($value = self::getInstance()->getConfig()->getNested($key)) ? $value : $defaultValue;
+    }
+
+    /**
+     * @param string $key
+     * @param string $defaultValue
+     *
+     * @return string
+     */
+    public static function getConfigString(string $key, string $defaultValue = ''): string {
+        return is_string($value = self::getInstance()->getConfig()->getNested($key)) ? $value : $defaultValue;
     }
 
     public static function debug(string $debug): void {

@@ -17,10 +17,6 @@ final class FactionFactory {
     /** @var array<string, string> */
     private array $factionsId = [];
 
-	public function init(): void {
-
-	}
-
     /**
      * @param Profile $profile
      * @param Faction $faction
@@ -33,12 +29,15 @@ final class FactionFactory {
         $profile->forceSave(true);
 
         $faction->registerMember($profile->getXuid(), $profile->getName(), $role);
+    }
 
-        if (!isset($this->factions[$faction->getId()])) {
-            $this->factions[$faction->getId()] = $faction;
+    /**
+     * @param Faction $faction
+     */
+    public function registerFaction(Faction $faction): void {
+        $this->factions[$faction->getId()] = $faction;
 
-            $this->factionsId[$faction->getName()] = $faction->getId();
-        }
+        $this->factionsId[$faction->getName()] = $faction->getId();
     }
 
 	/**

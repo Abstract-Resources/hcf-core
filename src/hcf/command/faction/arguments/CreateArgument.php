@@ -47,6 +47,7 @@ final class CreateArgument extends PlayerArgument {
         );
         $faction->forceSave(false);
 
+        FactionFactory::getInstance()->registerFaction($faction);
         FactionFactory::getInstance()->joinFaction($profile, $faction, ProfileData::LEADER_ROLE);
     }
 }

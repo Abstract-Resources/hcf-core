@@ -19,6 +19,10 @@ final class PlayerLoginListener implements Listener {
     public function onPlayerLoginEvent(PlayerLoginEvent $ev): void {
         $player = $ev->getPlayer();
 
-        ThreadPool::getInstance()->submit(new LoadProfileQuery($player->getXuid(), $player->getName()));
+        if (ThreadPool::getInstance()->submit(new LoadProfileQuery($player->getXuid(), $player->getName()))) {
+            return;
+        }
+
+        $player->kick('Failed trying load your profile');
     }
 }
