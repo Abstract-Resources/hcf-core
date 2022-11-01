@@ -6,6 +6,7 @@ namespace hcf\object\faction;
 
 use hcf\object\faction\query\SaveFactionQuery;
 use hcf\thread\ThreadPool;
+use function strtolower;
 
 final class Faction {
 

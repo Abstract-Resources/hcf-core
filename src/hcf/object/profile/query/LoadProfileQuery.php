@@ -10,6 +10,7 @@ use hcf\thread\query\Query;
 use hcf\utils\MySQL;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
+use function is_array;
 
 final class LoadProfileQuery extends Query {
 

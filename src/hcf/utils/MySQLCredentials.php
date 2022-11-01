@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace hcf\utils;
 
 use pocketmine\plugin\PluginException;
+use function count;
+use function explode;
 
 final class MySQLCredentials {
 

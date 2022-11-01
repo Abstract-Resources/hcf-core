@@ -12,7 +12,7 @@ final class HCFUtils {
      *
      * @return string
      */
-    public static function replacePlaceholders(string $text, string... $args): string {
+    public static function replacePlaceholders(string $text, string...$args): string {
 
     }
 }

@@ -7,6 +7,10 @@ namespace hcf\command;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function array_shift;
+use function in_array;
+use function strtolower;
 
 abstract class BaseCommand extends Command implements ParentCommand {
 
@@ -16,7 +20,7 @@ abstract class BaseCommand extends Command implements ParentCommand {
     /**
      * @param ParentCommand ...$parents
      */
-    protected function registerParent(ParentCommand... $parents): void {
+    protected function registerParent(ParentCommand...$parents): void {
         foreach ($parents as $parent) {
             $this->parents[strtolower($parent->getName())] = $parent;
         }

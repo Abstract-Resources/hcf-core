@@ -7,6 +7,11 @@ namespace hcf\utils;
 use mysqli;
 use mysqli_stmt;
 use RuntimeException;
+use function array_fill;
+use function count;
+use function is_bool;
+use function preg_replace;
+use function str_replace;
 
 final class MySQL extends mysqli {
 
