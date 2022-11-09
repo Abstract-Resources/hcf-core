@@ -64,7 +64,7 @@ abstract class PlayerArgument implements ParentCommand {
      * @param string $commandLabel
      * @param array  $args
      */
-    public abstract function handle(Player $sender, string $commandLabel, array $args): void;
+    abstract public function handle(Player $sender, string $commandLabel, array $args): void;
 
     /**
      * @param Player $player

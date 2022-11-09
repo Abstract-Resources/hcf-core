@@ -15,13 +15,23 @@ final class Faction {
     /** @var array<string, string> */
     private array $membersXuid = [];
 
-	/**
-	 * @param string $id
-	 * @param string $name
-	 */
+    /**
+     * @param string $id
+     * @param string $name
+     * @param float  $deathsUntilRaidable
+     * @param int    $regenCooldown
+     * @param int    $lastDtrUpdate
+     * @param int    $balance
+     * @param int    $points
+     */
 	public function __construct(
 		private string $id,
-		private string $name
+		private string $name,
+        private float $deathsUntilRaidable,
+        private int $regenCooldown,
+        private int $lastDtrUpdate,
+        private int $balance,
+        private int $points
 	) {}
 
 	/**
@@ -44,6 +54,41 @@ final class Faction {
 	public function setName(string $name): void {
 		$this->name = $name;
 	}
+
+    /**
+     * @return float
+     */
+    public function getDeathsUntilRaidable(): float {
+        return $this->deathsUntilRaidable;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRegenCooldown(): int {
+        return $this->regenCooldown;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastDtrUpdate(): int {
+        return $this->lastDtrUpdate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBalance(): int {
+        return $this->balance;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPoints(): int {
+        return $this->points;
+    }
 
     /**
      * @param string $xuid

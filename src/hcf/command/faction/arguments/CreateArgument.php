@@ -6,6 +6,7 @@ namespace hcf\command\faction\arguments;
 
 use hcf\command\PlayerArgument;
 use hcf\factory\FactionFactory;
+use hcf\HCFCore;
 use hcf\object\faction\Faction;
 use hcf\object\profile\ProfileData;
 use hcf\utils\HCFUtils;
@@ -43,7 +44,12 @@ final class CreateArgument extends PlayerArgument {
 
         $faction = new Faction(
             Uuid::uuid4()->toString(),
-            $args[0]
+            $args[0],
+            HCFCore::getConfigInt('factions.default-dtr'),
+            0,
+            time(),
+            HCFCore::getConfigInt('factions.default-balance'),
+            HCFCore::getConfigInt('factions.default-points')
         );
         $faction->forceSave(false);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\thread;
 
+use Exception;
 use hcf\thread\query\Query;
 use hcf\utils\MySQL;
 use hcf\utils\MySQLCredentials;
@@ -55,66 +56,78 @@ final class CoreThread extends Thread {
      * Runs code on the thread.
      */
     protected function onRun(): void {
-        $resource = new MySQL(
-            $this->credentials->getAddress(),
-            $this->credentials->getUsername(),
-            $this->credentials->getPassword(),
-            $this->credentials->getDbname(),
-            $this->credentials->getPort()
-        );
+        try {
+            $resource = new MySQL(
+                $this->credentials->getAddress(),
+                $this->credentials->getUsername(),
+                $this->credentials->getPassword(),
+                $this->credentials->getDbname(),
+                $this->credentials->getPort()
+            );
 
-        if ($resource->connect_error !== null) {
-            throw new SqlException('An error occurred while connecting to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\'');
-        }
-
-        while ($this->running) {
-            if (!$resource->ping()) {
-                $success = false;
-
-                $attempts = 0;
-
-                while (!$success) {
-                    $seconds = min(2 ** $attempts, PHP_INT_MAX);
-
-                    $this->logger->warning('MySQL Connection failed! Trying reconnecting in ' . $seconds . ' seconds.');
-
-                    sleep(intval($seconds));
-
-                    $resource->connect(
-                        $this->credentials->getAddress(),
-                        $this->credentials->getUsername(),
-                        $this->credentials->getPassword(),
-                        $this->credentials->getDbname(),
-                        $this->credentials->getPort()
-                    );
-
-                    if ($resource->connect_error !== null) {
-                        $attempts++;
-
-                        $this->logger->error('An error occurred while trying reconnect to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\': ' . $resource->connect_error);
-
-                        continue;
-                    }
-
-                    $success = true;
-                }
-
-                $this->logger->info('Successfully database connection restored!');
+            if ($resource->connect_error !== null) {
+                throw new SqlException('An error occurred while connecting to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\'');
             }
 
-            $this->lastUpdate = microtime(true);
+            gc_enable();
+            ini_set('display_errors', '1');
+            ini_set('display_startup_errors', '1');
+            ini_set('memory_limit', '512M');
 
-            $pending = $this->mainToThread->shift();
+            register_shutdown_function([$this, 'shutdownHandler']);
 
-            if (!$pending instanceof Query) continue;
+            while ($this->running) {
+                if (!$resource->ping()) {
+                    $success = false;
 
-            echo 'running ' . PHP_EOL;
-            $pending->run($resource);
+                    $attempts = 0;
 
-            $this->threadToMainWriter->write(serialize($pending));
+                    while (!$success) {
+                        $seconds = min(2 ** $attempts, PHP_INT_MAX);
+
+                        $this->logger->warning('MySQL Connection failed! Trying reconnecting in ' . $seconds . ' seconds.');
+
+                        sleep(intval($seconds));
+
+                        $resource->connect(
+                            $this->credentials->getAddress(),
+                            $this->credentials->getUsername(),
+                            $this->credentials->getPassword(),
+                            $this->credentials->getDbname(),
+                            $this->credentials->getPort()
+                        );
+
+                        if ($resource->connect_error !== null) {
+                            $attempts++;
+
+                            $this->logger->error('An error occurred while trying reconnect to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\': ' . $resource->connect_error);
+
+                            continue;
+                        }
+
+                        $success = true;
+                    }
+
+                    $this->logger->info('Successfully database connection restored!');
+                }
+
+                $this->lastUpdate = microtime(true);
+
+                foreach ($this->mainToThread as $index => $pending) {
+                    if (!$pending instanceof Query) continue;
+
+                    $pending->run($resource);
+
+                    $this->threadToMainWriter->write(serialize($pending));
+
+                    unset($this->mainToThread[$index]);
+                }
+            }
+
+            $resource->close();
+        } catch (Exception $e) {
+            $this->logger->logException($e);
         }
-
-        $resource->close();
     }
 
     /**

@@ -1,0 +1,12 @@
+mysql:
+  host: 127.0.0.1
+  username: "root"
+  password: ""
+  dbname: "hcf-core"
+
+thread-idle: 5
+
+factions:
+  default-dtr: 1.0
+  default-balance: 0
+  default-points: 0

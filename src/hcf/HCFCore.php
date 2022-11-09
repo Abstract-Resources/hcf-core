@@ -17,6 +17,8 @@ final class HCFCore extends PluginBase {
     use SingletonTrait;
 
     public function onEnable(): void {
+        self::setInstance($this);
+
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
         // TODO: Initialize all factions

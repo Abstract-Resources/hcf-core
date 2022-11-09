@@ -23,6 +23,7 @@ final class PlayerLoginListener implements Listener {
             return;
         }
 
-        $player->kick('Failed trying load your profile');
+        $ev->setKickMessage('Failed trying load your profile data');
+        $ev->cancel();
     }
 }
