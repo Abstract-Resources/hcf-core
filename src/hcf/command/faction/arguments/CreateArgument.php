@@ -13,6 +13,7 @@ use hcf\utils\HCFUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use Ramsey\Uuid\Uuid;
+use function time;
 
 final class CreateArgument extends PlayerArgument {
 

@@ -11,6 +11,7 @@ use hcf\utils\MySQL;
 use mysqli_result;
 use RuntimeException;
 use Threaded;
+use function time;
 
 final class LoadFactionsQuery extends Query {
 

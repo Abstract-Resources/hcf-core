@@ -14,9 +14,12 @@ use pocketmine\thread\Thread;
 use Threaded;
 use ThreadedLogger;
 use function error_get_last;
+use function gc_enable;
+use function ini_set;
 use function intval;
 use function microtime;
 use function min;
+use function register_shutdown_function;
 use function serialize;
 use function sleep;
 
