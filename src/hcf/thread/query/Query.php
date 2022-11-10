@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace hcf\thread\query;
 
-use hcf\utils\MySQL;
-
 abstract class Query {
 
     /**

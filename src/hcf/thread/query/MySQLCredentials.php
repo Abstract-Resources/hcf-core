@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\utils;
+namespace hcf\thread\query;
 
 use pocketmine\plugin\PluginException;
 use function count;

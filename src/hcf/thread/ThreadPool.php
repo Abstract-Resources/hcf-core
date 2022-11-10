@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace hcf\thread;
 
 use hcf\HCFCore;
+use hcf\thread\query\MySQLCredentials;
 use hcf\thread\query\Query;
-use hcf\utils\MySQLCredentials;
 use pocketmine\network\mcpe\raklib\PthreadsChannelReader;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\SingletonTrait;
 use Threaded;
-
 use function is_int;
 use function is_string;
 use function unserialize;

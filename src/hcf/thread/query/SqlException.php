@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\thread;
+namespace hcf\thread\query;
 
 use pocketmine\plugin\PluginException;
 

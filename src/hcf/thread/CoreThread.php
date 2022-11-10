@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace hcf\thread;
 
 use Exception;
+use hcf\thread\query\MySQL;
+use hcf\thread\query\MySQLCredentials;
 use hcf\thread\query\Query;
-use hcf\utils\MySQL;
-use hcf\utils\MySQLCredentials;
+use hcf\thread\query\SqlException;
 use pocketmine\network\mcpe\raklib\SnoozeAwarePthreadsChannelWriter;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
@@ -40,10 +41,10 @@ final class CoreThread extends Thread {
     public float $lastUpdate = 0.0;
 
     /**
-     * @param MySQLCredentials $credentials
-     * @param ThreadedLogger   $logger
-     * @param Threaded         $threadToMainBuffer
-     * @param SleeperNotifier  $notifier
+     * @param \hcf\thread\query\MySQLCredentials $credentials
+     * @param ThreadedLogger                     $logger
+     * @param Threaded                           $threadToMainBuffer
+     * @param SleeperNotifier                    $notifier
      */
     public function __construct(
         private MySQLCredentials $credentials,

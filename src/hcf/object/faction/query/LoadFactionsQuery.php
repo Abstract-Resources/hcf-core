@@ -6,8 +6,8 @@ namespace hcf\object\faction\query;
 
 use hcf\factory\FactionFactory;
 use hcf\object\faction\Faction;
+use hcf\thread\query\MySQL;
 use hcf\thread\query\Query;
-use hcf\utils\MySQL;
 use mysqli_result;
 use RuntimeException;
 use Threaded;
@@ -19,7 +19,7 @@ final class LoadFactionsQuery extends Query {
     private Threaded $factions;
 
     /**
-     * @param MySQL $provider
+     * @param \hcf\thread\query\MySQL $provider
      */
     public function run(MySQL $provider): void {
         $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, leader_xuid VARCHAR(60), deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");

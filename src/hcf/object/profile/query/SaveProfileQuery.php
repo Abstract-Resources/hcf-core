@@ -6,8 +6,8 @@ namespace hcf\object\profile\query;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileData;
+use hcf\thread\query\MySQL;
 use hcf\thread\query\Query;
-use hcf\utils\MySQL;
 
 final class SaveProfileQuery extends Query {
 
@@ -17,7 +17,7 @@ final class SaveProfileQuery extends Query {
 	public function __construct(private ProfileData $profileData) {}
 
 	/**
-	 * @param MySQL $provider
+	 * @param \hcf\thread\query\MySQL $provider
 	 *
 	 * This function is executed on other Thread to prevent lag spike on Main thread
 	 */
