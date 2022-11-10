@@ -6,11 +6,14 @@ namespace hcf\object\profile\query;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
+use hcf\object\profile\ProfileData;
 use hcf\thread\query\Query;
+use hcf\utils\HCFUtils;
 use hcf\utils\MySQL;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
 use function is_array;
+use function is_int;
 
 final class LoadProfileQuery extends Query {
 
@@ -44,9 +47,12 @@ final class LoadProfileQuery extends Query {
             $this->profile = new Profile(
                 $this->xuid,
                 $this->name,
+                $fetch['first_seen'],
+                $fetch['last_seen'],
                 $fetch['faction_id'] ?? -1,
-                $fetch['kills'] ?? 0,
-                $fetch['deaths'] ?? 0
+                $fetch['faction_role'] ?? ProfileData::MEMBER_ROLE,
+                is_int($kills = $fetch['kills'] ?? 0) ? $kills : 0,
+                is_int($deaths = $fetch['deaths'] ?? 0) ? $deaths : 0
             );
         }
 
@@ -59,7 +65,7 @@ final class LoadProfileQuery extends Query {
      */
     public function onComplete(): void {
         if ($this->profile === null) {
-            $this->profile = new Profile($this->xuid, $this->name);
+            $this->profile = new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now);
             $this->profile->forceSave(false);
         }
 

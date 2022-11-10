@@ -7,9 +7,9 @@ namespace hcf\command\faction\arguments;
 use hcf\command\PlayerArgument;
 use hcf\factory\FactionFactory;
 use hcf\HCFCore;
+use hcf\HCFLanguage;
 use hcf\object\faction\Faction;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use Ramsey\Uuid\Uuid;
@@ -32,13 +32,13 @@ final class CreateArgument extends PlayerArgument {
 		if (($profile = $this->getTarget($sender)) === null) return;
 
 		if ($profile->getFactionId() !== null) {
-			$sender->sendMessage(HCFUtils::replacePlaceholders('YOU_ALREADY_IN_FACTION'));
+			$sender->sendMessage(HCFLanguage::YOU_ALREADY_IN_FACTION()->build());
 
 			return;
 		}
 
 		if (FactionFactory::getInstance()->getFactionName($args[0]) !== null) {
-			$sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_ALREADY_EXISTS', $args[0]));
+            $sender->sendActionBarMessage(HCFLanguage::FACTION_ALREADY_EXISTS()->build($args[0]));
 
 			return;
 		}
@@ -46,6 +46,7 @@ final class CreateArgument extends PlayerArgument {
         $faction = new Faction(
             Uuid::uuid4()->toString(),
             $args[0],
+            $sender->getXuid(),
             HCFCore::getConfigInt('factions.default-dtr'),
             0,
             time(),

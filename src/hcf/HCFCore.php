@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf;
 
+use hcf\command\faction\FactionCommand;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\object\faction\query\LoadFactionsQuery;
@@ -26,8 +27,14 @@ final class HCFCore extends PluginBase {
             $this->getLogger()->warning('An error occurred while trying load all factions stored.');
         }
 
+        $this->getServer()->getCommandMap()->register(FactionCommand::class, new FactionCommand());
+
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
+    }
+
+    public function onDisable(): void {
+        ThreadPool::getInstance()->close();
     }
 
     /**

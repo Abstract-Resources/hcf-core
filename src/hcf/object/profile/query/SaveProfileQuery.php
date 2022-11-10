@@ -23,18 +23,19 @@ final class SaveProfileQuery extends Query {
 	 */
 	public function run(MySQL $provider): void {
 		if ($this->profileData->hasJoinedBefore()) {
-			$provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
+			$provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, faction_role = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
 		} else {
-			$provider->prepareStatement('INSERT INTO profiles (username, faction_id, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?)');
+			$provider->prepareStatement('INSERT INTO profiles (username, faction_id, faction_role, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
 		}
 
 		$provider->set(
 			$this->profileData->getName(),
 			$this->profileData->getFactionId(),
+            $this->profileData->getFactionRole(),
 			$this->profileData->getKills(),
 			$this->profileData->getDeaths(),
-			0,
-			0,
+			$this->profileData->getFirstSeen(),
+			$this->profileData->getLastSeen(),
 			$this->profileData->getXuid()
 		);
 

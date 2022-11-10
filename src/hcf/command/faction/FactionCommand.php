@@ -6,6 +6,7 @@ namespace hcf\command\faction;
 
 use hcf\command\BaseCommand;
 use hcf\command\faction\arguments\CreateArgument;
+use hcf\command\faction\arguments\DisbandArgument;
 
 final class FactionCommand extends BaseCommand {
 
@@ -13,7 +14,8 @@ final class FactionCommand extends BaseCommand {
         parent::__construct('faction', 'Faction management', '/f help', ['f']);
 
         $this->registerParent(
-            new CreateArgument('create')
+            new CreateArgument('create'),
+            new DisbandArgument('disband')
         );
     }
 }

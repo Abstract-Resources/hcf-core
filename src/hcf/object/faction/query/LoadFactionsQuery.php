@@ -22,8 +22,8 @@ final class LoadFactionsQuery extends Query {
      * @param MySQL $provider
      */
     public function run(MySQL $provider): void {
-        $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");
-        $provider->executeStatement("CREATE TABLE IF NOT EXISTS players (xuid VARCHAR(60) PRIMARY KEY, username VARCHAR(16), lives INT, balance INT, factionRowId TEXT, role INT)");
+        $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, leader_xuid VARCHAR(60), deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");
+        $provider->executeStatement("CREATE TABLE IF NOT EXISTS profiles (xuid VARCHAR(60) PRIMARY KEY, username VARCHAR(16), lives INT, balance INT, faction_id TEXT, faction_role INT, kills INT, deaths INT, first_seen TEXT, last_seen TEXT)");
 
         $stmt = $provider->executeStatement("SELECT * FROM factions");
         $result = $stmt->get_result();
@@ -35,9 +35,11 @@ final class LoadFactionsQuery extends Query {
         $this->factions = new Threaded();
 
         while ($fetch = $result->fetch_array(MYSQLI_ASSOC)) {
+
             $faction = new Faction(
                 $fetch['id'],
                 $fetch['fName'],
+                $fetch['leader_xuid'],
                 $fetch['deathsUntilRaidable'],
                 $fetch['regenCooldown'],
                 time(),
@@ -45,7 +47,7 @@ final class LoadFactionsQuery extends Query {
                 $fetch['points']
             );
 
-            $stmt0 = $provider->executeStatement("SELECT * FROM players WHERE factionRowId = '" . $faction->getId() . "'");
+            $stmt0 = $provider->executeStatement("SELECT * FROM profiles WHERE faction_id = '" . $faction->getId() . "'");
             $result0 = $stmt0->get_result();
 
             if (!$result0 instanceof mysqli_result) {
@@ -55,12 +57,20 @@ final class LoadFactionsQuery extends Query {
             while ($fetch0 = $result0->fetch_array(MYSQLI_ASSOC)) {
                 $faction->registerMember($fetch0['xuid'],
                     $fetch0['username'],
-                    $fetch0['role']
+                    $fetch0['faction_role']
                 );
             }
 
+            echo $faction->getName() . ' stored' . PHP_EOL;
+
             $this->factions[] = $faction;
+
+            $result0->close();
+            $stmt0->close();
         }
+
+        $result->close();
+        $stmt->close();
     }
 
     public function onComplete(): void {

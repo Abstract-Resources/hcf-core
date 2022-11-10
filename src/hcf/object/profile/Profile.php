@@ -6,6 +6,9 @@ namespace hcf\object\profile;
 
 use hcf\object\profile\query\SaveProfileQuery;
 use hcf\thread\ThreadPool;
+use hcf\utils\HCFUtils;
+use pocketmine\player\Player;
+use pocketmine\Server;
 
 final class Profile {
 
@@ -19,15 +22,26 @@ final class Profile {
      * @param int         $factionRole
      * @param int         $kills
      * @param int         $deaths
+     * @param string      $firstSeen
+     * @param string      $lastSeen
      */
 	public function __construct(
 		private string $xuid,
 		private string $name,
-		private ?string $factionId = null,
+        private string $firstSeen,
+        private string $lastSeen,
+        private ?string $factionId = null,
         private int $factionRole = ProfileData::MEMBER_ROLE,
-		private int $kills = 0,
-		private int $deaths = 0
+        private int $kills = 0,
+        private int $deaths = 0,
 	) {}
+
+    /**
+     * @return Player|null
+     */
+    public function getInstance(): ?Player {
+        return Server::getInstance()->getPlayerExact($this->name);
+    }
 
 	/**
 	 * @return string
@@ -99,18 +113,22 @@ final class Profile {
 		$this->alreadySaving = $alreadySaving;
 	}
 
-	/**
-	 * @param bool $joinedBefore
-	 */
-	public function forceSave(bool $joinedBefore): void {
+    /**
+     * @param bool $joinedBefore
+     * @param bool $stored
+     */
+	public function forceSave(bool $joinedBefore, bool $stored = true): void {
 		$this->alreadySaving = true;
 
 		ThreadPool::getInstance()->submit(new SaveProfileQuery(new ProfileData(
 			$this->xuid,
 			$this->name,
 			$this->factionId,
+            $this->factionRole,
 			$this->kills,
 			$this->deaths,
+            $this->firstSeen,
+            $stored ? HCFUtils::dateNow() : $this->lastSeen,
 			$joinedBefore
 		)));
 	}

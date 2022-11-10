@@ -18,6 +18,7 @@ final class Faction {
     /**
      * @param string $id
      * @param string $name
+     * @param string $leaderXuid
      * @param float  $deathsUntilRaidable
      * @param int    $regenCooldown
      * @param int    $lastDtrUpdate
@@ -27,6 +28,7 @@ final class Faction {
 	public function __construct(
 		private string $id,
 		private string $name,
+        private string $leaderXuid,
         private float $deathsUntilRaidable,
         private int $regenCooldown,
         private int $lastDtrUpdate,
@@ -54,6 +56,13 @@ final class Faction {
 	public function setName(string $name): void {
 		$this->name = $name;
 	}
+
+    /**
+     * @return string
+     */
+    public function getLeaderXuid(): string {
+        return $this->leaderXuid;
+    }
 
     /**
      * @return float
@@ -127,10 +136,25 @@ final class Faction {
         return $this->members[$xuid] ?? null;
     }
 
+    /**
+     * @return FactionMember[]
+     */
+    public function getMembers(): array {
+        return $this->members;
+    }
+
 	/**
 	 * @param bool $exists
 	 */
 	public function forceSave(bool $exists): void {
-        ThreadPool::getInstance()->submit(new SaveFactionQuery(new FactionData()));
+        ThreadPool::getInstance()->submit(new SaveFactionQuery(new FactionData(
+            $this->id,
+            $this->name,
+            $this->leaderXuid,
+            $this->deathsUntilRaidable,
+            $this->regenCooldown,
+            $this->balance,
+            $this->points
+        ), $exists));
 	}
 }
