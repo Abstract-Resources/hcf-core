@@ -38,7 +38,7 @@ final class CreateArgument extends PlayerArgument {
 		}
 
 		if (FactionFactory::getInstance()->getFactionName($args[0]) !== null) {
-            $sender->sendActionBarMessage(HCFLanguage::FACTION_ALREADY_EXISTS()->build($args[0]));
+            $sender->sendMessage(HCFLanguage::FACTION_ALREADY_EXISTS()->build($args[0]));
 
 			return;
 		}
