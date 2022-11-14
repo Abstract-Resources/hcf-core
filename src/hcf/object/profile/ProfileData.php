@@ -55,10 +55,24 @@ final class ProfileData {
 	}
 
     /**
+     * @param string|null $factionId
+     */
+    public function setFactionId(?string $factionId): void {
+        $this->factionId = $factionId;
+    }
+
+    /**
      * @return int
      */
     public function getFactionRole(): int {
         return $this->factionRole;
+    }
+
+    /**
+     * @param int $factionRole
+     */
+    public function setFactionRole(int $factionRole): void {
+        $this->factionRole = $factionRole;
     }
 
 	/**
@@ -68,12 +82,26 @@ final class ProfileData {
 		return $this->deaths;
 	}
 
+    /**
+     * @param int $deaths
+     */
+    public function setDeaths(int $deaths): void {
+        $this->deaths = $deaths;
+    }
+
 	/**
 	 * @return int
 	 */
 	public function getKills(): int {
 		return $this->kills;
 	}
+
+    /**
+     * @param int $kills
+     */
+    public function setKills(int $kills): void {
+        $this->kills = $kills;
+    }
 
     /**
      * @return string

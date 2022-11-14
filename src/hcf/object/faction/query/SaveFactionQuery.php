@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace hcf\object\faction\query;
 
 use hcf\object\faction\FactionData;
-use hcf\thread\query\MySQL;
-use hcf\thread\query\Query;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 
 final class SaveFactionQuery extends Query {
 
@@ -16,7 +16,7 @@ final class SaveFactionQuery extends Query {
     public function __construct(private FactionData $factionData, private bool $exists) {}
 
     /**
-     * @param \hcf\thread\query\MySQL $provider
+     * @param \hcf\thread\datasource\MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */

@@ -7,6 +7,8 @@ namespace hcf\factory;
 use hcf\object\faction\Faction;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
+use hcf\object\profile\query\BatchSaveProfileQuery;
+use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use hcf\utils\UnexpectedException;
 use pocketmine\utils\SingletonTrait;
@@ -42,9 +44,23 @@ final class FactionFactory {
             throw new UnexpectedException('An unexpected error as occurred while get the Faction leader!');
         }
 
+        $offlineProfiles = [];
+
         foreach ($faction->getMembers() as $factionMember) {
             if (($profile = ProfileFactory::getInstance()->getIfLoaded($factionMember->getXuid())) === null) {
                 // TODO: Store all offline profiles and update it on a query
+
+                $offlineProfiles[] = new ProfileData(
+                    $factionMember->getXuid(),
+                    $factionMember->getName(),
+                    null,
+                    ProfileData::MEMBER_ROLE,
+                    -1,
+                    -1,
+                    HCFUtils::dateNow(),
+                    HCFUtils::dateNow(),
+                    true
+                );
 
                 continue;
             }
@@ -58,6 +74,8 @@ final class FactionFactory {
 
             $instance->sendMessage(HCFUtils::replacePlaceholders('LEADER_DISBANDED_THE_FACTION', $leader->getName()));
         }
+
+        ThreadPool::getInstance()->submit(new BatchSaveProfileQuery($offlineProfiles));
 
         // TODO: Run disband faction query
 

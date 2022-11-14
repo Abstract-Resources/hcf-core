@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\thread\query;
+namespace hcf\thread\datasource;
 
 use mysqli;
 use mysqli_stmt;

@@ -6,8 +6,8 @@ namespace hcf\object\profile\query;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileData;
-use hcf\thread\query\MySQL;
-use hcf\thread\query\Query;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 
 final class SaveProfileQuery extends Query {
 
@@ -17,30 +17,33 @@ final class SaveProfileQuery extends Query {
 	public function __construct(private ProfileData $profileData) {}
 
 	/**
-	 * @param \hcf\thread\query\MySQL $provider
+	 * @param MySQL $provider
 	 *
 	 * This function is executed on other Thread to prevent lag spike on Main thread
 	 */
 	public function run(MySQL $provider): void {
-		if ($this->profileData->hasJoinedBefore()) {
-			$provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, faction_role = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
-		} else {
-			$provider->prepareStatement('INSERT INTO profiles (username, faction_id, faction_role, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-		}
-
-		$provider->set(
-			$this->profileData->getName(),
-			$this->profileData->getFactionId(),
-            $this->profileData->getFactionRole(),
-			$this->profileData->getKills(),
-			$this->profileData->getDeaths(),
-			$this->profileData->getFirstSeen(),
-			$this->profileData->getLastSeen(),
-			$this->profileData->getXuid()
-		);
-
-		$provider->executeStatement()->close();
+		self::push($this->profileData, $provider);
 	}
+
+    public static function push(ProfileData $profileData, MySQL $provider): void {
+        if ($profileData->hasJoinedBefore()) {
+            $provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, faction_role = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
+        } else {
+            $provider->prepareStatement('INSERT INTO profiles (username, faction_id, faction_role, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        }
+
+        $provider->set(
+            $profileData->getName(),
+            $profileData->getFactionId(),
+            $profileData->getFactionRole(),
+            $profileData->getKills(),
+            $profileData->getDeaths(),
+            $profileData->getFirstSeen(),
+            $profileData->getLastSeen(),
+            $profileData->getXuid()
+        );
+        $provider->executeStatement()->close();
+    }
 
 	/**
 	 * This function is executed on the Main Thread because need use some function of pmmp

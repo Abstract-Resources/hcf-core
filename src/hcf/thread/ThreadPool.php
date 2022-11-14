@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace hcf\thread;
 
 use hcf\HCFCore;
-use hcf\thread\query\MySQLCredentials;
-use hcf\thread\query\Query;
+use hcf\thread\datasource\MySQLCredentials;
+use hcf\thread\datasource\Query;
 use pocketmine\network\mcpe\raklib\PthreadsChannelReader;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;

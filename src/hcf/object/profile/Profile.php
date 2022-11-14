@@ -132,4 +132,22 @@ final class Profile {
 			$joinedBefore
 		)));
 	}
+
+    /**
+     * @param ProfileData $profileData
+     *
+     * @return Profile
+     */
+    public static function fromProfileData(ProfileData $profileData): Profile {
+        return new self (
+            $profileData->getXuid(),
+            $profileData->getName(),
+            $profileData->getFirstSeen(),
+            $profileData->getLastSeen(),
+            $profileData->getFactionId(),
+            $profileData->getFactionRole(),
+            $profileData->getKills(),
+            $profileData->getDeaths()
+        );
+    }
 }

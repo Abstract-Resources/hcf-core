@@ -7,8 +7,8 @@ namespace hcf\object\profile\query;
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\thread\query\MySQL;
-use hcf\thread\query\Query;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 use hcf\utils\HCFUtils;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
@@ -35,29 +35,40 @@ final class LoadProfileQuery extends Query {
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
     public function run(MySQL $provider): void {
+        if (($profileData = self::fetch($this->xuid, $this->name, $provider)) === null) return;
+
+        $this->profile = Profile::fromProfileData($profileData);
+    }
+
+    public static function fetch(string $xuid, string $name, MySQL $provider): ?ProfileData {
         $provider->prepareStatement('SELECT * FROM profiles WHERE xuid = ?');
-        $provider->set($this->xuid);
+        $provider->set($xuid);
 
         $stmt = $provider->executeStatement();
         if (!($result = $stmt->get_result()) instanceof mysqli_result) {
             throw new PluginException('An error occurred while tried fetch profile');
         }
 
+        $profileData = null;
+
         if (is_array($fetch = $result->fetch_array(MYSQLI_ASSOC))) {
-            $this->profile = new Profile(
-                $this->xuid,
-                $this->name,
+            $profileData = new ProfileData(
+                $xuid,
+                $name,
+                $fetch['faction_id'] ?? -1,
+            $fetch['faction_role'] ?? ProfileData::MEMBER_ROLE,
+                is_int($kills = $fetch['kills'] ?? 0) ? $kills : 0,
+                is_int($deaths = $fetch['deaths'] ?? 0) ? $deaths : 0,
                 $fetch['first_seen'],
                 $fetch['last_seen'],
-                $fetch['faction_id'] ?? -1,
-                $fetch['faction_role'] ?? ProfileData::MEMBER_ROLE,
-                is_int($kills = $fetch['kills'] ?? 0) ? $kills : 0,
-                is_int($deaths = $fetch['deaths'] ?? 0) ? $deaths : 0
+                true
             );
         }
 
         $result->close();
         $stmt->close();
+
+        return $profileData;
     }
 
     /**
