@@ -6,6 +6,10 @@ namespace hcf\object\faction;
 
 final class FactionData {
 
+    public const STATUS_PAUSED = 0;
+    public const STATUS_REGENERATING = 1;
+    public const STATUS_FULL = 2;
+
     /**
      * @param string $id
      * @param string $name

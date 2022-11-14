@@ -6,7 +6,9 @@ namespace hcf\command\faction;
 
 use abstractplugin\command\BaseCommand;
 use hcf\command\faction\arguments\CreateArgument;
-use hcf\command\faction\arguments\DisbandArgument;
+use hcf\command\faction\arguments\JoinArgument;
+use hcf\command\faction\arguments\leader\DisbandArgument;
+use hcf\command\faction\arguments\officer\InviteArgument;
 
 final class FactionCommand extends BaseCommand {
 
@@ -15,7 +17,9 @@ final class FactionCommand extends BaseCommand {
 
         $this->registerParent(
             new CreateArgument('create'),
-            new DisbandArgument('disband')
+            new InviteArgument('invite'),
+            new DisbandArgument('disband'),
+            new JoinArgument('join')
         );
     }
 }

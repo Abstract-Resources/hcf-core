@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\factory;
 
+use hcf\HCFCore;
 use hcf\object\faction\Faction;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
@@ -111,5 +112,33 @@ final class FactionFactory {
      */
     public function getFaction(string $id): ?Faction {
         return $this->factions[$id] ?? null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDtrUpdate(): int {
+        return HCFCore::getConfigInt('factions.dtr-update');
+    }
+
+    /**
+     * @return float
+     */
+    public function getDtrIncrementBetweenUpdate(): float {
+        return HCFCore::getConfigFloat('factions.dtr-increment-between-update'); // Im fan of large config setting
+    }
+
+    /**
+     * @return float
+     */
+    public function getDtrPerPlayer(): float {
+        return HCFCore::getConfigInt('factions.dtr-per-player');
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxDeathsUntilRaidable(): int {
+        return HCFCore::getConfigInt('factions.maximum-deaths-until-raidable');
     }
 }

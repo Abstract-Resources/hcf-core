@@ -4,9 +4,18 @@ declare(strict_types=1);
 
 namespace hcf\object\faction;
 
+use hcf\factory\FactionFactory;
 use hcf\object\faction\query\SaveFactionQuery;
 use hcf\thread\ThreadPool;
+use pocketmine\Server;
+use function abs;
+use function array_diff;
+use function count;
+use function in_array;
+use function min;
+use function round;
 use function strtolower;
+use function time;
 
 final class Faction {
 
@@ -14,6 +23,11 @@ final class Faction {
     private array $members = [];
     /** @var array<string, string> */
     private array $membersXuid = [];
+    /** @var array */
+    private array $pendingInvitesSent = [];
+
+    /** @var bool */
+    private bool $open = false; // This is a feature
 
     /**
      * @param string $id
@@ -65,10 +79,67 @@ final class Faction {
     }
 
     /**
+     * @param bool $updateLastCheck
+     *
      * @return float
      */
-    public function getDeathsUntilRaidable(): float {
+    public function getDeathsUntilRaidable(bool $updateLastCheck = false): float {
+        if ($updateLastCheck) $this->updateDeathsUntilRaidable();
+
         return $this->deathsUntilRaidable;
+    }
+
+    private function updateDeathsUntilRaidable(): void {
+        if ($this->getRegenStatus() !== FactionData::STATUS_REGENERATING) return;
+
+        $timePassed = ($now = time()) - $this->getLastDtrUpdate();
+
+        if ($timePassed < ($dtrUpdate = FactionFactory::getInstance()->getDtrUpdate())) {
+            return;
+        }
+
+        $multiplier = ($timePassed + ($timePassed % $dtrUpdate)) / $dtrUpdate;
+        $this->setDeathsUntilRaidable($this->deathsUntilRaidable + ($multiplier * FactionFactory::getInstance()->getDtrIncrementBetweenUpdate()));
+
+        $this->lastDtrUpdate = $now;
+    }
+
+    /**
+     * @param float $deathsUntilRaidable
+     * @param bool  $limit
+     *
+     * @return float
+     */
+    public function setDeathsUntilRaidable(float $deathsUntilRaidable, bool $limit = true): float {
+        $deathsUntilRaidable = round($deathsUntilRaidable * 100.0, 1) / 100.0;
+
+        if ($limit) $deathsUntilRaidable = min($deathsUntilRaidable, $this->getMaximumDeathsUntilRaidable());
+
+        if (abs($deathsUntilRaidable - $this->getDeathsUntilRaidable()) !== 0.0) {
+            $deathsUntilRaidable = round($deathsUntilRaidable * 100.0) / 100.0;
+
+            if ($deathsUntilRaidable <= 0) {
+                // TODO: is now raidable
+            }
+
+            $this->lastDtrUpdate = time();
+
+            $this->deathsUntilRaidable = $deathsUntilRaidable;
+
+            $this->forceSave(true);
+        }
+
+        return $this->deathsUntilRaidable;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMaximumDeathsUntilRaidable(): float {
+        return count($this->members) === 1 ? 1.1 : min(
+            FactionFactory::getInstance()->getMaxDeathsUntilRaidable(),
+            count($this->members) * FactionFactory::getInstance()->getDtrPerPlayer()
+        );
     }
 
     /**
@@ -83,6 +154,24 @@ final class Faction {
      */
     public function getLastDtrUpdate(): int {
         return $this->lastDtrUpdate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRemainingRegenerationTime(): int {
+        return $this->regenCooldown === 0 ? 0 : $this->regenCooldown - time();
+    }
+
+    /**
+     * @return int
+     */
+    public function getRegenStatus(): int {
+        if ($this->getRemainingRegenerationTime() > 0) return FactionData::STATUS_PAUSED;
+
+        if ($this->getMaximumDeathsUntilRaidable() > $this->getDeathsUntilRaidable()) return FactionData::STATUS_REGENERATING;
+
+        return FactionData::STATUS_FULL;
     }
 
     /**
@@ -141,6 +230,47 @@ final class Faction {
      */
     public function getMembers(): array {
         return $this->members;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOpen(): bool {
+        return $this->open;
+    }
+
+    /**
+     * @param string $xuid
+     */
+    public function addPendingInvite(string $xuid): void {
+        $this->pendingInvitesSent[] = $xuid;
+    }
+
+    /**
+     * @param string $xuid
+     *
+     * @return bool
+     */
+    public function hasPendingInvite(string $xuid): bool {
+        return in_array($xuid, $this->pendingInvitesSent, true);
+    }
+
+    /**
+     * @param string $xuid
+     */
+    public function removePendingInvite(string $xuid): void {
+        $this->pendingInvitesSent = array_diff($this->pendingInvitesSent, [$xuid]);
+    }
+
+    /**
+     * @param string $message
+     */
+    public function broadcastMessage(string $message): void {
+        foreach ($this->getMembers() as $factionMember) {
+            if (($instance = Server::getInstance()->getPlayerExact($factionMember->getName())) === null) continue;
+
+            $instance->sendMessage($message);
+        }
     }
 
 	/**

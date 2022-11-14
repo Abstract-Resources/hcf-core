@@ -12,6 +12,9 @@ use pocketmine\utils\EnumTrait;
  * @method static HCFLanguage FACTION_ALREADY_EXISTS()
  * @method static HCFLanguage COMMAND_FACTION_NOT_IN()
  * @method static HCFLanguage COMMAND_FACTION_NOT_LEADER()
+ * @method static HCFLanguage PLAYER_NOT_FOUND()
+ * @method static HCFLanguage YOU_CANT_USE_THIS_ON_YOURSELF()
+ * @method static HCFLanguage PLAYER_IN_FACTION()
  */
 final class HCFLanguage {
     use EnumTrait {
@@ -28,7 +31,8 @@ final class HCFLanguage {
             new HCFLanguage('YOU_ALREADY_IN_FACTION'),
             new HCFLanguage('FACTION_ALREADY_EXISTS', ['faction']),
             new HCFLanguage('COMMAND_FACTION_NOT_IN'),
-            new HCFLanguage('COMMAND_FACTION_NOT_LEADER')
+            new HCFLanguage('COMMAND_FACTION_NOT_LEADER'),
+            new HCFLanguage('PLAYER_NOT_FOUND', ['player'])
         );
     }
 

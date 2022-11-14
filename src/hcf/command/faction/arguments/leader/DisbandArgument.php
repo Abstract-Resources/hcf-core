@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\command\faction\arguments;
+namespace hcf\command\faction\arguments\leader;
 
 use abstractplugin\command\Argument;
 use abstractplugin\command\PlayerArgumentTrait;

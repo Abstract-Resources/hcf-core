@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace hcf\factory;
 
 use hcf\object\profile\Profile;
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 
 final class ProfileFactory {
@@ -29,6 +30,17 @@ final class ProfileFactory {
      */
     public function getIfLoaded(string $xuid): ?Profile {
         return $this->profiles[$xuid] ?? null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Profile|null
+     */
+    public function getPlayerProfile(string $name): ?Profile {
+        if (($target = Server::getInstance()->getPlayerByPrefix($name)) === null) return null;
+
+        return $this->getIfLoaded($target->getXuid());
     }
 
     /**

@@ -11,6 +11,7 @@ use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\thread\ThreadPool;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
+use function is_float;
 use function is_int;
 use function is_string;
 
@@ -49,6 +50,16 @@ final class HCFCore extends PluginBase {
 
     /**
      * @param string $key
+     * @param float  $defaultValue
+     *
+     * @return float
+     */
+    public static function getConfigFloat(string $key, float $defaultValue = 0.0): float {
+        return is_float($value = self::getInstance()->getConfig()->getNested($key)) ? $value : $defaultValue;
+    }
+
+    /**
+     * @param string $key
      * @param string $defaultValue
      *
      * @return string
@@ -59,5 +70,12 @@ final class HCFCore extends PluginBase {
 
     public static function debug(string $debug): void {
 
+    }
+
+    /**
+     * @return bool
+     */
+    public static function released(): bool {
+        return false;
     }
 }
