@@ -21,6 +21,15 @@ final class HCFCore extends PluginBase {
     public function onEnable(): void {
         self::setInstance($this);
 
+        if (!is_file($bootstrap = 'phar://' . $this->getServer()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
+            $this->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
+            $this->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
+
+            exit(1);
+        }
+
+        require_once($bootstrap);
+
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
         // TODO: Initialize all factions

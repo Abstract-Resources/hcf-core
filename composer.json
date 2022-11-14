@@ -11,12 +11,12 @@
     "ext-json": "*",
     "ext-mysqli": "*",
     "ext-curl": "*",
-    "ext-igbinary": "*"
+    "ext-igbinary": "*",
+    "abstract/command-framework": "^0.2"
   },
 
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^v3.12.0",
-    "abstract/command-framework": "^0.2",
     "phpstan/phpstan": "^1.2.0",
     "phpstan/phpstan-strict-rules": "^1.1.0",
     "pocketmine/pocketmine-mp": "^4.2.4"
@@ -28,5 +28,12 @@
 
   "autoload": {
     "psr-4": {"": ["src"]}
+  },
+
+  "scripts": {
+    "make-server": [
+      "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
+      "@php -dphar.readonly=0 make-phar.php"
+    ]
   }
 }
