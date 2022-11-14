@@ -10,3 +10,19 @@ factions:
   default-dtr: 1.0
   default-balance: 0
   default-points: 0
+
+  min-name: 3
+  max-name: 16
+  max-members: 10
+  dtr-freeze: 1 # MINUTES dtr freeze
+  dtr-regen-time: 5 #SECONDS dtr to regen #dtr-increment
+  dtr-increment: 0.1
+  dtr-per-player: 1.1
+  max-dtr: 6.5
+
+  claim_distance: 50
+  amount_per_block: 5.0
+
+  invalid-names:
+    - 'Road'
+    - 'Spawn'

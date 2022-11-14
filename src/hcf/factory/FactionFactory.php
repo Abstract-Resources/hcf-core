@@ -118,14 +118,14 @@ final class FactionFactory {
      * @return int
      */
     public function getDtrUpdate(): int {
-        return HCFCore::getConfigInt('factions.dtr-update');
+        return HCFCore::getConfigInt('factions.dtr-regen-time');
     }
 
     /**
      * @return float
      */
     public function getDtrIncrementBetweenUpdate(): float {
-        return HCFCore::getConfigFloat('factions.dtr-increment-between-update'); // Im fan of large config setting
+        return HCFCore::getConfigFloat('factions.dtr-increment'); // Im fan of large config setting
     }
 
     /**
@@ -139,6 +139,6 @@ final class FactionFactory {
      * @return int
      */
     public function getMaxDeathsUntilRaidable(): int {
-        return HCFCore::getConfigInt('factions.maximum-deaths-until-raidable');
+        return HCFCore::getConfigInt('factions.max-dtr');
     }
 }
