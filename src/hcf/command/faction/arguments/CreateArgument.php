@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace hcf\command\faction\arguments;
 
-use hcf\command\PlayerArgument;
+use abstractplugin\command\Argument;
+use abstractplugin\command\PlayerArgumentTrait;
 use hcf\factory\FactionFactory;
+use hcf\factory\ProfileFactory;
 use hcf\HCFCore;
 use hcf\HCFLanguage;
 use hcf\object\faction\Faction;
@@ -15,21 +17,22 @@ use pocketmine\utils\TextFormat;
 use Ramsey\Uuid\Uuid;
 use function time;
 
-final class CreateArgument extends PlayerArgument {
+final class CreateArgument extends Argument {
+    use PlayerArgumentTrait;
 
-	/**
-	 * @param Player $sender
-	 * @param string $commandLabel
-	 * @param array  $args
-	 */
-	public function handle(Player $sender, string $commandLabel, array $args): void {
+    /**
+     * @param Player $sender
+     * @param string $label
+     * @param array  $args
+     */
+	public function onPlayerExecute(Player $sender, string $label, array $args): void {
 		if (!isset($args[0])) {
-			$sender->sendMessage(TextFormat::RED . 'Usage: /' . $commandLabel . ' create <name>');
+			$sender->sendMessage(TextFormat::RED . 'Usage: /' . $label . ' create <name>');
 
 			return;
 		}
 
-		if (($profile = $this->getTarget($sender)) === null) return;
+		if (($profile = ProfileFactory::getInstance()->getIfLoaded($sender->getXuid())) === null) return;
 
 		if ($profile->getFactionId() !== null) {
 			$sender->sendMessage(HCFLanguage::YOU_ALREADY_IN_FACTION()->build());

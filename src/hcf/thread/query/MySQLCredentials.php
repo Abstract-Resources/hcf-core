@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace hcf\thread\query;
 
-use pocketmine\plugin\PluginException;
 use function count;
 use function explode;
 
@@ -66,11 +65,7 @@ final class MySQLCredentials {
      * @return array
      */
     public static function parseHost(string $host): array {
-        $split = explode(':', $host, 2);
-
-        if (count($split) === 0) {
-            throw new PluginException('An error occurred while tried parse the host');
-        }
+        $split = explode(':', $host);
 
         if (count($split) !== 2) {
             return [$split[0], 3306];

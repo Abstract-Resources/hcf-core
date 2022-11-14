@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace hcf\command\faction\arguments;
 
-use hcf\command\PlayerArgument;
+use abstractplugin\command\Argument;
+use abstractplugin\command\PlayerArgumentTrait;
 use hcf\factory\FactionFactory;
+use hcf\factory\ProfileFactory;
 use hcf\HCFLanguage;
 use hcf\object\profile\ProfileData;
 use pocketmine\player\Player;
 
-final class DisbandArgument extends PlayerArgument {
+final class DisbandArgument extends Argument {
+    use PlayerArgumentTrait;
 
     /**
      * @param Player $sender
-     * @param string $commandLabel
+     * @param string $label
      * @param array  $args
      */
-    public function handle(Player $sender, string $commandLabel, array $args): void {
-        if (($profile = $this->getTarget($sender)) === null) return;
+    public function onPlayerExecute(Player $sender, string $label, array $args): void {
+        if (($profile = ProfileFactory::getInstance()->getIfLoaded($sender->getXuid())) === null) return;
 
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
             $sender->sendMessage(HCFLanguage::COMMAND_FACTION_NOT_IN()->build());

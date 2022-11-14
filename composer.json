@@ -16,10 +16,15 @@
 
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^v3.12.0",
+    "abstract/command-framework": "^0.2",
     "phpstan/phpstan": "^1.2.0",
     "phpstan/phpstan-strict-rules": "^1.1.0",
     "pocketmine/pocketmine-mp": "^4.2.4"
   },
+
+  "repositories": [
+    {"type": "vcs", "url":  "git@github.com:Abstract-Resources/command-framework"}
+  ],
 
   "autoload": {
     "psr-4": {"": ["src"]}

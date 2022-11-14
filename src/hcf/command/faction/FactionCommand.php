@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\command\faction;
 
-use hcf\command\BaseCommand;
+use abstractplugin\command\BaseCommand;
 use hcf\command\faction\arguments\CreateArgument;
 use hcf\command\faction\arguments\DisbandArgument;
 
