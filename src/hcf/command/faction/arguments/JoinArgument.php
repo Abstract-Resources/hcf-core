@@ -8,6 +8,7 @@ use abstractplugin\command\Argument;
 use abstractplugin\command\PlayerArgumentTrait;
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
+use hcf\HCFLanguage;
 use hcf\object\faction\FactionData;
 use hcf\object\profile\ProfileData;
 use hcf\utils\HCFUtils;
@@ -33,19 +34,19 @@ final class JoinArgument extends Argument {
         if (($profile = ProfileFactory::getInstance()->getIfLoaded($sender->getXuid())) === null) return;
 
         if ($profile->getFactionId() !== null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_ATTEMPT_JOIN'));
+            $sender->sendMessage(HCFLanguage::COMMAND_FACTION_ATTEMPT_JOIN()->build());
 
             return;
         }
 
         if ((($faction = FactionFactory::getInstance()->getFactionName($args[0]))) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_NOT_INVITED', $args[0]));
+            $sender->sendMessage(HCFLanguage::FACTION_NOT_INVITED()->build($args[0]));
 
             return;
         }
 
         if (!$faction->isOpen() && !$faction->hasPendingInvite($sender->getXuid())) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_NOT_INVITED', $faction->getName()));
+            $sender->sendMessage(HCFLanguage::FACTION_NOT_INVITED()->build($faction->getName()));
 
             return;
         }

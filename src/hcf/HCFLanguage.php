@@ -12,9 +12,14 @@ use pocketmine\utils\EnumTrait;
  * @method static HCFLanguage FACTION_ALREADY_EXISTS()
  * @method static HCFLanguage COMMAND_FACTION_NOT_IN()
  * @method static HCFLanguage COMMAND_FACTION_NOT_LEADER()
+ * @method static HCFLanguage COMMAND_FACTION_ATTEMPT_JOIN()
  * @method static HCFLanguage PLAYER_NOT_FOUND()
  * @method static HCFLanguage YOU_CANT_USE_THIS_ON_YOURSELF()
  * @method static HCFLanguage PLAYER_IN_FACTION()
+ * @method static HCFLanguage PLAYER_ALREADY_INVITED()
+ * @method static HCFLanguage FACTION_INVITATION_SENT()
+ * @method static HCFLanguage FACTION_INVITE_RECEIVED()
+ * @method static HCFLanguage FACTION_NOT_INVITED()
  */
 final class HCFLanguage {
     use EnumTrait {
@@ -32,7 +37,14 @@ final class HCFLanguage {
             new HCFLanguage('FACTION_ALREADY_EXISTS', ['faction']),
             new HCFLanguage('COMMAND_FACTION_NOT_IN'),
             new HCFLanguage('COMMAND_FACTION_NOT_LEADER'),
-            new HCFLanguage('PLAYER_NOT_FOUND', ['player'])
+            new HCFLanguage('COMMAND_FACTION_ATTEMPT_JOIN'),
+            new HCFLanguage('PLAYER_NOT_FOUND', ['player']),
+            new HCFLanguage('YOU_CANT_USE_THIS_ON_YOURSELF'),
+            new HCFLanguage('PLAYER_IN_FACTION', ['player']),
+            new HCFLanguage('PLAYER_ALREADY_INVITED', ['player']),
+            new HCFLanguage('FACTION_INVITATION_SENT', ['player', 'sender']),
+            new HCFLanguage('FACTION_INVITE_RECEIVED', ['player', 'faction']),
+            new HCFLanguage('FACTION_NOT_INVITED', ['faction'])
         );
     }
 

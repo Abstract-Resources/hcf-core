@@ -70,7 +70,7 @@ final class InviteArgument extends Argument {
         }
 
         if ($faction->hasPendingInvite($targetProfile->getXuid())) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_ALREADY_INVITED', $targetProfile->getName()));
+            $sender->sendMessage(HCFLanguage::PLAYER_ALREADY_INVITED()->build($targetProfile->getName()));
 
             return;
         }
@@ -85,8 +85,8 @@ final class InviteArgument extends Argument {
         if (($instance = $targetProfile->getInstance()) === null) return;
 
         $faction->addPendingInvite($targetProfile->getXuid());
-        $faction->broadcastMessage(HCFUtils::replacePlaceholders('FACTION_INVITATION_SENT', $targetProfile->getName(), $sender->getName()));
+        $faction->broadcastMessage(HCFLanguage::FACTION_INVITATION_SENT()->build($targetProfile->getName(), $sender->getName()));
 
-        $instance->sendMessage(HCFUtils::replacePlaceholders('FACTION_INVITE_RECEIVED', $sender->getName(), $faction->getName()));
+        $instance->sendMessage(HCFLanguage::FACTION_INVITE_RECEIVED()->build($sender->getName(), $faction->getName()));
     }
 }

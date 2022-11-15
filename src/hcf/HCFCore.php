@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf;
 
+use abstractplugin\command\BaseCommand;
 use hcf\command\faction\FactionCommand;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
@@ -21,14 +22,8 @@ final class HCFCore extends PluginBase {
     public function onEnable(): void {
         self::setInstance($this);
 
-        if (!is_file($bootstrap = 'phar://' . $this->getServer()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
-            $this->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
-            $this->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
-
-            exit(1);
-        }
-
-        require_once($bootstrap);
+        // Initialize the composer autoload
+        BaseCommand::init($this);
 
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 

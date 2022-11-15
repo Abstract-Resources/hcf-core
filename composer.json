@@ -12,7 +12,7 @@
     "ext-mysqli": "*",
     "ext-curl": "*",
     "ext-igbinary": "*",
-    "abstract/command-framework": "^0.2"
+    "abstract/command-framework": "^0.3"
   },
 
   "require-dev": {
