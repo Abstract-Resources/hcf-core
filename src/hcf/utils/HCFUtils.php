@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace hcf\utils;
 
 use hcf\HCFCore;
+use pocketmine\math\Vector3;
+use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function count;
 use function date;
 use function implode;
@@ -15,6 +19,10 @@ use function str_replace;
 use function time;
 
 final class HCFUtils {
+
+    public const REGION_SPAWN = 'Spawn';
+    public const REGION_WARZONE = 'Warzone';
+    public const REGION_WILDERNESS = 'Wilderness';
 
     /** @var array */
     private static array $placeHolders = [];
@@ -52,5 +60,21 @@ final class HCFUtils {
      */
     public static function dateNow(int $timestamp = -1): string {
         return date('Y-m-d H:i:s', ($timestamp === -1 ? time() : $timestamp));
+    }
+
+    /**
+     * @param World $world
+     *
+     * @return Position
+     */
+    public static function posZero(World $world): Position {
+        return Position::fromObject(Vector3::zero(), $world);
+    }
+
+    /**
+     * @return World
+     */
+    public static function getDefaultWorld(): World {
+        return Server::getInstance()->getWorldManager()->getDefaultWorld() ?? throw new UnexpectedException('Default world not was loaded...');
     }
 }

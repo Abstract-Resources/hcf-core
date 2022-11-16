@@ -20,6 +20,9 @@ use pocketmine\utils\EnumTrait;
  * @method static HCFLanguage FACTION_INVITATION_SENT()
  * @method static HCFLanguage FACTION_INVITE_RECEIVED()
  * @method static HCFLanguage FACTION_NOT_INVITED()
+ * @method static HCFLanguage YOU_CANT_CLAIM_HERE()
+ * @method static HCFLanguage PLAYER_CLAIM_POSITION()
+ * @method static HCFLanguage PLAYER_CLAIM_COST()
  */
 final class HCFLanguage {
     use EnumTrait {
@@ -44,7 +47,10 @@ final class HCFLanguage {
             new HCFLanguage('PLAYER_ALREADY_INVITED', ['player']),
             new HCFLanguage('FACTION_INVITATION_SENT', ['player', 'sender']),
             new HCFLanguage('FACTION_INVITE_RECEIVED', ['player', 'faction']),
-            new HCFLanguage('FACTION_NOT_INVITED', ['faction'])
+            new HCFLanguage('FACTION_NOT_INVITED', ['faction']),
+            new HCFLanguage('YOU_CANT_CLAIM_HERE'),
+            new HCFLanguage('PLAYER_CLAIM_POSITION', ['corner', 'x', 'y', 'z']),
+            new HCFLanguage('PLAYER_CLAIM_COST', ['cost', 'x', 'z', 'blocks'])
         );
     }
 

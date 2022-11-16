@@ -5,12 +5,19 @@ declare(strict_types=1);
 namespace hcf\object\faction\query;
 
 use hcf\factory\FactionFactory;
+use hcf\HCFCore;
+use hcf\object\ClaimCuboid;
+use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
+use hcf\utils\HCFUtils;
 use mysqli_result;
+use pocketmine\utils\Config;
+use pocketmine\world\Position;
 use RuntimeException;
 use Threaded;
+use function is_array;
 use function time;
 
 final class LoadFactionsQuery extends Query {
@@ -74,10 +81,21 @@ final class LoadFactionsQuery extends Query {
     }
 
     public function onComplete(): void {
+        $config = new Config(HCFCore::getInstance()->getDataFolder() . 'claims.json');
+
         while ($faction = $this->factions->shift()) {
             if (!$faction instanceof Faction) continue;
 
             FactionFactory::getInstance()->registerFaction($faction);
+
+            if (!is_array($data = $config->get($faction->getId()))) continue;
+
+            $firstCorner = new Position($data['firstX'], $data['firstY'], $data['firstZ'], HCFUtils::getDefaultWorld());
+            FactionFactory::getInstance()->registerClaim(
+                $firstCorner,
+                new ClaimRegion($faction->getName(), new ClaimCuboid($firstCorner, new Position($data['secondX'], $data['secondY'], $data['secondZ'], HCFUtils::getDefaultWorld()))),
+                $faction->getId()
+            );
         }
     }
 }

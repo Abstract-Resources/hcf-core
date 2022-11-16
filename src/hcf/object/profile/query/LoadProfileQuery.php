@@ -55,7 +55,7 @@ final class LoadProfileQuery extends Query {
             $profileData = new ProfileData(
                 $xuid,
                 $name,
-                $fetch['faction_id'] ?? -1,
+                ($factionId = $fetch['faction_id'] ?? null) === '' ? null : $factionId,
             $fetch['faction_role'] ?? ProfileData::MEMBER_ROLE,
                 is_int($kills = $fetch['kills'] ?? 0) ? $kills : 0,
                 is_int($deaths = $fetch['deaths'] ?? 0) ? $deaths : 0,

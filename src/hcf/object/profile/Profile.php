@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
+use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
@@ -14,6 +15,9 @@ final class Profile {
 
 	/** @var bool */
 	private bool $alreadySaving = false;
+
+    /** @var ClaimRegion */
+    private ClaimRegion $claimRegion;
 
     /**
      * @param string      $xuid
@@ -112,6 +116,20 @@ final class Profile {
 	public function setAlreadySaving(bool $alreadySaving): void {
 		$this->alreadySaving = $alreadySaving;
 	}
+
+    /**
+     * @param ClaimRegion $claimRegion
+     */
+    public function setClaimRegion(ClaimRegion $claimRegion): void {
+        $this->claimRegion = $claimRegion;
+    }
+
+    /**
+     * @return ClaimRegion
+     */
+    public function getClaimRegion(): ClaimRegion {
+        return $this->claimRegion;
+    }
 
     /**
      * @param bool $joinedBefore

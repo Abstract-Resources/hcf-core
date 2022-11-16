@@ -6,11 +6,16 @@ namespace hcf;
 
 use abstractplugin\command\BaseCommand;
 use hcf\command\faction\FactionCommand;
+use hcf\factory\FactionFactory;
+use hcf\listener\claim\ClaimPlayerChatListener;
+use hcf\listener\claim\ClaimPlayerInteractListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\object\faction\query\LoadFactionsQuery;
+use hcf\task\ProfileRegionUpdateTask;
 use hcf\thread\ThreadPool;
 use pocketmine\plugin\PluginBase;
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use function is_float;
 use function is_int;
@@ -23,8 +28,16 @@ final class HCFCore extends PluginBase {
         self::setInstance($this);
 
         // Initialize the composer autoload
-        BaseCommand::init($this);
+        if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
+            $this->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
+            $this->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
 
+            exit(1);
+        }
+
+        require_once($bootstrap);
+
+        FactionFactory::getInstance()->init();
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
         // TODO: Initialize all factions
@@ -36,6 +49,11 @@ final class HCFCore extends PluginBase {
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
+
+        $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerChatListener(), $this);
+
+        $this->getScheduler()->scheduleRepeatingTask(new ProfileRegionUpdateTask(), 30);
     }
 
     public function onDisable(): void {

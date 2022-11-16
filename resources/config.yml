@@ -22,6 +22,7 @@ factions:
 
   claim_distance: 50
   amount_per_block: 5.0
+  price-multiplier-area: 500
 
   invalid-names:
     - 'Road'

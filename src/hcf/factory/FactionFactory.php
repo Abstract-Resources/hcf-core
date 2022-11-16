@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace hcf\factory;
 
 use hcf\HCFCore;
+use hcf\object\ClaimCuboid;
+use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
@@ -12,7 +14,11 @@ use hcf\object\profile\query\BatchSaveProfileQuery;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use hcf\utils\UnexpectedException;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\Position;
+use pocketmine\world\World;
 use function strtolower;
 
 final class FactionFactory {
@@ -22,6 +28,14 @@ final class FactionFactory {
 	private array $factions = [];
     /** @var array<string, string> */
     private array $factionsId = [];
+    /** @var array<int, array<string, ClaimRegion>> */
+    private array $claimsPerChunk = [];
+    /** @var array<string, ClaimRegion> */
+    private array $adminClaims = [];
+
+    public function init(): void {
+        $this->adminClaims[HCFUtils::REGION_WILDERNESS] = new ClaimRegion(HCFUtils::REGION_WILDERNESS, ClaimCuboid::fromNumber(500));
+    }
 
     /**
      * @param Profile $profile
@@ -92,6 +106,15 @@ final class FactionFactory {
         $this->factionsId[$faction->getName()] = $faction->getId();
     }
 
+    /**
+     * @param Vector3     $vector
+     * @param ClaimRegion $claimRegion
+     * @param string      $factionId
+     */
+    public function registerClaim(Vector3 $vector, ClaimRegion $claimRegion, string $factionId): void {
+        $this->claimsPerChunk[World::chunkHash($vector->getFloorX(), $vector->getFloorZ())][$factionId] = $claimRegion;
+    }
+
 	/**
 	 * @param string $factionName
 	 *
@@ -112,6 +135,36 @@ final class FactionFactory {
      */
     public function getFaction(string $id): ?Faction {
         return $this->factions[$id] ?? null;
+    }
+
+    /**
+     * @param Player $player
+     *
+     * @return Faction|null
+     */
+    public function getPlayerFaction(Player $player): ?Faction {
+        if (($profile = ProfileFactory::getInstance()->getIfLoaded($player->getXuid())) === null) return null;
+        if (($factionId = $profile->getFactionId()) === null) return null;
+
+        return $this->getFaction($factionId);
+    }
+
+    /**
+     * @param Position $position
+     *
+     * @return ClaimRegion
+     */
+    public function getRegionAt(Position $position): ClaimRegion {
+        /** @var ClaimRegion[] $claimsPerChunk */
+        $claimsPerChunk = $this->claimsPerChunk[World::chunkHash($position->getFloorX(), $position->getFloorZ())] ?? [];
+
+        foreach ($claimsPerChunk as $claimRegion) {
+            if (!$claimRegion->getCuboid()->isInside($position)) continue;
+
+            return $claimRegion;
+        }
+
+        return $this->adminClaims[HCFUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
     }
 
     /**
