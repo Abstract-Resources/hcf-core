@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace hcf;
 
-use abstractplugin\command\BaseCommand;
 use hcf\command\faction\FactionCommand;
 use hcf\factory\FactionFactory;
 use hcf\listener\claim\ClaimPlayerChatListener;
@@ -17,6 +16,7 @@ use hcf\thread\ThreadPool;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
+use function is_file;
 use function is_float;
 use function is_int;
 use function is_string;

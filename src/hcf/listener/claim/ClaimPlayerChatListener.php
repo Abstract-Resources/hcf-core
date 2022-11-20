@@ -91,7 +91,6 @@ final class ClaimPlayerChatListener implements Listener {
         $config->save();
 
         FactionFactory::getInstance()->registerClaim(
-            $cuboid->getFirstCorner(),
             new ClaimRegion($faction->getName(), $cuboid),
             $faction->getId()
         );

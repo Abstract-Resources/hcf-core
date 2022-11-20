@@ -14,9 +14,9 @@ use hcf\object\profile\query\BatchSaveProfileQuery;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use hcf\utils\UnexpectedException;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function strtolower;
@@ -107,12 +107,17 @@ final class FactionFactory {
     }
 
     /**
-     * @param Vector3     $vector
      * @param ClaimRegion $claimRegion
      * @param string      $factionId
      */
-    public function registerClaim(Vector3 $vector, ClaimRegion $claimRegion, string $factionId): void {
-        $this->claimsPerChunk[World::chunkHash($vector->getFloorX(), $vector->getFloorZ())][$factionId] = $claimRegion;
+    public function registerClaim(ClaimRegion $claimRegion, string $factionId): void {
+        $cuboid = $claimRegion->getCuboid();
+
+        for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
+            for ($z = $cuboid->getFirstCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $cuboid->getSecondCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
+                $this->claimsPerChunk[World::chunkHash($x, $z)][$factionId] = $claimRegion;
+            }
+        }
     }
 
 	/**

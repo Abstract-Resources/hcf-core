@@ -26,7 +26,7 @@ final class LoadFactionsQuery extends Query {
     private Threaded $factions;
 
     /**
-     * @param \hcf\thread\datasource\MySQL $provider
+     * @param MySQL $provider
      */
     public function run(MySQL $provider): void {
         $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, leader_xuid VARCHAR(60), deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");
@@ -90,12 +90,10 @@ final class LoadFactionsQuery extends Query {
 
             if (!is_array($data = $config->get($faction->getId()))) continue;
 
-            $firstCorner = new Position($data['firstX'], $data['firstY'], $data['firstZ'], HCFUtils::getDefaultWorld());
-            FactionFactory::getInstance()->registerClaim(
-                $firstCorner,
-                new ClaimRegion($faction->getName(), new ClaimCuboid($firstCorner, new Position($data['secondX'], $data['secondY'], $data['secondZ'], HCFUtils::getDefaultWorld()))),
-                $faction->getId()
-            );
+            FactionFactory::getInstance()->registerClaim(new ClaimRegion($faction->getName(), new ClaimCuboid(
+                new Position($data['firstX'], $data['firstY'], $data['firstZ'], HCFUtils::getDefaultWorld()),
+                new Position($data['secondX'], $data['secondY'], $data['secondZ'], HCFUtils::getDefaultWorld())
+            )), $faction->getId());
         }
     }
 }
