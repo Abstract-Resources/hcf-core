@@ -12,11 +12,12 @@ final class SaveFactionQuery extends Query {
 
     /**
      * @param FactionData $factionData
+     * @param bool        $exists
      */
     public function __construct(private FactionData $factionData, private bool $exists) {}
 
     /**
-     * @param \hcf\thread\datasource\MySQL $provider
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */

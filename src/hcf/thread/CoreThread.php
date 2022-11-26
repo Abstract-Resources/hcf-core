@@ -41,10 +41,10 @@ final class CoreThread extends Thread {
     public float $lastUpdate = 0.0;
 
     /**
-     * @param \hcf\thread\datasource\MySQLCredentials $credentials
-     * @param ThreadedLogger                          $logger
-     * @param Threaded                                $threadToMainBuffer
-     * @param SleeperNotifier                         $notifier
+     * @param MySQLCredentials $credentials
+     * @param ThreadedLogger   $logger
+     * @param Threaded         $threadToMainBuffer
+     * @param SleeperNotifier  $notifier
      */
     public function __construct(
         private MySQLCredentials $credentials,
