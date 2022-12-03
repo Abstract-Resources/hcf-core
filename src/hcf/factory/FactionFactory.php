@@ -8,6 +8,7 @@ use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
+use hcf\object\faction\query\DisbandFactionQuery;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\object\profile\query\BatchSaveProfileQuery;
@@ -94,8 +95,9 @@ final class FactionFactory {
         }
 
         ThreadPool::getInstance()->submit(new BatchSaveProfileQuery($offlineProfiles));
+        ThreadPool::getInstance()->submit(new DisbandFactionQuery($faction->getId()));
 
-        // TODO: Run disband faction query
+        $this->flushClaim($faction);
 
         unset($this->factions[$faction->getId()], $this->factionsId[$faction->getName()]);
     }
@@ -126,10 +128,14 @@ final class FactionFactory {
     }
 
     /**
-     * @param ClaimCuboid $cuboid
-     * @param string      $factionId
+     * @param Faction $faction
      */
-    public function flushClaim(ClaimCuboid $cuboid, string $factionId): void {
+    public function flushClaim(Faction $faction): void {
+        if (($claimRegion = $this->getFactionClaim($faction)) === null) return;
+
+        $factionId = $faction->getId();
+        $cuboid = $claimRegion->getCuboid();
+
         for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
             for ($z = $cuboid->getFirstCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $cuboid->getSecondCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
                 $claimsAt = $this->claimsPerChunk[World::chunkHash($x, $z)] ?? [];
@@ -141,6 +147,15 @@ final class FactionFactory {
         }
 
         unset($this->factionClaim[$factionId]);
+    }
+
+    /**
+     * @param Faction $faction
+     *
+     * @return ClaimRegion|null
+     */
+    public function getFactionClaim(Faction $faction): ?ClaimRegion {
+        return $this->factionClaim[$faction->getId()] ?? null;
     }
 
 	/**

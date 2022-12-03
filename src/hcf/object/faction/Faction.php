@@ -185,6 +185,13 @@ final class Faction {
     }
 
     /**
+     * @param int $balance
+     */
+    public function setBalance(int $balance): void {
+        $this->balance = $balance;
+    }
+
+    /**
      * @return int
      */
     public function getPoints(): int {
@@ -204,6 +211,14 @@ final class Faction {
         );
 
         $this->membersXuid[strtolower($name)] = $xuid;
+    }
+
+    /**
+     * @param string $xuid
+     * @param string $name
+     */
+    public function flushMember(string $xuid, string $name): void {
+        unset($this->membersXuid[$name], $this->members[$xuid]);
     }
 
     /**

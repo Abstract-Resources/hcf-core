@@ -22,12 +22,13 @@ final class Profile {
     /**
      * @param string      $xuid
      * @param string      $name
+     * @param string      $firstSeen
+     * @param string      $lastSeen
      * @param string|null $factionId
      * @param int         $factionRole
      * @param int         $kills
      * @param int         $deaths
-     * @param string      $firstSeen
-     * @param string      $lastSeen
+     * @param int         $balance
      */
 	public function __construct(
 		private string $xuid,
@@ -38,6 +39,7 @@ final class Profile {
         private int $factionRole = ProfileData::MEMBER_ROLE,
         private int $kills = 0,
         private int $deaths = 0,
+        private int $balance = 0,
 	) {}
 
     /**
@@ -102,6 +104,20 @@ final class Profile {
 	public function getDeaths(): int {
 		return $this->deaths;
 	}
+
+    /**
+     * @return int
+     */
+    public function getBalance(): int {
+        return $this->balance;
+    }
+
+    /**
+     * @param int $balance
+     */
+    public function setBalance(int $balance): void {
+        $this->balance = $balance;
+    }
 
 	/**
 	 * @return bool
