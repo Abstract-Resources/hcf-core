@@ -8,10 +8,12 @@ use hcf\command\faction\FactionCommand;
 use hcf\factory\FactionFactory;
 use hcf\listener\claim\ClaimPlayerChatListener;
 use hcf\listener\claim\ClaimPlayerInteractListener;
+use hcf\listener\EntityDamageListener;
+use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\object\faction\query\LoadFactionsQuery;
-use hcf\task\ProfileRegionUpdateTask;
+use hcf\task\ProfileTickUpdateTask;
 use hcf\thread\ThreadPool;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
@@ -48,12 +50,14 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getCommandMap()->register(FactionCommand::class, new FactionCommand());
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerJoinListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerChatListener(), $this);
 
-        $this->getScheduler()->scheduleRepeatingTask(new ProfileRegionUpdateTask(), 30);
+        $this->getScheduler()->scheduleRepeatingTask(new ProfileTickUpdateTask(), 20);
     }
 
     public function onDisable(): void {

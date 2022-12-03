@@ -76,6 +76,7 @@ final class FactionFactory {
                     ProfileData::MEMBER_ROLE,
                     -1,
                     -1,
+                    -1,
                     HCFUtils::dateNow(),
                     HCFUtils::dateNow(),
                     true
@@ -217,6 +218,15 @@ final class FactionFactory {
         }
 
         return $this->adminClaims[HCFUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
+    }
+
+    /**
+     * @param Position $position
+     *
+     * @return bool
+     */
+    public function isInsideSpawn(Position $position): bool {
+        return ($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position);
     }
 
     /**

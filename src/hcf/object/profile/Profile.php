@@ -4,20 +4,29 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
+use hcf\HCFCore;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
+use hcf\object\profile\timer\PlayerTimer;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
+use hcf\utils\ScoreboardBuilder;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use function is_array;
 
 final class Profile {
+
+    /** @var array<string, PlayerTimer> */
+    private array $timers;
 
 	/** @var bool */
 	private bool $alreadySaving = false;
 
     /** @var ClaimRegion */
     private ClaimRegion $claimRegion;
+
+    private ScoreboardBuilder $scoreboardBuilder;
 
     /**
      * @param string      $xuid
@@ -41,6 +50,18 @@ final class Profile {
         private int $deaths = 0,
         private int $balance = 0,
 	) {}
+
+    public function init(): void {
+        $this->timers = [
+            PlayerTimer::COMBAT_TAG => new PlayerTimer(PlayerTimer::COMBAT_TAG, 30),
+            PlayerTimer::PVP_TAG => new PlayerTimer(PlayerTimer::PVP_TAG, 60 * 60)
+        ];
+
+        $this->scoreboardBuilder = new ScoreboardBuilder(
+            HCFCore::getConfigString('scoreboard.title'),
+            ScoreboardBuilder::SIDEBAR
+        );
+    }
 
     /**
      * @return Player|null
@@ -145,6 +166,63 @@ final class Profile {
      */
     public function getClaimRegion(): ClaimRegion {
         return $this->claimRegion;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function updateTimer(string $name): void {
+        if (($timer = $this->timers[$name] ?? null) === null) return;
+
+        echo 'Updating timer' . PHP_EOL;
+        $timer->start();
+    }
+
+    public function showScoreboard(): void {
+        if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
+
+        $instance->getNetworkSession()->sendDataPacket($this->scoreboardBuilder->addPacket());
+    }
+
+    public function updateScoreboard(): void {
+        if (!is_array($scoreboardLines = HCFCore::getInstance()->getConfig()->getNested('scoreboard.lines'))) return;
+        if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
+
+        $scoreboardPlaceHolders = [];
+        foreach ($this->timers as $timer) {
+            if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
+
+            $scoreboardPlaceHolders[$timer->getName() . '_lines'] = ['combat_tag_timer' => HCFUtils::dateString($remainingTime)];
+        }
+
+        $originalLines = [];
+        foreach ($scoreboardLines['default'] as $scoreboardText) {
+            if (!is_string($placeholder = str_replace('%', '', $scoreboardText))) continue;
+            if (count($placeholderLines = $scoreboardLines[$placeholder] ?? []) <= 0) {
+                $originalLines[] = $scoreboardText;
+
+                continue;
+            }
+
+            if (!isset($scoreboardPlaceHolders[$placeholder])) continue;
+
+            $originalLines = array_merge($originalLines, array_map(
+                fn(string $scoreboardLine) => HCFUtils::replacePlaceholders($scoreboardLine, $scoreboardPlaceHolders[$placeholder] ?? []),
+                $placeholderLines
+            ));
+        }
+
+        foreach ($originalLines as $line => $scoreboardText) {
+            foreach ($this->scoreboardBuilder->fetchLine($line, $scoreboardText) as $packet) {
+                $instance->getNetworkSession()->sendDataPacket($packet);
+            }
+        }
+    }
+
+    public function hideScoreboard(): void {
+        if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
+
+        $instance->getNetworkSession()->sendDataPacket($this->scoreboardBuilder->removePacket());
     }
 
     /**

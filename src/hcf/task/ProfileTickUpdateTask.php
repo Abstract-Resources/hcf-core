@@ -9,7 +9,7 @@ use hcf\factory\ProfileFactory;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 
-final class ProfileRegionUpdateTask extends Task {
+final class ProfileTickUpdateTask extends Task {
 
     /**
      * Actions to execute when run
@@ -19,6 +19,7 @@ final class ProfileRegionUpdateTask extends Task {
             if (($profile = ProfileFactory::getInstance()->getIfLoaded($player->getXuid())) === null) continue;
 
             $profile->setClaimRegion(FactionFactory::getInstance()->getRegionAt($player->getPosition()));
+            $profile->updateScoreboard();
         }
     }
 }

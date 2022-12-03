@@ -59,6 +59,7 @@ final class LoadProfileQuery extends Query {
             $fetch['faction_role'] ?? ProfileData::MEMBER_ROLE,
                 is_int($kills = $fetch['kills'] ?? 0) ? $kills : 0,
                 is_int($deaths = $fetch['deaths'] ?? 0) ? $deaths : 0,
+                is_int($deaths = $fetch['balance'] ?? 0) ? $deaths : 0,
                 $fetch['first_seen'],
                 $fetch['last_seen'],
                 true

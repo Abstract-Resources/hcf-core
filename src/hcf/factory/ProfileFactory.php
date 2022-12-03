@@ -21,6 +21,7 @@ final class ProfileFactory {
         if (isset($this->profiles[$profile->getXuid()])) return;
 
         $this->profiles[$profile->getXuid()] = $profile;
+        $profile->init();
     }
 
     /**
@@ -47,6 +48,8 @@ final class ProfileFactory {
      * @param string $xuid
      */
     public function unregisterProfile(string $xuid): void {
+        if (($profile = $this->getIfLoaded($xuid)) !== null) $profile->hideScoreboard();
+
         unset($this->profiles[$xuid]);
     }
 }
