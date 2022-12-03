@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace hcf\object\faction;
 
+use pocketmine\Server;
+
 final class FactionMember {
 
     /**
@@ -36,5 +38,12 @@ final class FactionMember {
      */
     public function getRole(): int {
         return $this->role;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOnline(): bool {
+        return Server::getInstance()->getPlayerExact($this->name) !== null;
     }
 }

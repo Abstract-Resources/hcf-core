@@ -13,6 +13,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
 use function date;
+use function gmdate;
 use function implode;
 use function is_array;
 use function str_replace;
@@ -29,11 +30,11 @@ final class HCFUtils {
 
     /**
      * @param string $text
-     * @param string ...$args
+     * @param string[] $args
      *
      * @return string
      */
-    public static function replacePlaceholders(string $text, string...$args): string {
+    public static function replacePlaceholders(string $text, array $args = []): string {
         if (count(self::$placeHolders) === 0) {
             self::$placeHolders = (new Config(HCFCore::getInstance()->getDataFolder() . 'messages.yml'))->getAll();
         }
@@ -41,7 +42,7 @@ final class HCFUtils {
         $text = self::$placeHolders[$text] ?? $text;
 
         if (is_array($text)) {
-            return self::replacePlaceholders(implode("\n", $text), ...$args);
+            return self::replacePlaceholders(implode("\n", $text), $args);
         }
 
         foreach ($args as $i => $arg) {
@@ -60,6 +61,15 @@ final class HCFUtils {
      */
     public static function dateNow(int $timestamp = -1): string {
         return date('Y-m-d H:i:s', ($timestamp === -1 ? time() : $timestamp));
+    }
+
+    /**
+     * @param int $time
+     *
+     * @return string
+     */
+    public static function dateString(int $time): string {
+        return $time > 60 ? ($time <= 60 * 60 ? gmdate('i:s', $time) : gmdate('H:i:s', $time)) : $time . 's';
     }
 
     /**

@@ -7,6 +7,7 @@ namespace hcf\object\faction;
 use hcf\factory\FactionFactory;
 use hcf\object\faction\query\SaveFactionQuery;
 use hcf\thread\ThreadPool;
+use pocketmine\entity\Location;
 use pocketmine\Server;
 use function abs;
 use function array_diff;
@@ -30,14 +31,15 @@ final class Faction {
     private bool $open = false; // This is a feature
 
     /**
-     * @param string $id
-     * @param string $name
-     * @param string $leaderXuid
-     * @param float  $deathsUntilRaidable
-     * @param int    $regenCooldown
-     * @param int    $lastDtrUpdate
-     * @param int    $balance
-     * @param int    $points
+     * @param string        $id
+     * @param string        $name
+     * @param string        $leaderXuid
+     * @param float         $deathsUntilRaidable
+     * @param int           $regenCooldown
+     * @param int           $lastDtrUpdate
+     * @param int           $balance
+     * @param int           $points
+     * @param Location|null $hqLocation
      */
 	public function __construct(
 		private string $id,
@@ -47,7 +49,8 @@ final class Faction {
         private int $regenCooldown,
         private int $lastDtrUpdate,
         private int $balance,
-        private int $points
+        private int $points,
+        private ?Location $hqLocation = null
 	) {}
 
 	/**
@@ -260,6 +263,20 @@ final class Faction {
      */
     public function removePendingInvite(string $xuid): void {
         $this->pendingInvitesSent = array_diff($this->pendingInvitesSent, [$xuid]);
+    }
+
+    /**
+     * @return Location|null
+     */
+    public function getHqLocation(): ?Location {
+        return $this->hqLocation;
+    }
+
+    /**
+     * @param Location|null $hqLocation
+     */
+    public function setHqLocation(?Location $hqLocation): void {
+        $this->hqLocation = $hqLocation;
     }
 
     /**

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace hcf\command\faction\arguments\leader;
 
 use abstractplugin\command\Argument;
-use abstractplugin\command\PlayerArgumentTrait;
+use hcf\command\faction\ProfileArgumentTrait;
 use hcf\factory\FactionFactory;
-use hcf\factory\ProfileFactory;
 use hcf\HCFLanguage;
 use hcf\object\ClaimRegion;
+use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\utils\HCFUtils;
 use pocketmine\item\Item;
@@ -19,16 +19,15 @@ use pocketmine\utils\TextFormat;
 use function in_array;
 
 final class ClaimArgument extends Argument {
-    use PlayerArgumentTrait;
+    use ProfileArgumentTrait;
 
     /**
-     * @param Player $sender
-     * @param string $label
-     * @param array  $args
+     * @param Player  $sender
+     * @param Profile $profile
+     * @param string  $label
+     * @param array   $args
      */
-    public function onPlayerExecute(Player $sender, string $label, array $args): void {
-        if (($profile = ProfileFactory::getInstance()->getIfLoaded($sender->getXuid())) === null) return;
-
+    public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
         if ($profile->getFactionId() === null || FactionFactory::getInstance()->getFaction($profile->getFactionId()) === null) {
             $sender->sendMessage(HCFLanguage::COMMAND_FACTION_NOT_IN()->build());
 
@@ -51,7 +50,8 @@ final class ClaimArgument extends Argument {
 
         $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
 
-        if (!$found && !$sender->getInventory()->canAddItem($item = self::getClaimingWand())) {
+        $item = self::getClaimingWand();
+        if (!$found && !$sender->getInventory()->canAddItem($item)) {
             $sender->sendMessage(TextFormat::RED . 'Your inventory is full!');
 
             return;

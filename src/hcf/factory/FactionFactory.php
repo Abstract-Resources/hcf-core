@@ -19,6 +19,7 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
+use function count;
 use function strtolower;
 
 final class FactionFactory {
@@ -32,6 +33,8 @@ final class FactionFactory {
     private array $claimsPerChunk = [];
     /** @var array<string, ClaimRegion> */
     private array $adminClaims = [];
+    /** @var array<string, ClaimRegion> */
+    private array $factionClaim = [];
 
     public function init(): void {
         $this->adminClaims[HCFUtils::REGION_WILDERNESS] = new ClaimRegion(HCFUtils::REGION_WILDERNESS, ClaimCuboid::fromNumber(500));
@@ -87,7 +90,7 @@ final class FactionFactory {
 
             if (($instance = $profile->getInstance()) === null) continue;
 
-            $instance->sendMessage(HCFUtils::replacePlaceholders('LEADER_DISBANDED_THE_FACTION', $leader->getName()));
+            $instance->sendMessage(HCFUtils::replacePlaceholders('LEADER_DISBANDED_THE_FACTION', ['player' => $leader->getName()]));
         }
 
         ThreadPool::getInstance()->submit(new BatchSaveProfileQuery($offlineProfiles));
@@ -118,6 +121,26 @@ final class FactionFactory {
                 $this->claimsPerChunk[World::chunkHash($x, $z)][$factionId] = $claimRegion;
             }
         }
+
+        $this->factionClaim[$factionId] = $claimRegion;
+    }
+
+    /**
+     * @param ClaimCuboid $cuboid
+     * @param string      $factionId
+     */
+    public function flushClaim(ClaimCuboid $cuboid, string $factionId): void {
+        for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
+            for ($z = $cuboid->getFirstCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $cuboid->getSecondCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
+                $claimsAt = $this->claimsPerChunk[World::chunkHash($x, $z)] ?? [];
+
+                if (count($claimsAt) <= 0) continue;
+
+                unset($claimsAt[$factionId]);
+            }
+        }
+
+        unset($this->factionClaim[$factionId]);
     }
 
 	/**

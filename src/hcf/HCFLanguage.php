@@ -14,6 +14,7 @@ use pocketmine\utils\EnumTrait;
  * @method static HCFLanguage COMMAND_FACTION_NOT_LEADER()
  * @method static HCFLanguage COMMAND_FACTION_ATTEMPT_JOIN()
  * @method static HCFLanguage PLAYER_NOT_FOUND()
+ * @method static HCFLanguage FACTION_NOT_FOUND()
  * @method static HCFLanguage YOU_CANT_USE_THIS_ON_YOURSELF()
  * @method static HCFLanguage PLAYER_IN_FACTION()
  * @method static HCFLanguage PLAYER_ALREADY_INVITED()
@@ -42,6 +43,7 @@ final class HCFLanguage {
             new HCFLanguage('COMMAND_FACTION_NOT_LEADER'),
             new HCFLanguage('COMMAND_FACTION_ATTEMPT_JOIN'),
             new HCFLanguage('PLAYER_NOT_FOUND', ['player']),
+            new HCFLanguage('FACTION_NOT_FOUND', ['faction']),
             new HCFLanguage('YOU_CANT_USE_THIS_ON_YOURSELF'),
             new HCFLanguage('PLAYER_IN_FACTION', ['player']),
             new HCFLanguage('PLAYER_ALREADY_INVITED', ['player']),
@@ -68,6 +70,6 @@ final class HCFLanguage {
 
         foreach ($args as $i => $arg) $parameters[$this->parameters[$i]] = $arg;
 
-        return HCFUtils::replacePlaceholders($this->key, ...$parameters);
+        return HCFUtils::replacePlaceholders($this->key, $parameters);
     }
 }

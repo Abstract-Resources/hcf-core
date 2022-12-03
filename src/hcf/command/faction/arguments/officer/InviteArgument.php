@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace hcf\command\faction\arguments\officer;
 
 use abstractplugin\command\Argument;
-use abstractplugin\command\PlayerArgumentTrait;
+use hcf\command\faction\ProfileArgumentTrait;
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
 use hcf\HCFCore;
 use hcf\HCFLanguage;
+use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\utils\HCFUtils;
 use pocketmine\player\Player;
@@ -17,21 +18,20 @@ use pocketmine\utils\TextFormat;
 use function count;
 
 final class InviteArgument extends Argument {
-    use PlayerArgumentTrait;
+    use ProfileArgumentTrait;
 
     /**
-     * @param Player $sender
-     * @param string $label
-     * @param array  $args
+     * @param Player  $sender
+     * @param Profile $profile
+     * @param string  $label
+     * @param array   $args
      */
-    public function onPlayerExecute(Player $sender, string $label, array $args): void {
+    public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
         if (count($args) === 0) {
             $sender->sendMessage(TextFormat::RED . 'Usage: /' . $label . ' invite <player>');
 
             return;
         }
-
-        if (($profile = ProfileFactory::getInstance()->getIfLoaded($sender->getXuid())) === null) return;
 
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
             $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
@@ -77,7 +77,7 @@ final class InviteArgument extends Argument {
 
         // TODO: Change this to check what is the max members size
         if (count($faction->getMembers()) > 5) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_FULL', $faction->getName()));
+            $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_FULL', ['faction' => $faction->getName()]));
 
             return;
         }

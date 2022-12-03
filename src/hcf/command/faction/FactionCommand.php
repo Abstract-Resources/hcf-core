@@ -10,6 +10,7 @@ use hcf\command\faction\arguments\JoinArgument;
 use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\command\faction\arguments\leader\DisbandArgument;
 use hcf\command\faction\arguments\officer\InviteArgument;
+use hcf\command\faction\arguments\WhoArgument;
 
 final class FactionCommand extends BaseCommand {
 
@@ -21,7 +22,8 @@ final class FactionCommand extends BaseCommand {
             new InviteArgument('invite'),
             new ClaimArgument('claim'),
             new DisbandArgument('disband'),
-            new JoinArgument('join')
+            new JoinArgument('join'),
+            new WhoArgument('who')
         );
     }
 }

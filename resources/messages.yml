@@ -1,0 +1,11 @@
+FACTION_WHO_PLAYER:
+  - '&7&m--------------------------------------'
+  - '&7<faction> &7[<players_count/9] &3- &eHQ: &f<hq_x>, <hq_z>'
+  - '&eLeader: <leaders>'
+  - '&eOfficers: <officers>'
+  - '&eMembers: <members>'
+  - '&eBalance: &6<balance>'
+  - '&eDeaths until Raidable: &9<deaths_until_raidable>'
+  - '&ePoints: &9<points>'
+  - '&eTime Until Regen: &6<time_until_regen>'
+  - '&7&m--------------------------------------'
