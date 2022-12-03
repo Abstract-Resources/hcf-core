@@ -24,7 +24,7 @@ use function register_shutdown_function;
 use function serialize;
 use function sleep;
 
-final class CoreThread extends Thread {
+final class SQLDataSourceThread extends Thread {
 
     /** @var bool */
     private bool $running = true;
@@ -164,7 +164,7 @@ final class CoreThread extends Thread {
 
     public function shutdownHandler(): void {
         if ($this->cleanShutdown) {
-            $this->logger->info('Server Thread: Graceful shutdown complete');
+            $this->logger->info('SQL Thread: Graceful shutdown complete');
 
             return;
         }

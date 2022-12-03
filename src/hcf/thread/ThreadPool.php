@@ -19,7 +19,7 @@ use function unserialize;
 final class ThreadPool {
     use SingletonTrait;
 
-    /** @var CoreThread[] */
+    /** @var SQLDataSourceThread[] */
     private array $threads = [];
     /** @var SleeperNotifier|null */
     private ?SleeperNotifier $notifier;
@@ -42,7 +42,7 @@ final class ThreadPool {
         $this->notifier = new SleeperNotifier();
 
         for ($i = 0; $i < $threadsIdle; $i++) {
-            $thread = new CoreThread(
+            $thread = new SQLDataSourceThread(
                 $i,
                 $credentials,
                 Server::getInstance()->getLogger(),
@@ -73,7 +73,7 @@ final class ThreadPool {
      * @return bool
      */
     public function submit(Query $query): bool {
-        /** @var CoreThread|null $betterThread */
+        /** @var SQLDataSourceThread|null $betterThread */
         $betterThread = null;
 
         $attempts = 0;
