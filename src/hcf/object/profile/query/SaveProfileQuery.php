@@ -25,11 +25,15 @@ final class SaveProfileQuery extends Query {
 		self::push($this->profileData, $provider);
 	}
 
+    /**
+     * @param ProfileData $profileData
+     * @param MySQL       $provider
+     */
     public static function push(ProfileData $profileData, MySQL $provider): void {
         if ($profileData->hasJoinedBefore()) {
-            $provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, faction_role = ?, kills = ?, deaths = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
+            $provider->prepareStatement('UPDATE profiles SET username = ?, faction_id = ?, faction_role = ?, kills = ?, deaths = ?, lives = ?, balance = ?, first_seen = ?, last_seen = ? WHERE xuid = ?');
         } else {
-            $provider->prepareStatement('INSERT INTO profiles (username, faction_id, faction_role, kills, deaths, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+            $provider->prepareStatement('INSERT INTO profiles (username, faction_id, faction_role, kills, deaths, lives, balance, first_seen, last_seen, xuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         }
 
         $provider->set(
@@ -38,6 +42,8 @@ final class SaveProfileQuery extends Query {
             $profileData->getFactionRole(),
             $profileData->getKills(),
             $profileData->getDeaths(),
+            0,
+            $profileData->getBalance(),
             $profileData->getFirstSeen(),
             $profileData->getLastSeen(),
             $profileData->getXuid()

@@ -161,6 +161,7 @@ final class Profile {
             $this->factionRole,
 			$this->kills,
 			$this->deaths,
+            $this->balance,
             $this->firstSeen,
             $stored ? HCFUtils::dateNow() : $this->lastSeen,
 			$joinedBefore
@@ -181,7 +182,8 @@ final class Profile {
             $profileData->getFactionId(),
             $profileData->getFactionRole(),
             $profileData->getKills(),
-            $profileData->getDeaths()
+            $profileData->getDeaths(),
+            $profileData->getBalance()
         );
     }
 }

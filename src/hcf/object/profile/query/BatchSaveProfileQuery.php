@@ -32,8 +32,9 @@ final class BatchSaveProfileQuery extends Query {
 
             if ($profileData->getDeaths() !== -1) $storedProfileData->setDeaths($profileData->getDeaths());
             if ($profileData->getKills() !== -1) $storedProfileData->setKills($profileData->getKills());
+            if ($profileData->getBalance() !== -1) $storedProfileData->setBalance($profileData->getBalance());
 
-            SaveProfileQuery::push($profileData, $provider);
+            SaveProfileQuery::push($storedProfileData, $provider);
         }
     }
 

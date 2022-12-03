@@ -17,6 +17,7 @@ final class ProfileData {
      * @param int         $factionRole
      * @param int         $kills
      * @param int         $deaths
+     * @param int         $balance
      * @param string      $firstSeen
      * @param string      $lastSeen
      * @param bool        $joinedBefore
@@ -28,6 +29,7 @@ final class ProfileData {
         private int $factionRole,
 		private int $kills,
 		private int $deaths,
+        private int $balance,
         private string $firstSeen,
         private string $lastSeen,
 		private bool $joinedBefore
@@ -101,6 +103,20 @@ final class ProfileData {
      */
     public function setKills(int $kills): void {
         $this->kills = $kills;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBalance(): int {
+        return $this->balance;
+    }
+
+    /**
+     * @param int $balance
+     */
+    public function setBalance(int $balance): void {
+        $this->balance = $balance;
     }
 
     /**

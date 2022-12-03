@@ -13,6 +13,8 @@ use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
 use hcf\utils\HCFUtils;
 use mysqli_result;
+use pocketmine\entity\Location;
+use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\world\Position;
 use RuntimeException;
@@ -30,7 +32,7 @@ final class LoadFactionsQuery extends Query {
      */
     public function run(MySQL $provider): void {
         $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, leader_xuid VARCHAR(60), deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");
-        $provider->executeStatement("CREATE TABLE IF NOT EXISTS profiles (xuid VARCHAR(60) PRIMARY KEY, username VARCHAR(16), lives INT, balance INT, faction_id TEXT, faction_role INT, kills INT, deaths INT, first_seen TEXT, last_seen TEXT)");
+        $provider->executeStatement("CREATE TABLE IF NOT EXISTS profiles (xuid VARCHAR(60) PRIMARY KEY, username VARCHAR(16), lives INT, balance INT, faction_id TEXT, faction_role INT, kills INT, deaths INT, balance INT, first_seen TEXT, last_seen TEXT)");
 
         $stmt = $provider->executeStatement("SELECT * FROM factions");
         $result = $stmt->get_result();
@@ -68,8 +70,6 @@ final class LoadFactionsQuery extends Query {
                 );
             }
 
-            echo $faction->getName() . ' stored' . PHP_EOL;
-
             $this->factions[] = $faction;
 
             $result0->close();
@@ -82,9 +82,15 @@ final class LoadFactionsQuery extends Query {
 
     public function onComplete(): void {
         $config = new Config(HCFCore::getInstance()->getDataFolder() . 'claims.json');
+        $config0 = new Config(HCFCore::getInstance()->getDataFolder() . 'hq.json');
 
         while ($faction = $this->factions->shift()) {
             if (!$faction instanceof Faction) continue;
+
+            if (!is_array($hqData = $config0->get($faction->getId()))) continue;
+            if (($world = Server::getInstance()->getWorldManager()->getWorldByName($hqData['world'])) === null) continue;
+
+            $faction->setHqLocation(new Location($hqData['x'], $hqData['y'], $hqData['z'], $world, $hqData['yaw'], $hqData['pitch']));
 
             FactionFactory::getInstance()->registerFaction($faction);
 

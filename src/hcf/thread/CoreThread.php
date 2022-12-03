@@ -81,57 +81,65 @@ final class CoreThread extends Thread {
             register_shutdown_function([$this, 'shutdownHandler']);
 
             while ($this->running) {
-                if (!$resource->ping()) {
-                    $success = false;
-
-                    $attempts = 0;
-
-                    while (!$success) {
-                        $seconds = min(2 ** $attempts, PHP_INT_MAX);
-
-                        $this->logger->warning('MySQL Connection failed! Trying reconnecting in ' . $seconds . ' seconds.');
-
-                        sleep(intval($seconds));
-
-                        $resource->connect(
-                            $this->credentials->getAddress(),
-                            $this->credentials->getUsername(),
-                            $this->credentials->getPassword(),
-                            $this->credentials->getDbname(),
-                            $this->credentials->getPort()
-                        );
-
-                        if ($resource->connect_error !== null) {
-                            $attempts++;
-
-                            $this->logger->error('An error occurred while trying reconnect to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\': ' . $resource->connect_error);
-
-                            continue;
-                        }
-
-                        $success = true;
-                    }
-
-                    $this->logger->info('Successfully database connection restored!');
-                }
-
-                $this->lastUpdate = microtime(true);
-
                 foreach ($this->mainToThread as $index => $pending) {
                     if (!$pending instanceof Query) continue;
 
+                    $this->attemptPing($resource);
                     $pending->run($resource);
 
                     $this->threadToMainWriter->write(serialize($pending));
 
                     unset($this->mainToThread[$index]);
                 }
+
+                $this->lastUpdate = microtime(true);
             }
 
             $resource->close();
         } catch (Exception $e) {
             $this->logger->logException($e);
         }
+    }
+
+    /**
+     * @param MySQL $resource
+     */
+    private function attemptPing(MySQL $resource): void {
+        if ($resource->ping()) {
+            return;
+        }
+
+        $success = false;
+
+        $attempts = 0;
+
+        while (!$success) {
+            $seconds = min(2 ** $attempts, PHP_INT_MAX);
+
+            $this->logger->warning('MySQL Connection failed! Trying reconnecting in ' . $seconds . ' seconds.');
+
+            sleep(intval($seconds));
+
+            $resource->connect(
+                $this->credentials->getAddress(),
+                $this->credentials->getUsername(),
+                $this->credentials->getPassword(),
+                $this->credentials->getDbname(),
+                $this->credentials->getPort()
+            );
+
+            if ($resource->connect_error !== null) {
+                $attempts++;
+
+                $this->logger->error('An error occurred while trying reconnect to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\': ' . $resource->connect_error);
+
+                continue;
+            }
+
+            $success = true;
+        }
+
+        $this->logger->info('Successfully database connection restored!');
     }
 
     /**

@@ -12,6 +12,7 @@ use hcf\command\faction\arguments\leader\DisbandArgument;
 use hcf\command\faction\arguments\member\DepositArgument;
 use hcf\command\faction\arguments\member\LeaveArgument;
 use hcf\command\faction\arguments\officer\InviteArgument;
+use hcf\command\faction\arguments\officer\SetHomeArgument;
 use hcf\command\faction\arguments\WhoArgument;
 
 final class FactionCommand extends BaseCommand {
@@ -23,6 +24,7 @@ final class FactionCommand extends BaseCommand {
             new CreateArgument('create'),
             new InviteArgument('invite'),
             new ClaimArgument('claim'),
+            new SetHomeArgument('sethome'),
             new DisbandArgument('disband'),
             new DepositArgument('deposit'),
             new LeaveArgument('leave'),

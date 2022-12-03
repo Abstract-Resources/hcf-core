@@ -195,6 +195,15 @@ final class FactionFactory {
     /**
      * @param Position $position
      *
+     * @return Faction|null
+     */
+    public function getFactionAt(Position $position): ?Faction {
+        return $this->getFactionName($this->getRegionAt($position)->getName());
+    }
+
+    /**
+     * @param Position $position
+     *
      * @return ClaimRegion
      */
     public function getRegionAt(Position $position): ClaimRegion {
