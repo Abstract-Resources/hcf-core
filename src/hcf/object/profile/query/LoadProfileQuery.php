@@ -76,11 +76,11 @@ final class LoadProfileQuery extends Query {
      * This function is executed on the Main Thread because need use some function of pmmp
      */
     public function onComplete(): void {
-        if ($this->profile === null) {
+        if ($new = $this->profile === null) {
             $this->profile = new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now);
             $this->profile->forceSave(false);
         }
 
-        ProfileFactory::getInstance()->registerNewProfile($this->profile);
+        ProfileFactory::getInstance()->registerNewProfile($this->profile, $new);
     }
 }

@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace hcf\object\profile\timer;
+namespace hcf\object\profile;
 
 use function time;
 
-final class PlayerTimer {
+final class ProfileTimer {
 
     public const COMBAT_TAG = 'combat_tag';
     public const PVP_TAG = 'pvp_tag';
 
+    /** @var int */
     private int $endAt = 0;
 
     /**
@@ -29,8 +30,11 @@ final class PlayerTimer {
         return $this->name;
     }
 
-    public function start(): void {
-        $this->endAt = time() + $this->countdown;
+    /**
+     * @param int $countdown
+     */
+    public function start(int $countdown = -1): void {
+        $this->endAt = time() + ($countdown === -1 ? $this->countdown : $countdown);
     }
 
     /**

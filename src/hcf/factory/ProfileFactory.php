@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace hcf\factory;
 
 use hcf\object\profile\Profile;
+use hcf\object\profile\ProfileTimer;
+use hcf\utils\HCFUtils;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
+use function array_filter;
+use function array_map;
 
 final class ProfileFactory {
     use SingletonTrait;
@@ -16,12 +20,15 @@ final class ProfileFactory {
 
     /**
      * @param Profile $profile
+     * @param bool    $new
      */
-    public function registerNewProfile(Profile $profile): void {
+    public function registerNewProfile(Profile $profile, bool $new): void {
         if (isset($this->profiles[$profile->getXuid()])) return;
 
         $this->profiles[$profile->getXuid()] = $profile;
         $profile->init();
+
+        if ($new) $profile->toggleProfileTimer(ProfileTimer::PVP_TAG);
     }
 
     /**
@@ -48,7 +55,14 @@ final class ProfileFactory {
      * @param string $xuid
      */
     public function unregisterProfile(string $xuid): void {
-        if (($profile = $this->getIfLoaded($xuid)) !== null) $profile->hideScoreboard();
+        if (($profile = $this->getIfLoaded($xuid)) === null) return;
+
+        $profile->hideScoreboard();
+
+        HCFUtils::storeProfileTimers($profile->getXuid(), array_map(fn(ProfileTimer $timer) => [
+        	'name' => $timer->getName(),
+        	'remaining' => $timer->getRemainingTime()
+        ], array_filter($profile->getStoredTimers(), fn(ProfileTimer $timer) => $timer->getName() !== ProfileTimer::COMBAT_TAG)));
 
         unset($this->profiles[$xuid]);
     }

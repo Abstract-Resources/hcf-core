@@ -262,6 +262,13 @@ final class FactionFactory {
     }
 
     /**
+     * @return int
+     */
+    public function getDtrFreeze(): int {
+        return HCFCore::getConfigInt('factions.dtr-freeze');
+    }
+
+    /**
      * @return float
      */
     public function getDtrPerPlayer(): float {

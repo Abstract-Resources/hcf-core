@@ -11,12 +11,14 @@ use hcf\listener\BlockPlaceListener;
 use hcf\listener\claim\ClaimPlayerChatListener;
 use hcf\listener\claim\ClaimPlayerInteractListener;
 use hcf\listener\EntityDamageListener;
+use hcf\listener\PlayerDeathListener;
 use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\task\ProfileTickUpdateTask;
 use hcf\thread\ThreadPool;
+use hcf\utils\HCFUtils;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
@@ -44,6 +46,8 @@ final class HCFCore extends PluginBase {
         $this->saveDefaultConfig();
         $this->saveResource('messages.yml');
 
+        HCFUtils::load();
+
         FactionFactory::getInstance()->init();
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
@@ -59,6 +63,7 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new BlockPlaceListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerDeathListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);

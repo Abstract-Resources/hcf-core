@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\utils;
 
+use Exception;
 use hcf\HCFCore;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
@@ -11,7 +12,6 @@ use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use function count;
 use function date;
 use function gmdate;
 use function implode;
@@ -27,11 +27,22 @@ final class HCFUtils {
 
     /** @var array */
     private static array $placeHolders = [];
+    /** @var Config */
+    private static Config $timersConfig;
 
     /** @var int */
     private static int $sotwEndAt = 0;
     /** @var int */
     private static int $eotwEndAt = 0;
+
+    public static function load(): void {
+        self::$placeHolders = (new Config(HCFCore::getInstance()->getDataFolder() . 'messages.yml'))->getAll();
+
+        self::$timersConfig = new Config(HCFCore::getInstance()->getDataFolder() . 'timers.yml');
+
+        self::$sotwEndAt = HCFCore::getConfigInt('map.sotw-end-at');
+        self::$sotwEndAt = HCFCore::getConfigInt('map.eotw-end-at');
+    }
 
     /**
      * @param string $text
@@ -40,10 +51,6 @@ final class HCFUtils {
      * @return string
      */
     public static function replacePlaceholders(string $text, array $args = []): string {
-        if (count(self::$placeHolders) === 0) {
-            self::$placeHolders = (new Config(HCFCore::getInstance()->getDataFolder() . 'messages.yml'))->getAll();
-        }
-
         $text = self::$placeHolders[$text] ?? $text;
 
         if (is_array($text)) {
@@ -105,5 +112,27 @@ final class HCFUtils {
      */
     public static function getSotwTimeRemaining(): int {
         return self::$sotwEndAt - time();
+    }
+
+    /**
+     * @param string $xuid
+     * @param array  $timersData
+     */
+    public static function storeProfileTimers(string $xuid, array $timersData): void {
+        try {
+            self::$timersConfig->set($xuid, $timersData);
+            self::$timersConfig->save();
+        } catch (Exception $e) {
+            Server::getInstance()->getLogger()->logException($e);
+        }
+    }
+
+    /**
+     * @param string $xuid
+     *
+     * @return array
+     */
+    public static function fetchProfileTimers(string $xuid): array {
+        return is_array($stored = self::$timersConfig->get($xuid)) ? $stored : [];
     }
 }

@@ -146,6 +146,15 @@ final class Faction {
     }
 
     /**
+     * @param int $time
+     */
+    public function setRemainingRegenerationTime(int $time): void {
+        $this->regenCooldown = time() + $time;
+
+        $this->lastDtrUpdate = $this->regenCooldown;
+    }
+
+    /**
      * @return int
      */
     public function getRegenCooldown(): int {

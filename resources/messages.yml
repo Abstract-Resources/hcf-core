@@ -1,6 +1,6 @@
 FACTION_WHO_PLAYER:
   - '&7&m--------------------------------------'
-  - '&7<faction> &7[<players_count/9] &3- &eHQ: &f<hq_x>, <hq_z>'
+  - '&7<faction> &7[<players_count>/9] &3- &eHQ: &f<hq>'
   - '&eLeader: <leaders>'
   - '&eOfficers: <officers>'
   - '&eMembers: <members>'

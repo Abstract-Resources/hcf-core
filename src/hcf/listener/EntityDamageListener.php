@@ -6,7 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
-use hcf\object\profile\timer\PlayerTimer;
+use hcf\object\profile\ProfileTimer;
 use hcf\utils\HCFUtils;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -45,8 +45,8 @@ final class EntityDamageListener implements Listener {
             $target = $ev->getDamager();
             if (!$target instanceof Player || ($targetProfile = ProfileFactory::getInstance()->getIfLoaded($target->getXuid())) === null) return;
 
-            $profile->updateTimer(PlayerTimer::COMBAT_TAG);
-            $targetProfile->updateTimer(PlayerTimer::COMBAT_TAG);
+            $profile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
+            $targetProfile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
         }
     }
 }
