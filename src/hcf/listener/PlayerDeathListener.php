@@ -31,6 +31,8 @@ final class PlayerDeathListener implements Listener {
 
             $faction->setRemainingRegenerationTime(FactionFactory::getInstance()->getDtrFreeze() * 60);
             $faction->forceSave(true);
+
+            FactionFactory::getInstance()->storeFactionRegenerating($faction->getId(), $faction->getRegenCooldown());
         }
 
         $cause = $player->getLastDamageCause();

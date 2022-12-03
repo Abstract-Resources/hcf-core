@@ -16,6 +16,7 @@ use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use hcf\utils\UnexpectedException;
 use pocketmine\player\Player;
+use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -38,8 +39,23 @@ final class FactionFactory {
     private array $adminClaims = [];
     /** @var array<string, ClaimRegion> */
     private array $factionClaim = [];
+    /** @var array<string, int> */
+    private array $factionsRegenerating = [];
 
     public function init(): void {
+        HCFCore::getInstance()->getScheduler()->scheduleRepeatingTask(new ClosureTask(function (): void {
+            foreach ($this->factionsRegenerating as $factionId => $time) {
+                if ($time >= time()) continue;
+
+                if (($faction = $this->getFaction($factionId)) !== null) {
+                    $faction->getDeathsUntilRaidable(true); // Update the dtr
+                    $faction->forceSave(true);
+                }
+
+                unset($this->factionsRegenerating[$factionId]);
+            }
+        }), 60);
+
         if (!is_array($claims = HCFCore::getInstance()->getConfig()->getNested('map.admin_claims'))) return;
 
         foreach ($claims as $claimName => $storage) {
@@ -118,7 +134,7 @@ final class FactionFactory {
 
         $this->flushClaim($faction);
 
-        unset($this->factions[$faction->getId()], $this->factionsId[$faction->getName()]);
+        unset($this->factions[$faction->getId()], $this->factionsId[$faction->getName()], $this->factionsRegenerating[$faction->getId()]);
     }
 
     /**
@@ -245,6 +261,14 @@ final class FactionFactory {
      */
     public function isInsideSpawn(Position $position): bool {
         return ($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position);
+    }
+
+    /**
+     * @param string $factionId
+     * @param int    $targetTime
+     */
+    public function storeFactionRegenerating(string $factionId, int $targetTime): void {
+        $this->factionsRegenerating[$factionId] = $targetTime + 2;
     }
 
     /**
