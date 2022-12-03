@@ -41,12 +41,14 @@ final class CoreThread extends Thread {
     public float $lastUpdate = 0.0;
 
     /**
+     * @param int              $threadId
      * @param MySQLCredentials $credentials
      * @param ThreadedLogger   $logger
      * @param Threaded         $threadToMainBuffer
      * @param SleeperNotifier  $notifier
      */
     public function __construct(
+        private int $threadId,
         private MySQLCredentials $credentials,
         private ThreadedLogger $logger,
         Threaded $threadToMainBuffer,
@@ -73,6 +75,7 @@ final class CoreThread extends Thread {
                 throw new SqlException('An error occurred while connecting to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\'');
             }
 
+            @cli_set_process_title('MySQL Thread (' . $this->threadId . ')');
             gc_enable();
             ini_set('display_errors', '1');
             ini_set('display_startup_errors', '1');

@@ -43,6 +43,7 @@ final class ThreadPool {
 
         for ($i = 0; $i < $threadsIdle; $i++) {
             $thread = new CoreThread(
+                $i,
                 $credentials,
                 Server::getInstance()->getLogger(),
                 $threadToMainBuffer,

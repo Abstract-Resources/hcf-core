@@ -44,11 +44,14 @@ scoreboard:
       - '&f'
       - '&b&lClaim: &r&a<current_claim>'
       - '%combat_tag_lines%'
+      - '%pvp_tag_lines'
       - '%koth_lines%'
       - '&d'
       - '&7mc.serverhcf.net'
 
     combat_tag_lines:
       - '&c&lCombatTag: &r&c<combat_tag_timer>'
+    pvp_tag_lines:
+      - '&a&lPvP Timer: &r&f<pvp_tag_timer>'
     koth_lines:
       - '&9&l<koth_name>: &r&8<koth_time>'
