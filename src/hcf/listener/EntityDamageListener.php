@@ -7,6 +7,7 @@ namespace hcf\listener;
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\timer\PlayerTimer;
+use hcf\utils\HCFUtils;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
@@ -23,6 +24,12 @@ final class EntityDamageListener implements Listener {
         $entity = $ev->getEntity();
         if (!$entity instanceof Player) return;
         if (($profile = ProfileFactory::getInstance()->getIfLoaded($entity->getXuid())) === null) {
+            $ev->cancel();
+
+            return;
+        }
+
+        if (HCFUtils::isSotwRunning()) {
             $ev->cancel();
 
             return;

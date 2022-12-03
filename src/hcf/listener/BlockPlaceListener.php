@@ -6,22 +6,21 @@ namespace hcf\listener;
 
 use hcf\factory\FactionFactory;
 use hcf\object\ClaimRegion;
-use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\Listener;
 
-final class BlockBreakListener implements Listener {
+final class BlockPlaceListener implements Listener {
 
     /**
-     * @param BlockBreakEvent $ev
+     * @param BlockPlaceEvent $ev
      *
      * @priority NORMAL
      */
-    public function onBlockBreakEvent(BlockBreakEvent $ev): void {
+    public function onBlockPlaceEvent(BlockPlaceEvent $ev): void {
         $player = $ev->getPlayer();
 
         $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());
-
-        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->isFlagEnabled(ClaimRegion::BLOCK_BREAK_FLAG)) {
+        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->isFlagEnabled(ClaimRegion::BLOCK_PLACE_FLAG)) {
             $ev->cancel();
 
             return;

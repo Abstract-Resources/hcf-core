@@ -28,6 +28,11 @@ final class HCFUtils {
     /** @var array */
     private static array $placeHolders = [];
 
+    /** @var int */
+    private static int $sotwEndAt = 0;
+    /** @var int */
+    private static int $eotwEndAt = 0;
+
     /**
      * @param string $text
      * @param string[] $args
@@ -86,5 +91,19 @@ final class HCFUtils {
      */
     public static function getDefaultWorld(): World {
         return Server::getInstance()->getWorldManager()->getDefaultWorld() ?? throw new UnexpectedException('Default world not was loaded...');
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isSotwRunning(): bool {
+        return self::getSotwTimeRemaining() > 0;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getSotwTimeRemaining(): int {
+        return self::$sotwEndAt - time();
     }
 }

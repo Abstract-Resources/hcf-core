@@ -6,6 +6,8 @@ namespace hcf;
 
 use hcf\command\faction\FactionCommand;
 use hcf\factory\FactionFactory;
+use hcf\listener\BlockBreakListener;
+use hcf\listener\BlockPlaceListener;
 use hcf\listener\claim\ClaimPlayerChatListener;
 use hcf\listener\claim\ClaimPlayerInteractListener;
 use hcf\listener\EntityDamageListener;
@@ -54,6 +56,8 @@ final class HCFCore extends PluginBase {
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerJoinListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new BlockPlaceListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 

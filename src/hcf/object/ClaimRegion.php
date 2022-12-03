@@ -10,16 +10,21 @@ use pocketmine\world\Position;
 
 final class ClaimRegion {
 
+    public const BLOCK_BREAK_FLAG = 'block_break_disabled';
+    public const BLOCK_PLACE_FLAG = 'block_place_disabled';
+
     /** @var array<string, ClaimCuboid> */
     private static array $claimingSessions = [];
 
     /**
-     * @param string      $name
-     * @param ClaimCuboid $cuboid
+     * @param string              $name
+     * @param ClaimCuboid         $cuboid
+     * @param array<string, bool> $flags
      */
     public function __construct(
         private string $name,
-        private ClaimCuboid $cuboid
+        private ClaimCuboid $cuboid,
+        private array $flags = []
     ) {}
 
     /**
@@ -34,6 +39,15 @@ final class ClaimRegion {
      */
     public function getCuboid(): ClaimCuboid {
         return $this->cuboid;
+    }
+
+    /**
+     * @param string $flagName
+     *
+     * @return bool
+     */
+    public function isFlagEnabled(string $flagName): bool {
+        return $this->flags[$flagName] ?? false;
     }
 
     /**

@@ -55,7 +55,7 @@ final class FactionFactory {
 
             if ($cuboid === null) continue;
 
-            $this->adminClaims[$claimName] = new ClaimRegion($claimName, $cuboid);
+            $this->adminClaims[$claimName] = new ClaimRegion($claimName, $cuboid, $storage['flags'] ?? []);
         }
     }
 

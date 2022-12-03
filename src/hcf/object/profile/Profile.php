@@ -13,7 +13,12 @@ use hcf\utils\HCFUtils;
 use hcf\utils\ScoreboardBuilder;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use function array_merge;
+use function count;
+use function in_array;
 use function is_array;
+use function is_string;
+use function str_replace;
 
 final class Profile {
 
@@ -53,8 +58,8 @@ final class Profile {
 
     public function init(): void {
         $this->timers = [
-            PlayerTimer::COMBAT_TAG => new PlayerTimer(PlayerTimer::COMBAT_TAG, 30),
-            PlayerTimer::PVP_TAG => new PlayerTimer(PlayerTimer::PVP_TAG, 60 * 60)
+        	PlayerTimer::COMBAT_TAG => new PlayerTimer(PlayerTimer::COMBAT_TAG, 30),
+        	PlayerTimer::PVP_TAG => new PlayerTimer(PlayerTimer::PVP_TAG, 60 * 60)
         ];
 
         $this->scoreboardBuilder = new ScoreboardBuilder(
@@ -189,9 +194,9 @@ final class Profile {
 
         $allowedPlaceholders = [];
         $args = [
-            'koth_name' => '',
-            'koth_time_remaining' => '',
-            'current_claim' => $this->getClaimRegion()->getName()
+        	'koth_name' => '',
+        	'koth_time_remaining' => '',
+        	'current_claim' => $this->getClaimRegion()->getName()
         ];
 
         foreach ($this->timers as $timer) {
