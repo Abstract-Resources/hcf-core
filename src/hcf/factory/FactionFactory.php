@@ -21,6 +21,8 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
+use function is_array;
+use function is_int;
 use function strtolower;
 
 final class FactionFactory {
@@ -38,7 +40,23 @@ final class FactionFactory {
     private array $factionClaim = [];
 
     public function init(): void {
-        $this->adminClaims[HCFUtils::REGION_WILDERNESS] = new ClaimRegion(HCFUtils::REGION_WILDERNESS, ClaimCuboid::fromNumber(500));
+        if (!is_array($claims = HCFCore::getInstance()->getConfig()->getNested('map.admin_claims'))) return;
+
+        foreach ($claims as $claimName => $storage) {
+            if (($value = $storage['value'] ?? null) === null) continue;
+
+            $cuboid = null;
+
+            if (is_array($value)) {
+                $cuboid = ClaimCuboid::fromStorage($value);
+            } elseif (is_int($value)) {
+                $cuboid = ClaimCuboid::fromNumber($value);
+            }
+
+            if ($cuboid === null) continue;
+
+            $this->adminClaims[$claimName] = new ClaimRegion($claimName, $cuboid);
+        }
     }
 
     /**
@@ -209,7 +227,7 @@ final class FactionFactory {
      */
     public function getRegionAt(Position $position): ClaimRegion {
         /** @var ClaimRegion[] $claimsPerChunk */
-        $claimsPerChunk = $this->claimsPerChunk[World::chunkHash($position->getFloorX(), $position->getFloorZ())] ?? [];
+        $claimsPerChunk = $this->claimsPerChunk[World::chunkHash($position->getFloorX() >> Chunk::COORD_BIT_SIZE, $position->getFloorZ() >> Chunk::COORD_BIT_SIZE)] ?? [];
 
         foreach ($claimsPerChunk as $claimRegion) {
             if (!$claimRegion->getCuboid()->isInside($position)) continue;

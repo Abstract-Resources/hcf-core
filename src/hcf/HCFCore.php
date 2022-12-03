@@ -39,6 +39,9 @@ final class HCFCore extends PluginBase {
 
         require_once($bootstrap);
 
+        $this->saveDefaultConfig();
+        $this->saveResource('messages.yml');
+
         FactionFactory::getInstance()->init();
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 

@@ -28,11 +28,21 @@ factions:
     - 'Road'
     - 'Spawn'
 
+map:
+  admin_claims:
+    warzone:
+      flags: []
+      value: 400
+    wilderness:
+      flags: []
+      value: 2000
+
 scoreboard:
   title: '&a&lHCF'
   lines:
     default-lines:
       - '&f'
+      - '&b&lClaim: &r&a<current_claim>'
       - '%combat_tag_lines%'
       - '%koth_lines%'
       - '&d'

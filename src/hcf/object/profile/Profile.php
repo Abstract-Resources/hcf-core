@@ -174,7 +174,6 @@ final class Profile {
     public function updateTimer(string $name): void {
         if (($timer = $this->timers[$name] ?? null) === null) return;
 
-        echo 'Updating timer' . PHP_EOL;
         $timer->start();
     }
 
@@ -188,11 +187,18 @@ final class Profile {
         if (!is_array($scoreboardLines = HCFCore::getInstance()->getConfig()->getNested('scoreboard.lines'))) return;
         if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
 
-        $scoreboardPlaceHolders = [];
+        $allowedPlaceholders = [];
+        $args = [
+            'koth_name' => '',
+            'koth_time_remaining' => '',
+            'current_claim' => $this->getClaimRegion()->getName()
+        ];
+
         foreach ($this->timers as $timer) {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
 
-            $scoreboardPlaceHolders[$timer->getName() . '_lines'] = ['combat_tag_timer' => HCFUtils::dateString($remainingTime)];
+            $allowedPlaceholders[] = $timer->getName() . '_lines';
+            $args['combat_tag_timer'] = HCFUtils::dateString($remainingTime);
         }
 
         $originalLines = [];
@@ -204,16 +210,13 @@ final class Profile {
                 continue;
             }
 
-            if (!isset($scoreboardPlaceHolders[$placeholder])) continue;
+            if (!in_array($placeholder, $allowedPlaceholders, true)) continue;
 
-            $originalLines = array_merge($originalLines, array_map(
-                fn(string $scoreboardLine) => HCFUtils::replacePlaceholders($scoreboardLine, $scoreboardPlaceHolders[$placeholder] ?? []),
-                $placeholderLines
-            ));
+            $originalLines = array_merge($originalLines, $placeholderLines);
         }
 
         foreach ($originalLines as $line => $scoreboardText) {
-            foreach ($this->scoreboardBuilder->fetchLine($line, $scoreboardText) as $packet) {
+            foreach ($this->scoreboardBuilder->fetchLine($line, HCFUtils::replacePlaceholders($scoreboardText, $args)) as $packet) {
                 $instance->getNetworkSession()->sendDataPacket($packet);
             }
         }

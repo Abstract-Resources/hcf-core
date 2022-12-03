@@ -80,8 +80,16 @@ final class ClaimCuboid {
         );
     }
 
+    /**
+     * @param Position $position
+     *
+     * @return bool
+     */
     public function isInside(Position $position): bool {
-        return false;
+        if ($position->getWorld() !== $this->firstCorner->getWorld()) return false;
+
+        return $position->getFloorX() >= $this->firstCorner->getFloorX() && $position->getFloorX() <= $this->secondCorner->getFloorX() &&
+            $position->getFloorZ() >= $this->firstCorner->getFloorZ() && $position->getFloorZ() <= $this->secondCorner->getFloorZ();
     }
 
     /**
@@ -113,6 +121,21 @@ final class ClaimCuboid {
         $cuboid = new self (
             new Position($number, World::Y_MIN, $number, HCFUtils::getDefaultWorld()),
             new Position(-$number, World::Y_MAX, -$number, HCFUtils::getDefaultWorld())
+        );
+        $cuboid->recalculate();
+
+        return $cuboid;
+    }
+
+    /**
+     * @param array $storage
+     *
+     * @return ClaimCuboid
+     */
+    public static function fromStorage(array $storage): ClaimCuboid {
+        $cuboid = new self(
+            new Position($storage['firstX'], $storage['firstY'], $storage['firstZ'], HCFUtils::getDefaultWorld()),
+            new Position($storage['secondX'], $storage['secondY'], $storage['secondZ'], HCFUtils::getDefaultWorld())
         );
         $cuboid->recalculate();
 
