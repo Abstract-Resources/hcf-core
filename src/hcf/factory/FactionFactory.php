@@ -25,6 +25,7 @@ use function count;
 use function is_array;
 use function is_int;
 use function strtolower;
+use function time;
 
 final class FactionFactory {
 	use SingletonTrait;

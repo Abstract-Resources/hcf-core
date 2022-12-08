@@ -8,14 +8,16 @@ use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\thread\datasource\MySQL;
-use hcf\thread\datasource\Query;
+use hcf\thread\LocalThreaded;
+use hcf\thread\types\SQLDataSourceThread;
+use hcf\thread\types\ThreadType;
 use hcf\utils\HCFUtils;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
 use function is_array;
 use function is_int;
 
-final class LoadProfileQuery extends Query {
+final class LoadProfileQuery implements LocalThreaded {
 
     /** @var Profile|null */
     private ?Profile $profile = null;
@@ -30,12 +32,14 @@ final class LoadProfileQuery extends Query {
     ) {}
 
     /**
-     * @param MySQL $provider
+     * @param ThreadType $threadType
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(MySQL $provider): void {
-        if (($profileData = self::fetch($this->xuid, $this->name, $provider)) === null) return;
+    public function run(ThreadType $threadType): void {
+        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
+
+        if (($profileData = self::fetch($this->xuid, $this->name, $threadType->getResource())) === null) return;
 
         $this->profile = Profile::fromProfileData($profileData);
     }
@@ -76,11 +80,22 @@ final class LoadProfileQuery extends Query {
      * This function is executed on the Main Thread because need use some function of pmmp
      */
     public function onComplete(): void {
-        if ($new = $this->profile === null) {
+        $new = $this->profile === null;
+
+        if ($new) {
             $this->profile = new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now);
             $this->profile->forceSave(false);
         }
 
+        if ($this->profile === null) return;
+
         ProfileFactory::getInstance()->registerNewProfile($this->profile, $new);
+    }
+
+    /**
+     * @return int
+     */
+    public function threadId(): int {
+        return 0;
     }
 }

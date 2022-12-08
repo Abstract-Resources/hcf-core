@@ -207,6 +207,15 @@ final class Profile {
         return $this->timers;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return ProfileTimer|null
+     */
+    public function getProfileTimer(string $name): ?ProfileTimer {
+        return $this->timers[$name] ?? null;
+    }
+
     public function showScoreboard(): void {
         if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
 

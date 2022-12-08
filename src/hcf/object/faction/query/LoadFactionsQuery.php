@@ -9,8 +9,9 @@ use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
-use hcf\thread\datasource\MySQL;
-use hcf\thread\datasource\Query;
+use hcf\thread\LocalThreaded;
+use hcf\thread\types\SQLDataSourceThread;
+use hcf\thread\types\ThreadType;
 use hcf\utils\HCFUtils;
 use mysqli_result;
 use pocketmine\entity\Location;
@@ -22,15 +23,28 @@ use Threaded;
 use function is_array;
 use function time;
 
-final class LoadFactionsQuery extends Query {
+final class LoadFactionsQuery implements LocalThreaded {
 
     /** @var Threaded */
     private Threaded $factions;
 
     /**
-     * @param MySQL $provider
+     * @return int
      */
-    public function run(MySQL $provider): void {
+    public function threadId(): int {
+        return 0;
+    }
+
+    /**
+     * @param ThreadType $threadType
+     *
+     * This function is executed on other Thread to prevent lag spike on Main thread
+     */
+    public function run(ThreadType $threadType): void {
+        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
+
+        $provider = $threadType->getResource();
+
         $provider->executeStatement("CREATE TABLE IF NOT EXISTS factions (id VARCHAR(60) PRIMARY KEY, fName TEXT, leader_xuid VARCHAR(60), deathsUntilRaidable FLOAT, regenCooldown INT, balance INT, points INT)");
         $provider->executeStatement("CREATE TABLE IF NOT EXISTS profiles (xuid VARCHAR(60) PRIMARY KEY, username VARCHAR(16), lives INT, faction_id TEXT, faction_role INT, kills INT, deaths INT, balance INT, first_seen TEXT, last_seen TEXT)");
 

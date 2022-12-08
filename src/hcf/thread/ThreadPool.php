@@ -6,7 +6,7 @@ namespace hcf\thread;
 
 use hcf\HCFCore;
 use hcf\thread\datasource\MySQLCredentials;
-use hcf\thread\datasource\Query;
+use hcf\thread\types\SQLDataSourceThread;
 use pocketmine\network\mcpe\raklib\PthreadsChannelReader;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
@@ -19,7 +19,7 @@ use function unserialize;
 final class ThreadPool {
     use SingletonTrait;
 
-    /** @var SQLDataSourceThread[] */
+    /** @var CommonThread[] */
     private array $threads = [];
     /** @var SleeperNotifier|null */
     private ?SleeperNotifier $notifier;
@@ -40,12 +40,15 @@ final class ThreadPool {
 
         $threadToMainBuffer = new Threaded();
         $this->notifier = new SleeperNotifier();
+        $logger = Server::getInstance()->getLogger();
+
+        $threadTypes = [new SQLDataSourceThread($credentials)];
 
         for ($i = 0; $i < $threadsIdle; $i++) {
-            $thread = new SQLDataSourceThread(
+            $thread = new CommonThread(
                 $i,
-                $credentials,
-                Server::getInstance()->getLogger(),
+                $threadTypes,
+                $logger,
                 $threadToMainBuffer,
                 $this->notifier
             );
@@ -56,24 +59,24 @@ final class ThreadPool {
 
         $threadToMainReader = new PthreadsChannelReader($threadToMainBuffer);
         Server::getInstance()->getTickSleeper()->addNotifier($this->notifier, function () use ($threadToMainReader): void {
-            /** @var $query Query */
+            /** @var $localThreaded LocalThreaded */
             while (($payload = $threadToMainReader->read()) !== null) {
-                $query = unserialize($payload, ['allowed_classes' => true]);
+                $localThreaded = unserialize($payload, ['allowed_classes' => true]);
 
-                if (!$query instanceof Query) continue;
+                if (!$localThreaded instanceof LocalThreaded) continue;
 
-                $query->onComplete();
+                $localThreaded->onComplete();
             }
         });
     }
 
     /**
-     * @param Query $query
+     * @param LocalThreaded $localThreaded
      *
      * @return bool
      */
-    public function submit(Query $query): bool {
-        /** @var SQLDataSourceThread|null $betterThread */
+    public function submit(LocalThreaded $localThreaded): bool {
+        /** @var CommonThread|null $betterThread */
         $betterThread = null;
 
         $attempts = 0;
@@ -102,7 +105,7 @@ final class ThreadPool {
 
         HCFCore::debug('An available \'Thread\' was found after ' . $attempts . ' attempts');
 
-        $betterThread->submit($query);
+        $betterThread->submit($localThreaded);
 
         return true;
     }

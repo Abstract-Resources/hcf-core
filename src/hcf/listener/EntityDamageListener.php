@@ -12,6 +12,8 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
+use function sprintf;
 
 final class EntityDamageListener implements Listener {
 
@@ -35,18 +37,56 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
-        if ($ev instanceof EntityDamageByEntityEvent) {
-            if (FactionFactory::getInstance()->isInsideSpawn($entity->getPosition())) {
-                $ev->cancel();
+        if (!$ev instanceof EntityDamageByEntityEvent) return;
 
-                return;
-            }
+        $attacker = $ev->getDamager();
+        if (!$attacker instanceof Player || ($attackerProfile = ProfileFactory::getInstance()->getIfLoaded($attacker->getXuid())) === null) {
+            $ev->cancel();
 
-            $target = $ev->getDamager();
-            if (!$target instanceof Player || ($targetProfile = ProfileFactory::getInstance()->getIfLoaded($target->getXuid())) === null) return;
-
-            $profile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
-            $targetProfile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
+            return;
         }
+
+        if ($attackerProfile->getFactionId() !== null && $attackerProfile->getFactionId() === $profile->getFactionId()) {
+            $attacker->sendMessage(TextFormat::DARK_GREEN . $entity->getName() . TextFormat::YELLOW . ' is in your faction.');
+
+            $ev->cancel();
+
+            return;
+        }
+
+        if (FactionFactory::getInstance()->isInsideSpawn($entity->getPosition())) {
+            $attacker->sendMessage(TextFormat::RED . 'You cannot attack players that are in safe-zones');
+
+            $ev->cancel();
+
+            return;
+        }
+
+        if (FactionFactory::getInstance()->isInsideSpawn($attacker->getPosition())) {
+            $attacker->sendMessage(TextFormat::RED . 'You cannot attack players whilst in safe-zones.');
+
+            $ev->cancel();
+
+            return;
+        }
+
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && ($remainingTime = $profileTimer->getRemainingTime()) > 0) {
+            $attacker->sendMessage(TextFormat::RED . $profile->getName() . ' has their ' . $profileTimer->getNameColoured() . TextFormat::RED . ' timer for another ' . TextFormat::BOLD . HCFUtils::dateString($remainingTime));
+
+            $ev->cancel();
+
+            return;
+        }
+
+        if (($profileTimer = $attackerProfile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && ($remainingTime = $profileTimer->getRemainingTime()) > 0) {
+            $attacker->sendMessage(TextFormat::colorize(sprintf('&cYou cannot attack players whilst your %s&c timer is active [&l%s&r&c remaining]. Use \'&7/pvp enable\' to allow pvp.', $profileTimer->getNameColoured(), HCFUtils::dateString($remainingTime))));
+
+            $ev->cancel();
+
+            return;
+        }
+
+        $profile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
+        $attackerProfile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
     }
 }

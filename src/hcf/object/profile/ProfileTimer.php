@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
+use hcf\utils\HCFUtils;
+use function strtoupper;
 use function time;
 
 final class ProfileTimer {
@@ -31,6 +33,13 @@ final class ProfileTimer {
     }
 
     /**
+     * @return string
+     */
+    public function getNameColoured(): string {
+        return HCFUtils::replacePlaceholders('TIMER_' . strtoupper($this->name));
+    }
+
+    /**
      * @param int $countdown
      */
     public function start(int $countdown = -1): void {
@@ -42,5 +51,12 @@ final class ProfileTimer {
      */
     public function getRemainingTime(): int {
         return $this->endAt - time();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRunning(): bool {
+        return $this->getRemainingTime() > 0;
     }
 }
