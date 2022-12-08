@@ -6,6 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
+use hcf\object\profile\ProfileTimer;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerDeathEvent;
@@ -34,6 +35,10 @@ final class PlayerDeathListener implements Listener {
 
             FactionFactory::getInstance()->storeFactionRegenerating($faction->getId(), $faction->getRegenCooldown());
         }
+
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::COMBAT_TAG)) !== null) $profileTimer->cancel();
+
+        $profile->toggleProfileTimer(ProfileTimer::PVP_TAG, 60 * 60);
 
         $cause = $player->getLastDamageCause();
 

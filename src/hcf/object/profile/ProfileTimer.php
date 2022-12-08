@@ -46,6 +46,10 @@ final class ProfileTimer {
         $this->endAt = time() + ($countdown === -1 ? $this->countdown : $countdown);
     }
 
+    public function cancel(): void {
+        $this->endAt = 0;
+    }
+
     /**
      * @return int
      */

@@ -9,3 +9,5 @@ FACTION_WHO_PLAYER:
   - '&ePoints: &9<points>'
   - '&eTime Until Regen: &6<time_until_regen>'
   - '&7&m--------------------------------------'
+
+FACTION_LIST_ARGUMENT: '&e<index> &7- &3<name>'

@@ -66,7 +66,7 @@ final class FactionListThreaded implements Query {
 
         /** @var array<int, Faction> $factions */
         foreach ($factions as $index => $faction) {
-            $this->results[] = ['FACTION_LIST_ARGUMENT', ['index' => (string) $index, 'name' => $faction->getName()]];
+            $this->results[] = ['FACTION_LIST_ARGUMENT', ['index' => (string) ($index + 1), 'name' => $faction->getName()]];
         }
     }
 
