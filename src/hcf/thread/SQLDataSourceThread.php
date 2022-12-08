@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace hcf\thread;
 
 use Exception;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\MySQLCredentials;
+use hcf\thread\datasource\Query;
+use hcf\thread\datasource\SqlException;
 use pocketmine\network\mcpe\raklib\SnoozeAwarePthreadsChannelWriter;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
@@ -15,14 +18,14 @@ use function cli_set_process_title;
 use function error_get_last;
 use function gc_enable;
 use function ini_set;
+use function intval;
 use function microtime;
+use function min;
 use function register_shutdown_function;
 use function serialize;
+use function sleep;
 
-final class CommonThread extends Thread {
-
-    public const SQL_DATA_SOURCE = 0;
-    public const COMMON_DATA_SOURCE = 1;
+final class SQLDataSourceThread extends Thread {
 
     /** @var bool */
     private bool $running = true;
@@ -39,15 +42,15 @@ final class CommonThread extends Thread {
     public float $lastUpdate = 0.0;
 
     /**
-     * @param int             $threadId
-     * @param array<int, ThreadType>           $threadTypes
-     * @param ThreadedLogger  $logger
-     * @param Threaded        $threadToMainBuffer
-     * @param SleeperNotifier $notifier
+     * @param int              $threadId
+     * @param MySQLCredentials $credentials
+     * @param ThreadedLogger   $logger
+     * @param Threaded         $threadToMainBuffer
+     * @param SleeperNotifier  $notifier
      */
     public function __construct(
         private int $threadId,
-        private array $threadTypes,
+        private MySQLCredentials $credentials,
         private ThreadedLogger $logger,
         Threaded $threadToMainBuffer,
         SleeperNotifier $notifier
@@ -61,7 +64,19 @@ final class CommonThread extends Thread {
      */
     protected function onRun(): void {
         try {
-            @cli_set_process_title('Common Thread (' . $this->threadId . ')');
+            $resource = new MySQL(
+                $this->credentials->getAddress(),
+                $this->credentials->getUsername(),
+                $this->credentials->getPassword(),
+                $this->credentials->getDbname(),
+                $this->credentials->getPort()
+            );
+
+            if ($resource->connect_error !== null) {
+                throw new SqlException('An error occurred while connecting to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\'');
+            }
+
+            @cli_set_process_title('SQL Thread (' . $this->threadId . ')');
 
             gc_enable();
             ini_set('display_errors', '1');
@@ -70,25 +85,16 @@ final class CommonThread extends Thread {
 
             register_shutdown_function([$this, 'shutdownHandler']);
 
-            foreach ($this->threadTypes as $threadType) $threadType->init($this->logger);
-
             while ($this->running) {
                 foreach ($this->mainToThread as $index => $pending) {
-                    if (!$pending instanceof LocalThreaded) {
+                    if (!$pending instanceof Query) {
                         unset($this->mainToThread[$index]);
 
                         continue;
                     }
 
-                    $threadType = $this->threadTypes[$pending->threadId()] ?? null;
-
-                    if ($threadType === null) {
-                        unset($this->mainToThread[$index]);
-
-                        continue;
-                    }
-
-                    $pending->run($threadType);
+                    $this->attemptPing($resource);
+                    $pending->run($resource);
 
                     $this->threadToMainWriter->write(serialize($pending));
 
@@ -103,10 +109,51 @@ final class CommonThread extends Thread {
     }
 
     /**
-     * @param LocalThreaded $threaded
+     * @param MySQL $resource
      */
-    public function submit(LocalThreaded $threaded): void {
-        $this->mainToThread[] = $threaded;
+    private function attemptPing(MySQL $resource): void {
+        if ($resource->ping()) {
+            return;
+        }
+
+        $success = false;
+
+        $attempts = 0;
+
+        while (!$success) {
+            $seconds = min(2 ** $attempts, PHP_INT_MAX);
+
+            $this->logger->warning('MySQL Connection failed! Trying reconnecting in ' . $seconds . ' seconds.');
+
+            sleep(intval($seconds));
+
+            $resource->connect(
+                $this->credentials->getAddress(),
+                $this->credentials->getUsername(),
+                $this->credentials->getPassword(),
+                $this->credentials->getDbname(),
+                $this->credentials->getPort()
+            );
+
+            if ($resource->connect_error !== null) {
+                $attempts++;
+
+                $this->logger->error('An error occurred while trying reconnect to \'' . $this->credentials->getAddress() . '@' . $this->credentials->getUsername() . '\': ' . $resource->connect_error);
+
+                continue;
+            }
+
+            $success = true;
+        }
+
+        $this->logger->info('Successfully database connection restored!');
+    }
+
+    /**
+     * @param Query $query
+     */
+    public function submit(Query $query): void {
+        $this->mainToThread[] = $query;
 
         $this->lastUsage = microtime(true);
     }
@@ -121,7 +168,7 @@ final class CommonThread extends Thread {
 
     public function shutdownHandler(): void {
         if ($this->cleanShutdown) {
-            $this->logger->info('Common Thread: Graceful shutdown complete');
+            $this->logger->info('SQL Thread: Graceful shutdown complete');
 
             return;
         }

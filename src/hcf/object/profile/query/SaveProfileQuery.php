@@ -8,11 +8,9 @@ use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileData;
 use hcf\thread\CommonThread;
 use hcf\thread\datasource\MySQL;
-use hcf\thread\LocalThreaded;
-use hcf\thread\types\SQLDataSourceThread;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\Query;
 
-final class SaveProfileQuery implements LocalThreaded {
+final class SaveProfileQuery implements Query {
 
 	/**
 	 * @param ProfileData $profileData
@@ -20,14 +18,12 @@ final class SaveProfileQuery implements LocalThreaded {
 	public function __construct(private ProfileData $profileData) {}
 
     /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void {
-        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
-
-        self::push($this->profileData, $threadType->getResource());
+    public function run(MySQL $provider): void {
+        self::push($this->profileData, $provider);
 	}
 
     /**
@@ -64,11 +60,4 @@ final class SaveProfileQuery implements LocalThreaded {
 
 		$profile->setAlreadySaving(false);
 	}
-
-    /**
-     * @return int
-     */
-    public function threadId(): int {
-        return CommonThread::SQL_DATA_SOURCE;
-    }
 }

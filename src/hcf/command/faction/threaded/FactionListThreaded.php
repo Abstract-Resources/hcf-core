@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace hcf\command\faction\threaded;
 
 use hcf\object\faction\Faction;
-use hcf\thread\CommonThread;
-use hcf\thread\LocalThreaded;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 use hcf\utils\HCFUtils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\Server;
@@ -18,7 +17,7 @@ use function is_array;
 use function ksort;
 use function min;
 
-final class FactionListThreaded implements LocalThreaded {
+final class FactionListThreaded implements Query {
 
     private array $results = [];
 
@@ -34,18 +33,11 @@ final class FactionListThreaded implements LocalThreaded {
     ) {}
 
     /**
-     * @return int
-     */
-    public function threadId(): int {
-        return CommonThread::COMMON_DATA_SOURCE;
-    }
-
-    /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void {
+    public function run(MySQL $provider): void {
         $factionsUnserialized = igbinary_unserialize($this->factionsSerialized);
 
         if (!is_array($factionsUnserialized)) return;

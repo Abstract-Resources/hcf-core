@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace hcf\object\profile\query;
 
 use hcf\object\profile\ProfileData;
-use hcf\thread\CommonThread;
-use hcf\thread\LocalThreaded;
-use hcf\thread\types\SQLDataSourceThread;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 
-final class BatchSaveProfileQuery implements LocalThreaded {
+final class BatchSaveProfileQuery implements Query {
 
     /**
      * @param ProfileData[] $profilesData
@@ -20,17 +18,13 @@ final class BatchSaveProfileQuery implements LocalThreaded {
     ) {}
 
     /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void {
-        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
-
-        $provider = $threadType->getResource();
-
+    public function run(MySQL $provider): void {
         foreach ($this->profilesData as $profileData) {
-            // TODO: Load the profile from the data storored
+            // TODO: Load the profile from the data stored
             $storedProfileData = LoadProfileQuery::fetch($profileData->getXuid(), $profileData->getName(), $provider);
 
             if ($storedProfileData === null) continue;
@@ -49,11 +43,5 @@ final class BatchSaveProfileQuery implements LocalThreaded {
     /**
      * This function is executed on the Main Thread because need use some function of pmmp
      */
-    public function onComplete(): void {
-        // TODO: Implement onComplete() method.
-    }
-
-    public function threadId(): int {
-        return CommonThread::SQL_DATA_SOURCE;
-    }
+    public function onComplete(): void {}
 }

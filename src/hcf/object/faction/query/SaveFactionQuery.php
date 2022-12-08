@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace hcf\object\faction\query;
 
 use hcf\object\faction\FactionData;
-use hcf\thread\CommonThread;
-use hcf\thread\LocalThreaded;
-use hcf\thread\types\SQLDataSourceThread;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 
-final class SaveFactionQuery implements LocalThreaded {
+final class SaveFactionQuery implements Query {
 
     /**
      * @param FactionData $factionData
@@ -19,22 +17,11 @@ final class SaveFactionQuery implements LocalThreaded {
     public function __construct(private FactionData $factionData, private bool $exists) {}
 
     /**
-     * @return int
-     */
-    public function threadId(): int {
-        return CommonThread::SQL_DATA_SOURCE;
-    }
-
-    /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void {
-        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
-
-        $provider = $threadType->getResource();
-
+    public function run(MySQL $provider): void {
         if ($this->exists) {
             $provider->prepareStatement("UPDATE factions SET fName = ?, leader_xuid = ?, deathsUntilRaidable = ?, regenCooldown = ?, balance = ?, points = ? WHERE id = ?");
         } else {

@@ -2,23 +2,16 @@
 
 declare(strict_types=1);
 
-namespace hcf\thread;
+namespace hcf\thread\datasource;
 
-use hcf\thread\types\ThreadType;
-
-interface LocalThreaded {
+interface Query {
 
     /**
-     * @return int
-     */
-    public function threadId(): int;
-
-    /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void;
+    public function run(MySQL $provider): void;
 
     /**
      * This function is executed on the Main Thread because need use some function of pmmp

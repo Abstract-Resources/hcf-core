@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace hcf\object\faction\query;
 
-use hcf\thread\CommonThread;
-use hcf\thread\LocalThreaded;
-use hcf\thread\types\SQLDataSourceThread;
-use hcf\thread\types\ThreadType;
+use hcf\thread\datasource\MySQL;
+use hcf\thread\datasource\Query;
 
-final class DisbandFactionQuery implements LocalThreaded {
+final class DisbandFactionQuery implements Query {
 
     /**
      * @param string $id
@@ -17,22 +15,11 @@ final class DisbandFactionQuery implements LocalThreaded {
     public function __construct(private string $id) {}
 
     /**
-     * @return int
-     */
-    public function threadId(): int {
-        return CommonThread::SQL_DATA_SOURCE;
-    }
-
-    /**
-     * @param ThreadType $threadType
+     * @param MySQL $provider
      *
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
-    public function run(ThreadType $threadType): void {
-        if (!$threadType instanceof SQLDataSourceThread || $threadType->id() !== $this->threadId()) return;
-
-        $provider = $threadType->getResource();
-
+    public function run(MySQL $provider): void {
         $provider->prepareStatement('DELETE FROM factions WHERE id = ?');
         $provider->set($this->id);
 
