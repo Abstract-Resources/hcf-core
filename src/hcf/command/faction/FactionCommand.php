@@ -9,6 +9,7 @@ use hcf\command\faction\arguments\CreateArgument;
 use hcf\command\faction\arguments\JoinArgument;
 use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\command\faction\arguments\leader\DisbandArgument;
+use hcf\command\faction\arguments\ListArgument;
 use hcf\command\faction\arguments\member\DepositArgument;
 use hcf\command\faction\arguments\member\LeaveArgument;
 use hcf\command\faction\arguments\officer\InviteArgument;
@@ -29,7 +30,8 @@ final class FactionCommand extends BaseCommand {
             new DepositArgument('deposit'),
             new LeaveArgument('leave'),
             new JoinArgument('join'),
-            new WhoArgument('who')
+            new WhoArgument('who'),
+            new ListArgument('list')
         );
     }
 }

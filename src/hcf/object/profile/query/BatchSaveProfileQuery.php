@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace hcf\object\profile\query;
 
 use hcf\object\profile\ProfileData;
+use hcf\thread\CommonThread;
 use hcf\thread\LocalThreaded;
 use hcf\thread\types\SQLDataSourceThread;
 use hcf\thread\types\ThreadType;
@@ -53,6 +54,6 @@ final class BatchSaveProfileQuery implements LocalThreaded {
     }
 
     public function threadId(): int {
-        return 0;
+        return CommonThread::SQL_DATA_SOURCE;
     }
 }

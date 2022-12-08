@@ -21,6 +21,7 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
+use function array_values;
 use function count;
 use function is_array;
 use function is_int;
@@ -235,6 +236,13 @@ final class FactionFactory {
      */
     public function getFactionAt(Position $position): ?Faction {
         return $this->getFactionName($this->getRegionAt($position)->getName());
+    }
+
+    /**
+     * @return Faction[]
+     */
+    public function getFactionsStored(): array {
+        return array_values($this->factions);
     }
 
     /**

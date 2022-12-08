@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\thread\types;
 
+use hcf\thread\CommonThread;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\MySQLCredentials;
 use hcf\thread\datasource\SqlException;
@@ -95,6 +96,6 @@ final class SQLDataSourceThread implements ThreadType {
      * @return int
      */
     public function id(): int {
-        return 0;
+        return CommonThread::SQL_DATA_SOURCE;
     }
 }

@@ -9,6 +9,7 @@ use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
+use hcf\thread\CommonThread;
 use hcf\thread\LocalThreaded;
 use hcf\thread\types\SQLDataSourceThread;
 use hcf\thread\types\ThreadType;
@@ -32,7 +33,7 @@ final class LoadFactionsQuery implements LocalThreaded {
      * @return int
      */
     public function threadId(): int {
-        return 0;
+        return CommonThread::SQL_DATA_SOURCE;
     }
 
     /**

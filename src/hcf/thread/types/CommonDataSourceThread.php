@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\thread\types;
 
+use hcf\thread\CommonThread;
 use ThreadedLogger;
 
 final class CommonDataSourceThread implements ThreadType {
@@ -19,6 +20,6 @@ final class CommonDataSourceThread implements ThreadType {
      * @return int
      */
     public function id(): int {
-        return 1;
+            return CommonThread::COMMON_DATA_SOURCE;
     }
 }

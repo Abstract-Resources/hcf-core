@@ -7,6 +7,7 @@ namespace hcf\object\profile\query;
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
+use hcf\thread\CommonThread;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\LocalThreaded;
 use hcf\thread\types\SQLDataSourceThread;
@@ -96,6 +97,6 @@ final class LoadProfileQuery implements LocalThreaded {
      * @return int
      */
     public function threadId(): int {
-        return 0;
+        return CommonThread::SQL_DATA_SOURCE;
     }
 }

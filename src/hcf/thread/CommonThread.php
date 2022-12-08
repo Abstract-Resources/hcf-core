@@ -21,6 +21,9 @@ use function serialize;
 
 final class CommonThread extends Thread {
 
+    public const SQL_DATA_SOURCE = 0;
+    public const COMMON_DATA_SOURCE = 1;
+
     /** @var bool */
     private bool $running = true;
     /** @var bool */
