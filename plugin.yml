@@ -9,4 +9,6 @@ softdepend:
 permissions:
   faction.admin:
     default: op
+  koth.start:
+    default: op
 ...

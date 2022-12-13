@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\listener\claim;
 
+use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\HCFLanguage;
@@ -25,10 +26,10 @@ final class ClaimPlayerInteractListener implements Listener {
     public function onPlayerInteractEvent(PlayerInteractEvent $ev): void {
         $player = $ev->getPlayer();
 
-        if ($ev->getItem()->getNamedTag()->getTag('claim_type') === null) return;
+        if (($tag = $ev->getItem()->getNamedTag()->getTag('claim_type')) === null) return;
         if (($cuboid = ClaimRegion::getIfClaiming($player)) === null) return;
 
-        if (FactionFactory::getInstance()->getRegionAt($vec = $ev->getBlock()->getPosition())->getName() !== HCFUtils::REGION_WILDERNESS) return;
+        if (FactionFactory::getInstance()->getRegionAt($vec = $ev->getBlock()->getPosition())->getName() !== HCFUtils::REGION_WILDERNESS && $tag->getValue() === ClaimArgument::FACTION_CLAIMING) return;
 
         if ($ev->getAction() === PlayerInteractEvent::LEFT_CLICK_BLOCK) {
             $cuboid->setFirstCorner($vec);
@@ -47,8 +48,7 @@ final class ClaimPlayerInteractListener implements Listener {
             (string) $vec->z
         ));
 
-        $zero = HCFUtils::posZero($player->getWorld());
-        if ($zero->equals($cuboid->getFirstCorner()) || $zero->equals($cuboid->getSecondCorner())) return;
+        if (!$cuboid->hasBothPositionsSet($player->getWorld())) return;
 
         $cuboid->recalculate();
 

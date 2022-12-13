@@ -56,7 +56,5 @@ final class SaveProfileQuery implements Query {
 	 */
 	public function onComplete(): void {
 		if (($profile = ProfileFactory::getInstance()->getIfLoaded($this->profileData->getXuid())) === null) return;
-
-		$profile->setAlreadySaving(false);
 	}
 }

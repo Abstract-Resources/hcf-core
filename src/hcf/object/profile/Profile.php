@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace hcf\object\profile;
 
 use hcf\factory\FactionFactory;
+use hcf\factory\KothFactory;
 use hcf\factory\PvpClassFactory;
 use hcf\HCFCore;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
-use hcf\object\pvpclass\impl\BardPvpClass;
 use hcf\object\pvpclass\PvpClass;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
@@ -32,9 +32,6 @@ final class Profile {
     /** @var array<string, ProfileTimer> */
     private array $timers;
 
-	/** @var bool */
-	private bool $alreadySaving = false;
-
     /** @var string|null */
     private ?string $pvpClassName = null;
 
@@ -55,8 +52,8 @@ final class Profile {
      * @param int         $balance
      */
 	public function __construct(
-		private string $xuid,
-		private string $name,
+        private string $xuid,
+        private string $name,
         private string $firstSeen,
         private string $lastSeen,
         private ?string $factionId = null,
@@ -93,6 +90,8 @@ final class Profile {
 
             $pvpClass->onEquip($this);
         });
+
+        PvpClassFactory::getInstance()->attemptEquip($this, $instance->getArmorInventory()->getContents(true));
     }
 
     /**
@@ -186,20 +185,6 @@ final class Profile {
         $this->balance = $balance;
     }
 
-	/**
-	 * @return bool
-	 */
-	public function isAlreadySaving(): bool {
-		return $this->alreadySaving;
-	}
-
-	/**
-	 * @param bool $alreadySaving
-	 */
-	public function setAlreadySaving(bool $alreadySaving): void {
-		$this->alreadySaving = $alreadySaving;
-	}
-
     /**
      * @param ClaimRegion $claimRegion
      */
@@ -272,29 +257,32 @@ final class Profile {
         if (!is_array($scoreboardLines = HCFCore::getInstance()->getConfig()->getNested('scoreboard.lines'))) return;
         if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
 
-        $allowedPlaceholders = [];
-        $args = [
-        	'koth_name' => '',
-        	'koth_time_remaining' => '',
-        	'current_claim' => $this->getClaimRegion()->getCustomName()
-        ];
+        $placeholders = ['current_claim' => $this->getClaimRegion()->getCustomName()];
+        $pendingScoreboardLines = [];
+
+        if (count($targetLines = KothFactory::getInstance()->getScoreboardLines()) > 0) {
+            $pendingScoreboardLines[] = KothFactory::getInstance()->getScoreboardPlaceholder();
+
+            $placeholders = array_merge($placeholders, $targetLines);
+        }
 
         if (($pvpClass = $this->getPvpClass()) !== null) {
-            $allowedPlaceholders[] = 'active_class_lines';
-            $args['class_name'] = $pvpClass->getCustomName();
+            $pendingScoreboardLines = array_merge($pendingScoreboardLines, ['active_class_lines', $pvpClass->getScoreboardPlaceholder()]);
 
-            if ($pvpClass instanceof BardPvpClass) {
-                $allowedPlaceholders[] = 'bard_class_lines';
+            $placeholders = array_merge($placeholders, $pvpClass->getScoreboardLines($this));
+        }
 
-                $args['bard_energy'] = '0';
-            }
+        if (($remainingTime = HCFUtils::getSotwTimeRemaining()) > 0) {
+            $pendingScoreboardLines[] = 'sotw_lines';
+
+            $placeholders['sotw_remaining'] = HCFUtils::dateString($remainingTime);
         }
 
         foreach ($this->timers as $timer) {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
 
-            $allowedPlaceholders[] = $timer->getName() . '_lines';
-            $args[$timer->getName() . '_timer'] = HCFUtils::dateString($remainingTime);
+            $pendingScoreboardLines[] = $timer->getName() . '_lines';
+            $placeholders[$timer->getName() . '_timer'] = HCFUtils::dateString($remainingTime);
         }
 
         $originalLines = [];
@@ -306,13 +294,13 @@ final class Profile {
                 continue;
             }
 
-            if (!in_array($placeholder, $allowedPlaceholders, true)) continue;
+            if (!in_array($placeholder, $pendingScoreboardLines, true)) continue;
 
             $originalLines = array_merge($originalLines, $placeholderLines);
         }
 
         foreach ($originalLines as $line => $scoreboardText) {
-            foreach ($this->scoreboardBuilder->fetchLine($line, HCFUtils::replacePlaceholders($scoreboardText, $args)) as $packet) {
+            foreach ($this->scoreboardBuilder->fetchLine($line, HCFUtils::replacePlaceholders($scoreboardText, $placeholders)) as $packet) {
                 $instance->getNetworkSession()->sendDataPacket($packet);
             }
         }
@@ -329,8 +317,6 @@ final class Profile {
      * @param bool $stored
      */
 	public function forceSave(bool $joinedBefore, bool $stored = true): void {
-		$this->alreadySaving = true;
-
 		ThreadPool::getInstance()->submit(new SaveProfileQuery(new ProfileData(
 			$this->xuid,
 			$this->name,

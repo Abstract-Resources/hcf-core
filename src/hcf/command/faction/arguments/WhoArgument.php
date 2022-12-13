@@ -8,6 +8,7 @@ use abstractplugin\command\Argument;
 use hcf\factory\FactionFactory;
 use hcf\HCFLanguage;
 use hcf\object\faction\Faction;
+use hcf\object\faction\FactionData;
 use hcf\object\profile\ProfileData;
 use hcf\utils\HCFUtils;
 use pocketmine\command\CommandSender;
@@ -39,10 +40,10 @@ final class WhoArgument extends Argument {
             return;
         }
 
-        /** @var array<int, string> $m */
+        /** @var array<int, array<int, string>> $m */
         $m = [];
         foreach ($faction->getMembers() as $factionMember) {
-            $m[$factionMember->getRole()][] = ($factionMember->isOnline() ? TextFormat::GREEN : TextFormat::GRAY) . $factionMember->getName() . sprintf('&e[&a%s&e]', '0');
+            $m[$factionMember->getRole()][] = ($factionMember->isOnline() ? TextFormat::GREEN : TextFormat::GRAY) . $factionMember->getName() . sprintf('&e[&a%s&e]', strval($factionMember->getKills()));
         }
 
         $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_WHO_PLAYER', [
@@ -50,12 +51,12 @@ final class WhoArgument extends Argument {
         	'players_count' => (string) count($faction->getMembers()),
         	'hq' => ($loc = $faction->getHqLocation()) === null ? 'None' : $loc->getFloorX() . ', ' . $loc->getFloorZ(),
         	'leaders' => implode(TextFormat::GRAY . ',', $m[ProfileData::LEADER_ROLE]),
-        	'officers' => implode(TextFormat::GRAY . ',', $m[ProfileData::OFFICER_ROLE] ?? []),
-        	'members' => implode(TextFormat::GRAY . ',', $m[ProfileData::MEMBER_ROLE] ?? []),
+        	'officers' => isset($m[ProfileData::OFFICER_ROLE]) ? implode(TextFormat::GRAY . ',', $m[ProfileData::OFFICER_ROLE] ?? []) : 'None',
+        	'members' => isset($m[ProfileData::OFFICER_ROLE]) ? implode(TextFormat::GRAY . ',', $m[ProfileData::MEMBER_ROLE] ?? []) : 'None',
         	'balance' => (string) $faction->getBalance(),
         	'deaths_until_raidable' => (string) $faction->getDeathsUntilRaidable(true),
         	'points' => (string) $faction->getPoints(),
-        	'time_until_regen' => ($remainingRegenerating = $faction->getRemainingRegenerationTime()) <= 0 ? 'None' : HCFUtils::dateString($remainingRegenerating)
+        	'time_until_regen' => $faction->getRegenStatus() === FactionData::STATUS_REGENERATING ? '&4Regenerating' : (($remainingRegenerating = $faction->getRemainingRegenerationTime()) <= 0 ? 'None' : HCFUtils::dateString($remainingRegenerating))
         ]));
     }
 }

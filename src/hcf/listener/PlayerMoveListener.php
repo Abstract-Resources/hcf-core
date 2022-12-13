@@ -42,6 +42,7 @@ final class PlayerMoveListener implements Listener {
         }
 
         $profile->setClaimRegion($targetClaim);
+        $profile->updateScoreboard();
 
         $player->sendMessage(HCFLanguage::PLAYER_CLAIM_LEAVE()->build($currentClaim->getCustomName(), $currentClaim->isDeathBan() ? TextFormat::RED . 'Deathban' : TextFormat::GREEN . 'Non-Deathban'));
         $player->sendMessage(HCFLanguage::PLAYER_CLAIM_ENTER()->build($targetClaim->getCustomName(), $targetClaim->isDeathBan() ? TextFormat::RED . 'Deathban' : TextFormat::GREEN . 'Non-Deathban'));

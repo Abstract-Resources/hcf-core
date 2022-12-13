@@ -49,7 +49,7 @@ return (new PhpCsFixer\Config)
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
 		'no_extra_blank_lines' => true,
-		'no_trailing_whitespace' => true,
+		'no_trailing_whitespace' => false,
 		'no_trailing_whitespace_in_comment' => true,
 		'no_whitespace_in_blank_line' => true,
 		'no_unused_imports' => true,

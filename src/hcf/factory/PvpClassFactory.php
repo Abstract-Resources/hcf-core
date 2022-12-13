@@ -19,6 +19,7 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\SingletonTrait;
 use function is_array;
 use function is_string;
+use function mb_strtoupper;
 
 final class PvpClassFactory {
     use SingletonTrait;

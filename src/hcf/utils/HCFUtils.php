@@ -17,6 +17,7 @@ use function gmdate;
 use function implode;
 use function is_array;
 use function str_replace;
+use function strval;
 use function time;
 
 final class HCFUtils {
@@ -40,8 +41,8 @@ final class HCFUtils {
 
         self::$timersConfig = new Config(HCFCore::getInstance()->getDataFolder() . 'timers.yml');
 
-        self::$sotwEndAt = HCFCore::getConfigInt('map.sotw-end-at');
-        self::$sotwEndAt = HCFCore::getConfigInt('map.eotw-end-at');
+        self::setSotwTime(HCFCore::getConfigInt('map.sotw-remaining'), false);
+        self::$sotwEndAt = time() + HCFCore::getConfigInt('map.eotw-remaining');
     }
 
     /**
@@ -58,9 +59,7 @@ final class HCFUtils {
         }
 
         foreach ($args as $i => $arg) {
-            if ($arg === '') $arg = 'None';
-
-            $text = str_replace('<' . $i . '>' . ($arg === 'Empty' ? "\n" : ''), $arg === 'Empty' ? '' : $arg, $text);
+            $text = str_replace('<' . $i . '>', strval($arg), $text);
         }
 
         return TextFormat::colorize($text);
@@ -81,7 +80,7 @@ final class HCFUtils {
      * @return string
      */
     public static function dateString(int $time): string {
-        return $time > 60 ? ($time <= 60 * 60 ? gmdate('i:s', $time) : gmdate('H:i:s', $time)) : $time . 's';
+        return $time > 60 ? ($time < 60 * 60 ? gmdate('i:s', $time) : gmdate('H:i:s', $time)) : $time . 's';
     }
 
     /**
@@ -98,6 +97,25 @@ final class HCFUtils {
      */
     public static function getDefaultWorld(): World {
         return Server::getInstance()->getWorldManager()->getDefaultWorld() ?? throw new UnexpectedException('Default world not was loaded...');
+    }
+
+    /**
+     * @param int  $time
+     * @param bool $overwrite
+     */
+    public static function setSotwTime(int $time, bool $overwrite): void {
+        self::$sotwEndAt = time() + $time;
+
+        if (!$overwrite) return;
+
+        try {
+            $config = HCFCore::getInstance()->getConfig();
+
+            $config->setNested('map.sotw-remaining', $time);
+            $config->save();
+        } catch (Exception $e) {
+            Server::getInstance()->getLogger()->logException($e);
+        }
     }
 
     /**

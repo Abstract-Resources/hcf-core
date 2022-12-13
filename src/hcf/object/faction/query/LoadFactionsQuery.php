@@ -68,7 +68,8 @@ final class LoadFactionsQuery implements Query {
             while ($fetch0 = $result0->fetch_array(MYSQLI_ASSOC)) {
                 $faction->registerMember($fetch0['xuid'],
                     $fetch0['username'],
-                    $fetch0['faction_role']
+                    $fetch0['faction_role'],
+                    $fetch0['kills']
                 );
             }
 

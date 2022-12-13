@@ -119,15 +119,9 @@ final class Faction {
         if ($limit) $deathsUntilRaidable = min($deathsUntilRaidable, $this->getMaximumDeathsUntilRaidable());
 
         if (abs($deathsUntilRaidable - $this->getDeathsUntilRaidable()) !== 0.0) {
-            $deathsUntilRaidable = round($deathsUntilRaidable * 100.0) / 100.0;
-
-            if ($deathsUntilRaidable <= 0) {
-                // TODO: is now raidable
-            }
+            $this->deathsUntilRaidable = round($deathsUntilRaidable * 100.0) / 100.0;
 
             $this->lastDtrUpdate = time();
-
-            $this->deathsUntilRaidable = $deathsUntilRaidable;
 
             $this->forceSave(true);
         }
@@ -211,12 +205,14 @@ final class Faction {
      * @param string $xuid
      * @param string $name
      * @param int    $role
+     * @param int    $kills
      */
-    public function registerMember(string $xuid, string $name, int $role): void {
+    public function registerMember(string $xuid, string $name, int $role, int $kills): void {
         $this->members[$xuid] = new FactionMember(
             $xuid,
             $name,
-            $role
+            $role,
+            $kills
         );
 
         $this->membersXuid[strtolower($name)] = $xuid;

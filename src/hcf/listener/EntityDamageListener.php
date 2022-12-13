@@ -36,6 +36,9 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
+        if (!$profile->getClaimRegion()->isDeathBan()) $ev->cancel();
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && $profileTimer->isRunning()) $ev->cancel();
+
         if (!$ev instanceof EntityDamageByEntityEvent) return;
 
         $attacker = $ev->getDamager();
@@ -56,15 +59,11 @@ final class EntityDamageListener implements Listener {
         if (!$profile->getClaimRegion()->isDeathBan()) {
             $attacker->sendMessage(TextFormat::RED . 'You cannot attack players that are in safe-zones');
 
-            $ev->cancel();
-
             return;
         }
 
         if (!$attackerProfile->getClaimRegion()->isDeathBan()) {
             $attacker->sendMessage(TextFormat::RED . 'You cannot attack players whilst in safe-zones.');
-
-            $ev->cancel();
 
             return;
         }

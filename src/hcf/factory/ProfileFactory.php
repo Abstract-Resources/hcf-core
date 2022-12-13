@@ -68,6 +68,10 @@ final class ProfileFactory {
         	'remaining' => $timer->getRemainingTime()
         ], array_filter($profile->getStoredTimers(), fn(ProfileTimer $timer) => $timer->getName() !== ProfileTimer::COMBAT_TAG)));
 
+        if (($factionId = $profile->getFactionId()) !== null && ($faction = FactionFactory::getInstance()->getFaction($factionId)) !== null) {
+            $faction->registerMember($profile->getXuid(), $profile->getName(), $profile->getFactionRole(), $profile->getKills());
+        }
+
         unset($this->profiles[$xuid]);
     }
 
