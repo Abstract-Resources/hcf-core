@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
+use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
@@ -56,13 +57,17 @@ final class Profile {
 	) {}
 
     public function init(): void {
+        if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
+
+        $this->setClaimRegion(FactionFactory::getInstance()->getRegionAt($instance->getPosition()));
+
         $this->timers = [
         	ProfileTimer::COMBAT_TAG => new ProfileTimer(ProfileTimer::COMBAT_TAG, 30),
         	ProfileTimer::PVP_TAG => new ProfileTimer(ProfileTimer::PVP_TAG, 60 * 60)
         ];
 
         foreach (HCFUtils::fetchProfileTimers($this->xuid) as $timerData) {
-            $this->toggleProfileTimer($timerData['name'], $timerData['remaining']);
+            $this->toggleProfileTimer($timerData['name'], $timerData['remaining'], !$this->getClaimRegion()->isDeathBan());
         }
 
         $this->scoreboardBuilder = new ScoreboardBuilder(
@@ -193,11 +198,12 @@ final class Profile {
     /**
      * @param string $name
      * @param int    $countdown
+     * @param bool   $paused
      */
-    public function toggleProfileTimer(string $name, int $countdown = -1): void {
+    public function toggleProfileTimer(string $name, int $countdown = -1, bool $paused = false): void {
         if (($timer = $this->timers[$name] ?? null) === null) return;
 
-        $timer->start($countdown);
+        $timer->start($countdown, $paused);
     }
 
     /**

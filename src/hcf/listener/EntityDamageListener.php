@@ -54,7 +54,7 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
-        if (FactionFactory::getInstance()->isInsideSpawn($entity->getPosition())) {
+        if (!$profile->getClaimRegion()->isDeathBan()) {
             $attacker->sendMessage(TextFormat::RED . 'You cannot attack players that are in safe-zones');
 
             $ev->cancel();
@@ -62,7 +62,7 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
-        if (FactionFactory::getInstance()->isInsideSpawn($attacker->getPosition())) {
+        if (!$attackerProfile->getClaimRegion()->isDeathBan()) {
             $attacker->sendMessage(TextFormat::RED . 'You cannot attack players whilst in safe-zones.');
 
             $ev->cancel();

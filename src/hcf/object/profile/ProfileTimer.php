@@ -16,6 +16,8 @@ final class ProfileTimer {
     /** @var int */
     private int $endAt = 0;
 
+    private int $pausedRemaining = 0;
+
     /**
      * @param string $name
      * @param int    $countdown
@@ -40,10 +42,29 @@ final class ProfileTimer {
     }
 
     /**
-     * @param int $countdown
+     * @param int  $countdown
+     * @param bool $paused
      */
-    public function start(int $countdown = -1): void {
+    public function start(int $countdown = -1, bool $paused = false): void {
+        if ($paused && $countdown !== -1) {
+            $this->pausedRemaining = $countdown;
+
+            return;
+        }
+
         $this->endAt = time() + ($countdown === -1 ? $this->countdown : $countdown);
+    }
+
+    public function pause(): void {
+        $this->pausedRemaining = $this->getRemainingTime();
+    }
+
+    public function continue(): void {
+        if ($this->pausedRemaining === 0) return;
+
+        $this->start($this->pausedRemaining);
+
+        $this->pausedRemaining = 0;
     }
 
     public function cancel(): void {
@@ -54,7 +75,7 @@ final class ProfileTimer {
      * @return int
      */
     public function getRemainingTime(): int {
-        return $this->endAt - time();
+        return $this->pausedRemaining !== 0 ? $this->pausedRemaining : $this->endAt - time();
     }
 
     /**

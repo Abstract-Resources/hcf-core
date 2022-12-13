@@ -14,6 +14,7 @@ use hcf\listener\EntityDamageListener;
 use hcf\listener\PlayerDeathListener;
 use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
+use hcf\listener\PlayerMoveListener;
 use hcf\listener\PlayerQuitListener;
 use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\task\ProfileTickUpdateTask;
@@ -64,6 +65,7 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new BlockPlaceListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerDeathListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerMoveListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);

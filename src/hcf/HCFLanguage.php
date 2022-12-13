@@ -24,6 +24,8 @@ use pocketmine\utils\EnumTrait;
  * @method static HCFLanguage YOU_CANT_CLAIM_HERE()
  * @method static HCFLanguage PLAYER_CLAIM_POSITION()
  * @method static HCFLanguage PLAYER_CLAIM_COST()
+ * @method static HCFLanguage PLAYER_CLAIM_ENTER()
+ * @method static HCFLanguage PLAYER_CLAIM_LEAVE()
  */
 final class HCFLanguage {
     use EnumTrait {
@@ -52,7 +54,9 @@ final class HCFLanguage {
             new HCFLanguage('FACTION_NOT_INVITED', ['faction']),
             new HCFLanguage('YOU_CANT_CLAIM_HERE'),
             new HCFLanguage('PLAYER_CLAIM_POSITION', ['corner', 'x', 'y', 'z']),
-            new HCFLanguage('PLAYER_CLAIM_COST', ['cost', 'x', 'z', 'blocks'])
+            new HCFLanguage('PLAYER_CLAIM_COST', ['cost', 'x', 'z', 'blocks']),
+            new HCFLanguage('PLAYER_CLAIM_ENTER', ['claim_name', 'death_ban_status']),
+            new HCFLanguage('PLAYER_CLAIM_LEAVE', ['claim_name', 'death_ban_status'])
         );
     }
 
