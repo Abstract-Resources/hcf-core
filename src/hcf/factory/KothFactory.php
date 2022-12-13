@@ -142,4 +142,23 @@ final class KothFactory {
 
         $this->setCurrentKoth(null);
     }
+
+    /**
+     * @return string
+     */
+    public function getScoreboardPlaceholder(): string {
+        return 'koth_lines';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getScoreboardLines(): array {
+        if ($this->currentKoth === null) return [];
+
+        return [
+        	'koth_name' => $this->getKothName(),
+        	'koth_time_remaining' => HCFUtils::dateString($this->capturingTime)
+        ];
+    }
 }

@@ -45,6 +45,21 @@ abstract class PvpClass {
         return $this->armorContents;
     }
 
+    public function getScoreboardPlaceholder(): string {
+        return '';
+    }
+
+    /**
+     * @param Profile $profile
+     *
+     * @return array
+     */
+    public function getScoreboardLines(Profile $profile): array {
+        return [
+        	'class_name' => $this->getCustomName()
+        ];
+    }
+
     /**
      * @param Item[] $armorContents
      *
@@ -53,8 +68,6 @@ abstract class PvpClass {
     public function isApplicableFor(array $armorContents): bool {
         foreach ($armorContents as $slot => $item) {
             $targetItem = $this->armorContents[$slot] ?? VanillaItems::AIR();
-
-            echo 'Target item is ' . $targetItem->getName() . ' at slot ' . $slot . PHP_EOL;
 
             if ($targetItem->getId() !== $item->getId()) return false;
 
