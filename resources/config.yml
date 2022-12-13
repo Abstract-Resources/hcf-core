@@ -43,6 +43,8 @@ scoreboard:
     default-lines:
       - '&f'
       - '&b&lClaim: &r&a<current_claim>'
+      - '%active_class_lines%'
+      - '%bard_class_lines%'
       - '%combat_tag_lines%'
       - '%pvp_tag_lines'
       - '%koth_lines%'
@@ -53,5 +55,9 @@ scoreboard:
       - '&c&lCombatTag: &r&c<combat_tag_timer>'
     pvp_tag_lines:
       - '&a&lPvP Timer: &r&f<pvp_tag_timer>'
+    active_class_lines:
+      - '&e&lActive Class: &r<class_name>'
+    bard_class_lines:
+      - '&d&lEnergy: &r&6<bard_energy>'
     koth_lines:
       - '&9&l<koth_name>: &r&8<koth_time>'

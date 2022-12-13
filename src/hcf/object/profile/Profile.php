@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace hcf\object\profile;
 
 use hcf\factory\FactionFactory;
+use hcf\factory\PvpClassFactory;
 use hcf\HCFCore;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
+use hcf\object\pvpclass\impl\BardPvpClass;
+use hcf\object\pvpclass\PvpClass;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use hcf\utils\ScoreboardBuilder;
+use pocketmine\entity\effect\EffectInstance;
+use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -28,6 +34,9 @@ final class Profile {
 
 	/** @var bool */
 	private bool $alreadySaving = false;
+
+    /** @var string|null */
+    private ?string $pvpClassName = null;
 
     /** @var ClaimRegion */
     private ClaimRegion $claimRegion;
@@ -75,6 +84,15 @@ final class Profile {
             TextFormat::colorize(HCFCore::getConfigString('scoreboard.title')),
             ScoreboardBuilder::SIDEBAR
         );
+
+        $instance->getArmorInventory()->getListeners()->add(CallbackInventoryListener::onAnyChange(fn (Inventory $inventory) => PvpClassFactory::getInstance()->attemptEquip($this, $inventory->getContents(true))));
+        $instance->getEffects()->getEffectRemoveHooks()->add(function (EffectInstance $effectInstance): void {
+            if (!$effectInstance->hasExpired()) return;
+
+            if (($pvpClass = $this->getPvpClass()) === null) return;
+
+            $pvpClass->onEquip($this);
+        });
     }
 
     /**
@@ -197,6 +215,27 @@ final class Profile {
     }
 
     /**
+     * @return string|null
+     */
+    public function getPvpClassName(): ?string {
+        return $this->pvpClassName;
+    }
+
+    /**
+     * @param string|null $pvpClassName
+     */
+    public function setPvpClassName(?string $pvpClassName): void {
+        $this->pvpClassName = $pvpClassName;
+    }
+
+    /**
+     * @return PvpClass|null
+     */
+    public function getPvpClass(): ?PvpClass {
+        return $this->pvpClassName !== null ? PvpClassFactory::getInstance()->getPvpClass($this->pvpClassName) : null;
+    }
+
+    /**
      * @param string $name
      * @param int    $countdown
      * @param bool   $paused
@@ -239,6 +278,17 @@ final class Profile {
         	'koth_time_remaining' => '',
         	'current_claim' => $this->getClaimRegion()->getCustomName()
         ];
+
+        if (($pvpClass = $this->getPvpClass()) !== null) {
+            $allowedPlaceholders[] = 'active_class_lines';
+            $args['class_name'] = $pvpClass->getCustomName();
+
+            if ($pvpClass instanceof BardPvpClass) {
+                $allowedPlaceholders[] = 'bard_class_lines';
+
+                $args['bard_energy'] = '0';
+            }
+        }
 
         foreach ($this->timers as $timer) {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;

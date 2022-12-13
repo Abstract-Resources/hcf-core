@@ -129,8 +129,8 @@ final class ClaimCuboid {
      */
     public static function fromNumber(int $number): ClaimCuboid {
         $cuboid = new self (
-            new Position($number, World::Y_MIN, $number, HCFUtils::getDefaultWorld()),
-            new Position(-$number, World::Y_MAX, -$number, HCFUtils::getDefaultWorld())
+            new Position(-$number, World::Y_MIN, -$number, HCFUtils::getDefaultWorld()),
+            new Position($number, World::Y_MAX, $number, HCFUtils::getDefaultWorld())
         );
         $cuboid->recalculate();
 
