@@ -6,12 +6,14 @@ namespace hcf\object;
 
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 
 final class ClaimRegion {
 
     public const BLOCK_BREAK_FLAG = 'block_break_disabled';
     public const BLOCK_PLACE_FLAG = 'block_place_disabled';
+    public const ENTITY_DAMAGE_FLAG = 'entity_damage_disabled';
 
     /** @var array<string, ClaimCuboid> */
     private static array $claimingSessions = [];
@@ -35,6 +37,13 @@ final class ClaimRegion {
     }
 
     /**
+     * @return string
+     */
+    public function getCustomName(): string {
+        return ($this->isDeathBan() ? TextFormat::RED : TextFormat::GREEN) . $this->name;
+    }
+
+    /**
      * @return ClaimCuboid
      */
     public function getCuboid(): ClaimCuboid {
@@ -48,6 +57,13 @@ final class ClaimRegion {
      */
     public function isFlagEnabled(string $flagName): bool {
         return $this->flags[$flagName] ?? false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeathBan(): bool {
+        return !$this->isFlagEnabled(self::ENTITY_DAMAGE_FLAG);
     }
 
     /**

@@ -230,7 +230,7 @@ final class Profile {
         $args = [
         	'koth_name' => '',
         	'koth_time_remaining' => '',
-        	'current_claim' => $this->getClaimRegion()->getName()
+        	'current_claim' => $this->getClaimRegion()->getCustomName()
         ];
 
         foreach ($this->timers as $timer) {
