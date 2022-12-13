@@ -78,7 +78,7 @@ final class EntityDamageListener implements Listener {
         }
 
         if (($profileTimer = $attackerProfile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && ($remainingTime = $profileTimer->getRemainingTime()) > 0) {
-            $attacker->sendMessage(TextFormat::colorize(sprintf('&cYou cannot attack players whilst your %s&c timer is active [&l%s&r&c remaining]. Use \'&7/pvp enable\' to allow pvp.', $profileTimer->getNameColoured(), HCFUtils::dateString($remainingTime))));
+            $attacker->sendMessage(TextFormat::colorize(sprintf('&cYou cannot attack players whilst your %s&c timer is active [&l%s&r&c remaining]. Use \'&7/pvp enable&c\' to allow pvp.', $profileTimer->getNameColoured(), HCFUtils::dateString($remainingTime))));
 
             $ev->cancel();
 

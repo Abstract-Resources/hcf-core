@@ -180,7 +180,7 @@ final class FactionFactory {
         $firstCorner = $claimRegion->getCuboid()->getFirstCorner();
         $secondCorner = $claimRegion->getCuboid()->getSecondCorner();
 
-        $config->setNested('map.admin_claims.' . $claimRegion->getName(), [
+        $config->setNested('map.admin_claims.' . $claimRegion->getName() . '.value', [
         	'firstX' => $firstCorner->getFloorX(),
         	'firstY' => $firstCorner->getFloorY(),
         	'firstZ' => $firstCorner->getFloorZ(),
@@ -290,6 +290,19 @@ final class FactionFactory {
             if (!$claimRegion->getCuboid()->isInside($position)) continue;
 
             return $claimRegion;
+        }
+
+        // First do this check because maybe Warzone is returned
+        if (($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
+            return $claimRegion;
+        }
+
+        foreach ($this->adminClaims as $adminClaimRegion) {
+            if (!$adminClaimRegion->getCuboid()->isInside($position)) {
+                continue;
+            }
+
+            return $adminClaimRegion;
         }
 
         return $this->adminClaims[HCFUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');

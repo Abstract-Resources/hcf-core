@@ -13,3 +13,5 @@ FACTION_WHO_PLAYER:
 FACTION_LIST_ARGUMENT: '&e<index> &7- &3<name>'
 PLAYER_CLAIM_ENTER: '&eNow entering: <claim_name> &e(<death_ban_status>&e)'
 PLAYER_CLAIM_LEAVE: '&eNow leaving: <claim_name> &e(<death_ban_status>&e)'
+
+TIMER_PVP_TAG: '&a&lPvP Timer&r'

@@ -34,7 +34,7 @@ final class ClaimPlayerChatListener implements Listener {
 
         if (($item = self::getClaimingWand($player->getInventory())) === null) return;
 
-        $claimType = $item->getNamedTag()->getInt('claim_type');
+        $claimType = $item->getNamedTag()->getByte('claim_type');
 
         if (($cuboid = ClaimRegion::getIfClaiming($player)) === null) return;
         if (($faction = FactionFactory::getInstance()->getPlayerFaction($player)) === null && $claimType === ClaimArgument::FACTION_CLAIMING) return;

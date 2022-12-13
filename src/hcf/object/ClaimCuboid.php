@@ -8,6 +8,7 @@ use hcf\utils\HCFUtils;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
@@ -19,6 +20,9 @@ use function max;
 use function min;
 
 final class ClaimCuboid {
+
+    /** @var AxisAlignedBB */
+    private AxisAlignedBB $bb;
 
     /**
      * @param Position $firstCorner
@@ -78,6 +82,15 @@ final class ClaimCuboid {
             max($this->firstCorner->getFloorZ(), $this->secondCorner->getFloorZ()),
             $this->firstCorner->getWorld()
         );
+
+        $this->bb = new AxisAlignedBB(
+            $this->firstCorner->getFloorX(),
+            World::Y_MIN,
+            $this->firstCorner->getFloorZ(),
+            $this->secondCorner->getFloorX(),
+            World::Y_MAX,
+            $this->secondCorner->getFloorZ()
+        );
     }
 
     /**
@@ -86,10 +99,7 @@ final class ClaimCuboid {
      * @return bool
      */
     public function isInside(Position $position): bool {
-        if ($position->getWorld() !== $this->firstCorner->getWorld()) return false;
-
-        return $position->getFloorX() >= $this->firstCorner->getFloorX() && $position->getFloorX() <= $this->secondCorner->getFloorX() &&
-            $position->getFloorZ() >= $this->firstCorner->getFloorZ() && $position->getFloorZ() <= $this->secondCorner->getFloorZ();
+        return $this->bb->isVectorInside($position) && $position->world === $this->firstCorner->world;
     }
 
     /**

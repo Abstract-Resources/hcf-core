@@ -70,4 +70,10 @@ final class ProfileFactory {
 
         unset($this->profiles[$xuid]);
     }
+
+    public function close(): void {
+        foreach ($this->profiles as $profile) {
+            $this->unregisterProfile($profile->getXuid());
+        }
+    }
 }

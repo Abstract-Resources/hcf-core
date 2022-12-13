@@ -56,7 +56,7 @@ final class ClaimRegion {
      * @return bool
      */
     public function isFlagEnabled(string $flagName): bool {
-        return $this->flags[$flagName] ?? false;
+        return in_array($flagName, $this->flags, true);
     }
 
     /**

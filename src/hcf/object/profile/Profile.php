@@ -244,7 +244,7 @@ final class Profile {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
 
             $allowedPlaceholders[] = $timer->getName() . '_lines';
-            $args['combat_tag_timer'] = HCFUtils::dateString($remainingTime);
+            $args[$timer->getName() . '_timer'] = HCFUtils::dateString($remainingTime);
         }
 
         $originalLines = [];
