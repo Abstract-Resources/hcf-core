@@ -13,6 +13,7 @@ use hcf\utils\HCFUtils;
 use hcf\utils\ScoreboardBuilder;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use function array_merge;
 use function count;
 use function in_array;
@@ -71,7 +72,7 @@ final class Profile {
         }
 
         $this->scoreboardBuilder = new ScoreboardBuilder(
-            HCFCore::getConfigString('scoreboard.title'),
+            TextFormat::colorize(HCFCore::getConfigString('scoreboard.title')),
             ScoreboardBuilder::SIDEBAR
         );
     }

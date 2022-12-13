@@ -17,8 +17,7 @@ use function is_int;
 
 final class LoadProfileQuery implements Query {
 
-    /** @var Profile|null */
-    private ?Profile $profile = null;
+    private ?ProfileData $profileData = null;
 
     /**
      * @param string $xuid
@@ -35,9 +34,7 @@ final class LoadProfileQuery implements Query {
      * This function is executed on other Thread to prevent lag spike on Main thread
      */
     public function run(MySQL $provider): void {
-        if (($profileData = self::fetch($this->xuid, $this->name, $provider)) === null) return;
-
-        $this->profile = Profile::fromProfileData($profileData);
+        $this->profileData = self::fetch($this->xuid, $this->name, $provider);
     }
 
     public static function fetch(string $xuid, string $name, MySQL $provider): ?ProfileData {
@@ -76,15 +73,9 @@ final class LoadProfileQuery implements Query {
      * This function is executed on the Main Thread because need use some function of pmmp
      */
     public function onComplete(): void {
-        $new = $this->profile === null;
-
-        if ($new) {
-            $this->profile = new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now);
-            $this->profile->forceSave(false);
-        }
-
-        if ($this->profile === null) return;
-
-        ProfileFactory::getInstance()->registerNewProfile($this->profile, $new);
+        ProfileFactory::getInstance()->registerNewProfile(
+            $this->profileData === null ? new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now) : Profile::fromProfileData($this->profileData),
+            $this->profileData !== null
+        );
     }
 }

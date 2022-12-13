@@ -20,15 +20,19 @@ final class ProfileFactory {
 
     /**
      * @param Profile $profile
-     * @param bool    $new
+     * @param bool    $joinedBefore
      */
-    public function registerNewProfile(Profile $profile, bool $new): void {
+    public function registerNewProfile(Profile $profile, bool $joinedBefore): void {
         if (isset($this->profiles[$profile->getXuid()])) return;
 
-        $this->profiles[$profile->getXuid()] = $profile;
         $profile->init();
 
-        if ($new) $profile->toggleProfileTimer(ProfileTimer::PVP_TAG);
+        $this->profiles[$profile->getXuid()] = $profile;
+
+        if ($joinedBefore) return;
+
+        $profile->toggleProfileTimer(ProfileTimer::PVP_TAG);
+        $profile->forceSave(false);
     }
 
     /**

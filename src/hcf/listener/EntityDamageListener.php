@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace hcf\listener;
 
-use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileTimer;
 use hcf\utils\HCFUtils;
