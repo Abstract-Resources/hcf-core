@@ -154,10 +154,10 @@ final class KothFactory {
      * @return string[]
      */
     public function getScoreboardLines(): array {
-        if ($this->currentKoth === null) return [];
+        if (($kothName = $this->getKothName()) === null) return [];
 
         return [
-        	'koth_name' => $this->getKothName(),
+        	'koth_name' => $kothName,
         	'koth_time_remaining' => HCFUtils::dateString($this->capturingTime)
         ];
     }

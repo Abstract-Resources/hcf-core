@@ -39,12 +39,8 @@ abstract class PvpClass {
     }
 
     /**
-     * @return Item[]
+     * @return string
      */
-    public function getArmorContents(): array {
-        return $this->armorContents;
-    }
-
     public function getScoreboardPlaceholder(): string {
         return '';
     }
