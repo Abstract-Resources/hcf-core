@@ -69,6 +69,8 @@ final class ProfileTimer {
 
     public function cancel(): void {
         $this->endAt = 0;
+
+        $this->pausedRemaining = 0;
     }
 
     /**

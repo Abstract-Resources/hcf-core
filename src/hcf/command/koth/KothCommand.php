@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace hcf\command\koth;
 
 use abstractplugin\command\BaseCommand;
-use hcf\command\koth\argument\StartArgument;
+use hcf\command\koth\arguments\StartArgument;
 
 final class KothCommand extends BaseCommand {
 

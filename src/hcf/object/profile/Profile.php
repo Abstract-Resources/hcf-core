@@ -52,8 +52,8 @@ final class Profile {
      * @param int         $balance
      */
 	public function __construct(
-		private string $xuid,
-		private string $name,
+        private string $xuid,
+        private string $name,
         private string $firstSeen,
         private string $lastSeen,
         private ?string $factionId = null,

@@ -25,6 +25,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use function array_values;
 use function count;
+use function in_array;
 use function is_array;
 use function is_int;
 use function strtolower;
@@ -92,7 +93,7 @@ final class FactionFactory {
 
         $profile->forceSave(true);
 
-        $faction->registerMember($profile->getXuid(), $profile->getName(), $role);
+        $faction->registerMember($profile->getXuid(), $profile->getName(), $role, $profile->getKills());
     }
 
     /**
@@ -155,17 +156,23 @@ final class FactionFactory {
     /**
      * @param ClaimRegion $claimRegion
      * @param string      $factionId
+     * @param bool        $overwrite
      */
-    public function registerClaim(ClaimRegion $claimRegion, string $factionId): void {
-        $cuboid = $claimRegion->getCuboid();
+    public function registerClaim(ClaimRegion $claimRegion, string $factionId, bool $overwrite = true): void {
+        if ($overwrite) {
+            $this->factionClaim[$factionId] = $claimRegion;
+        } else {
+            $this->adminClaims[$factionId] = $claimRegion;
+        }
 
+        if (in_array($factionId, [HCFUtils::REGION_WARZONE, HCFUtils::REGION_WILDERNESS], true)) return;
+
+        $cuboid = $claimRegion->getCuboid();
         for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
             for ($z = $cuboid->getFirstCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $cuboid->getSecondCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
                 $this->claimsPerChunk[World::chunkHash($x, $z)][$factionId] = $claimRegion;
             }
         }
-
-        $this->factionClaim[$factionId] = $claimRegion;
     }
 
     /**
@@ -176,7 +183,7 @@ final class FactionFactory {
         if ($claimRegion->isFlagEnabled(ClaimRegion::KOTH)) {
             $this->kothClaims[$claimRegion->getName()] = $claimRegion;
         } else {
-            $this->adminClaims[$claimRegion->getName()] = $claimRegion;
+            $this->registerClaim($claimRegion, $claimRegion->getName(), false);
         }
 
         if (!$overwrite) return;
@@ -298,8 +305,12 @@ final class FactionFactory {
             return $claimRegion;
         }
 
+        if (($claimRegion = $this->adminClaims[HCFUtils::REGION_WARZONE] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
+            return $claimRegion;
+        }
+
         // First do this check because maybe Warzone is returned
-        if (($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
+        /*if (($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
             return $claimRegion;
         }
 
@@ -311,7 +322,7 @@ final class FactionFactory {
             }
 
             return $adminClaimRegion;
-        }
+        }*/
 
         return $this->adminClaims[HCFUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\command\koth\argument;
+namespace hcf\command\koth\arguments;
 
 use abstractplugin\command\Argument;
 use hcf\factory\FactionFactory;

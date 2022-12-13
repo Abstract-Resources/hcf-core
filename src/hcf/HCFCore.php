@@ -6,6 +6,7 @@ namespace hcf;
 
 use hcf\command\faction\FactionCommand;
 use hcf\command\koth\KothCommand;
+use hcf\command\pvp\PvPCommand;
 use hcf\factory\FactionFactory;
 use hcf\factory\KothFactory;
 use hcf\factory\ProfileFactory;
@@ -21,6 +22,7 @@ use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerMoveListener;
 use hcf\listener\PlayerQuitListener;
+use hcf\listener\PlayerRespawnListener;
 use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\task\ProfileTickUpdateTask;
 use hcf\thread\ThreadPool;
@@ -68,6 +70,7 @@ final class HCFCore extends PluginBase {
 
         $this->getServer()->getCommandMap()->register(FactionCommand::class, new FactionCommand());
         $this->getServer()->getCommandMap()->register(KothCommand::class, new KothCommand());
+        $this->getServer()->getCommandMap()->register(PvPCommand::class, new PvPCommand());
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerJoinListener(), $this);
@@ -75,6 +78,7 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new BlockPlaceListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerDeathListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerRespawnListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerMoveListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityTeleportListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);

@@ -80,7 +80,7 @@ final class HCFUtils {
      * @return string
      */
     public static function dateString(int $time): string {
-        return $time > 60 ? ($time <= 60 * 60 ? gmdate('i:s', $time) : gmdate('H:i:s', $time)) : $time . 's';
+        return $time > 60 ? ($time < 60 * 60 ? gmdate('i:s', $time) : gmdate('H:i:s', $time)) : $time . 's';
     }
 
     /**

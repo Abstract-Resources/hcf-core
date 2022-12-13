@@ -38,8 +38,6 @@ final class PlayerDeathListener implements Listener {
 
         if (($profileTimer = $profile->getProfileTimer(ProfileTimer::COMBAT_TAG)) !== null) $profileTimer->cancel();
 
-        $profile->toggleProfileTimer(ProfileTimer::PVP_TAG, 60 * 60);
-
         $cause = $player->getLastDamageCause();
 
         $profile->setDeaths($profile->getDeaths() + 1);
