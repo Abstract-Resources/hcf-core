@@ -6,11 +6,13 @@ namespace hcf;
 
 use hcf\command\faction\FactionCommand;
 use hcf\factory\FactionFactory;
+use hcf\factory\ProfileFactory;
 use hcf\listener\BlockBreakListener;
 use hcf\listener\BlockPlaceListener;
 use hcf\listener\claim\ClaimPlayerChatListener;
 use hcf\listener\claim\ClaimPlayerInteractListener;
 use hcf\listener\EntityDamageListener;
+use hcf\listener\EntityTeleportListener;
 use hcf\listener\PlayerDeathListener;
 use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
@@ -35,14 +37,14 @@ final class HCFCore extends PluginBase {
         self::setInstance($this);
 
         // Initialize the composer autoload
-        if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
+        /*if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
             $this->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
             $this->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
 
             exit(1);
         }
 
-        require_once($bootstrap);
+        require_once($bootstrap);*/
 
         $this->saveDefaultConfig();
         $this->saveResource('messages.yml');
@@ -66,6 +68,7 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new EntityDamageListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerDeathListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerMoveListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new EntityTeleportListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);
@@ -75,6 +78,8 @@ final class HCFCore extends PluginBase {
     }
 
     public function onDisable(): void {
+        ProfileFactory::getInstance()->close();
+
         ThreadPool::getInstance()->close();
     }
 

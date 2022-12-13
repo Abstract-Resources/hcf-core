@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace hcf\listener;
 
-use hcf\factory\ProfileFactory;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
@@ -22,7 +21,6 @@ final class EntityTeleportListener implements Listener {
         $player = $ev->getEntity();
 
         if (!$player instanceof Player) return;
-        if (($profile = ProfileFactory::getInstance()->getIfLoaded($player->getXuid())) === null) return;
 
         $loc = $player->getLocation();
 
