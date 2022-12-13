@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\factory;
 
+use Exception;
 use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
@@ -17,6 +18,7 @@ use hcf\utils\HCFUtils;
 use hcf\utils\UnexpectedException;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -73,7 +75,7 @@ final class FactionFactory {
 
             if ($cuboid === null) continue;
 
-            $this->adminClaims[$claimName] = new ClaimRegion($claimName, $cuboid, $storage['flags'] ?? []);
+            $this->registerAdminClaim(new ClaimRegion($claimName, $cuboid, $storage['flags'] ?? []), false);
         }
     }
 
@@ -162,6 +164,36 @@ final class FactionFactory {
         }
 
         $this->factionClaim[$factionId] = $claimRegion;
+    }
+
+    /**
+     * @param ClaimRegion $claimRegion
+     * @param bool        $overwrite
+     */
+    public function registerAdminClaim(ClaimRegion $claimRegion, bool $overwrite): void {
+        $this->adminClaims[$claimRegion->getName()] = $claimRegion;
+
+        if (!$overwrite) return;
+
+        $config = HCFCore::getInstance()->getConfig();
+
+        $firstCorner = $claimRegion->getCuboid()->getFirstCorner();
+        $secondCorner = $claimRegion->getCuboid()->getSecondCorner();
+
+        $config->setNested('map.admin_claims.' . $claimRegion->getName(), [
+        	'firstX' => $firstCorner->getFloorX(),
+        	'firstY' => $firstCorner->getFloorY(),
+        	'firstZ' => $firstCorner->getFloorZ(),
+        	'secondX' => $secondCorner->getFloorX(),
+        	'secondY' => $secondCorner->getFloorY(),
+        	'secondZ' => $secondCorner->getFloorZ()
+        ]);
+
+        try {
+            $config->save();
+        } catch (Exception $e) {
+            Server::getInstance()->getLogger()->logException($e);
+        }
     }
 
     /**

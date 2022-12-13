@@ -6,7 +6,6 @@ namespace hcf\object\profile\query;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileData;
-use hcf\thread\CommonThread;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
 

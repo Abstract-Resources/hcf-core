@@ -21,6 +21,9 @@ use function in_array;
 final class ClaimArgument extends Argument {
     use ProfileArgumentTrait;
 
+    public const ADMIN_CLAIMING = 0;
+    public const FACTION_CLAIMING = 1;
+
     /**
      * @param Player  $sender
      * @param Profile $profile
@@ -28,7 +31,7 @@ final class ClaimArgument extends Argument {
      * @param array   $args
      */
     public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
-        if ($profile->getFactionId() === null || FactionFactory::getInstance()->getFaction($profile->getFactionId()) === null) {
+        if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
             $sender->sendMessage(HCFLanguage::COMMAND_FACTION_NOT_IN()->build());
 
             return;
@@ -46,11 +49,15 @@ final class ClaimArgument extends Argument {
             return;
         }
 
-        // TODO: Check if the faction not have an claim region
+        if (FactionFactory::getInstance()->getFactionClaim($faction) !== null) {
+            $sender->sendMessage(HCFLanguage::YOU_CANT_CLAIM_HERE()->build());
+
+            return;
+        }
 
         $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
 
-        $item = self::getClaimingWand();
+        $item = self::getClaimingWand(self::FACTION_CLAIMING);
         if (!$found && !$sender->getInventory()->canAddItem($item)) {
             $sender->sendMessage(TextFormat::RED . 'Your inventory is full!');
 
@@ -70,10 +77,12 @@ final class ClaimArgument extends Argument {
         ClaimRegion::store($sender);
     }
 
-    public static function getClaimingWand(): Item {
+    public static function getClaimingWand(int $type, ?string $claimName = null): Item {
         $item = VanillaItems::DIAMOND_HOE();
         $item->setCustomName(TextFormat::colorize('&r&6Claim Tool'));
-        $item->getNamedTag()->setByte('claim_type', 1);
+        $item->getNamedTag()->setByte('claim_type', $type);
+
+        if ($claimName !== null) $item->getNamedTag()->setString('claim_name', $claimName);
 
         return $item;
     }

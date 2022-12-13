@@ -13,7 +13,10 @@ use hcf\utils\HCFUtils;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
+use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function in_array;
@@ -29,8 +32,12 @@ final class ClaimPlayerChatListener implements Listener {
     public function onPlayerChatEvent(PlayerChatEvent $ev): void {
         $player = $ev->getPlayer();
 
-        if (($faction = FactionFactory::getInstance()->getPlayerFaction($player)) === null) return;
+        if (($item = self::getClaimingWand($player->getInventory())) === null) return;
+
+        $claimType = $item->getNamedTag()->getInt('claim_type');
+
         if (($cuboid = ClaimRegion::getIfClaiming($player)) === null) return;
+        if (($faction = FactionFactory::getInstance()->getPlayerFaction($player)) === null && $claimType === ClaimArgument::FACTION_CLAIMING) return;
 
         if (!in_array(strtolower($ev->getMessage()), ['accept', 'cancel'], true)) return;
 
@@ -46,7 +53,7 @@ final class ClaimPlayerChatListener implements Listener {
             ClaimCuboid::growTower($player, VanillaBlocks::AIR(), $secondCorner);
         }
 
-        $player->getInventory()->remove(ClaimArgument::getClaimingWand());
+        $player->getInventory()->remove($item);
 
         ClaimRegion::flush($player->getXuid());
 
@@ -56,6 +63,18 @@ final class ClaimPlayerChatListener implements Listener {
 
         $zero = HCFUtils::posZero($player->getWorld());
         if ($zero->equals($firstCorner) || $zero->equals($secondCorner)) return;
+
+        if ($faction === null) {
+            FactionFactory::getInstance()->registerAdminClaim(new ClaimRegion(
+                $item->getNamedTag()->getString('claim_name'),
+                $cuboid,
+                []
+            ), true);
+
+            $player->sendMessage(TextFormat::GREEN . 'Admin claim was successfully saved!');
+
+            return;
+        }
 
         $price = ClaimPlayerInteractListener::calculateClaimPrice($cuboid);
 
@@ -94,5 +113,20 @@ final class ClaimPlayerChatListener implements Listener {
             new ClaimRegion($faction->getName(), $cuboid),
             $faction->getId()
         );
+    }
+
+    /**
+     * @param Inventory $inventory
+     *
+     * @return Item|null
+     */
+    public static function getClaimingWand(Inventory $inventory): ?Item {
+        foreach ($inventory->getContents() as $item) {
+            if ($item->getNamedTag()->getTag('claim_type') === null) continue;
+
+            return $item;
+        }
+
+        return null;
     }
 }

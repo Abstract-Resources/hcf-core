@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace hcf\command\faction;
 
 use abstractplugin\command\BaseCommand;
+use hcf\command\faction\arguments\admin\AdminClaimArgument;
 use hcf\command\faction\arguments\CreateArgument;
 use hcf\command\faction\arguments\JoinArgument;
 use hcf\command\faction\arguments\leader\ClaimArgument;
@@ -31,7 +32,8 @@ final class FactionCommand extends BaseCommand {
             new LeaveArgument('leave'),
             new JoinArgument('join'),
             new WhoArgument('who'),
-            new ListArgument('list')
+            new ListArgument('list'),
+            new AdminClaimArgument('adminclaim', 'faction.admin')
         );
     }
 }
