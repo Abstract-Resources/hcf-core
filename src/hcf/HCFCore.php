@@ -7,6 +7,7 @@ namespace hcf;
 use hcf\command\faction\FactionCommand;
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
+use hcf\factory\PvpClassFactory;
 use hcf\listener\BlockBreakListener;
 use hcf\listener\BlockPlaceListener;
 use hcf\listener\claim\ClaimPlayerChatListener;
@@ -48,9 +49,11 @@ final class HCFCore extends PluginBase {
 
         $this->saveDefaultConfig();
         $this->saveResource('messages.yml');
+        $this->saveResource('classes.yml');
 
         HCFUtils::load();
 
+        PvpClassFactory::getInstance()->init();
         FactionFactory::getInstance()->init();
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
