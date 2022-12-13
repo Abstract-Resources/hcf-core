@@ -68,6 +68,15 @@ final class ClaimCuboid {
         return (($this->secondCorner->getFloorX() - $this->firstCorner->getFloorX() + 1) * ($this->secondCorner->getFloorZ() - $this->firstCorner->getFloorZ() + 1));
     }
 
+    /**
+     * @param World $world
+     *
+     * @return bool
+     */
+    public function hasBothPositionsSet(World $world): bool {
+        return !($zero = HCFUtils::posZero($world))->equals($this->firstCorner) && !$zero->equals($this->secondCorner);
+    }
+
     public function recalculate(): void {
         $firstCorner = $this->firstCorner;
         $secondCorner = $this->secondCorner;

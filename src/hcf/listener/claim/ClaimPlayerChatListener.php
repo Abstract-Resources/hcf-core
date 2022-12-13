@@ -43,13 +43,12 @@ final class ClaimPlayerChatListener implements Listener {
 
         $ev->cancel();
 
-        $firstCorner = $cuboid->getFirstCorner();
-        if (!$firstCorner->equals(HCFUtils::posZero($player->getWorld()))) {
+        $zero = HCFUtils::posZero($player->getWorld());
+        if (!$zero->equals($firstCorner = $cuboid->getFirstCorner())) {
             ClaimCuboid::growTower($player, VanillaBlocks::AIR(), $firstCorner);
         }
 
-        $secondCorner = $cuboid->getSecondCorner();
-        if (!$secondCorner->equals(HCFUtils::posZero($player->getWorld()))) {
+        if (!$zero->equals($secondCorner = $cuboid->getSecondCorner())) {
             ClaimCuboid::growTower($player, VanillaBlocks::AIR(), $secondCorner);
         }
 
@@ -61,8 +60,7 @@ final class ClaimPlayerChatListener implements Listener {
             return;
         }
 
-        $zero = HCFUtils::posZero($player->getWorld());
-        if ($zero->equals($firstCorner) || $zero->equals($secondCorner)) return;
+        if (!$cuboid->hasBothPositionsSet($player->getWorld())) return;
 
         if ($faction === null) {
             FactionFactory::getInstance()->registerAdminClaim(new ClaimRegion(

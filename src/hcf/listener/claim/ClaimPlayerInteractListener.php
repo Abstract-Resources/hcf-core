@@ -48,8 +48,7 @@ final class ClaimPlayerInteractListener implements Listener {
             (string) $vec->z
         ));
 
-        $zero = HCFUtils::posZero($player->getWorld());
-        if ($zero->equals($cuboid->getFirstCorner()) || $zero->equals($cuboid->getSecondCorner())) return;
+        if (!$cuboid->hasBothPositionsSet($player->getWorld())) return;
 
         $cuboid->recalculate();
 
