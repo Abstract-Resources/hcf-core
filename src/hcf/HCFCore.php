@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace hcf;
 
 use hcf\command\faction\FactionCommand;
+use hcf\command\koth\KothCommand;
 use hcf\factory\FactionFactory;
+use hcf\factory\KothFactory;
 use hcf\factory\ProfileFactory;
 use hcf\factory\PvpClassFactory;
 use hcf\listener\BlockBreakListener;
@@ -55,6 +57,8 @@ final class HCFCore extends PluginBase {
 
         PvpClassFactory::getInstance()->init();
         FactionFactory::getInstance()->init();
+        KothFactory::getInstance()->init();
+
         ThreadPool::getInstance()->init(self::getConfigInt('thread-idle', 3));
 
         // TODO: Initialize all factions
@@ -63,6 +67,7 @@ final class HCFCore extends PluginBase {
         }
 
         $this->getServer()->getCommandMap()->register(FactionCommand::class, new FactionCommand());
+        $this->getServer()->getCommandMap()->register(KothCommand::class, new KothCommand());
 
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerJoinListener(), $this);
@@ -84,6 +89,8 @@ final class HCFCore extends PluginBase {
         ProfileFactory::getInstance()->close();
 
         ThreadPool::getInstance()->close();
+
+        HCFUtils::setSotwTime(HCFUtils::getSotwTimeRemaining(), true);
     }
 
     /**

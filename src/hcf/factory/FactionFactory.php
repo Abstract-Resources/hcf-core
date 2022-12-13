@@ -42,6 +42,8 @@ final class FactionFactory {
     /** @var array<string, ClaimRegion> */
     private array $adminClaims = [];
     /** @var array<string, ClaimRegion> */
+    private array $kothClaims = [];
+    /** @var array<string, ClaimRegion> */
     private array $factionClaim = [];
     /** @var array<string, int> */
     private array $factionsRegenerating = [];
@@ -171,7 +173,11 @@ final class FactionFactory {
      * @param bool        $overwrite
      */
     public function registerAdminClaim(ClaimRegion $claimRegion, bool $overwrite): void {
-        $this->adminClaims[$claimRegion->getName()] = $claimRegion;
+        if ($claimRegion->isFlagEnabled(ClaimRegion::KOTH)) {
+            $this->kothClaims[$claimRegion->getName()] = $claimRegion;
+        } else {
+            $this->adminClaims[$claimRegion->getName()] = $claimRegion;
+        }
 
         if (!$overwrite) return;
 
@@ -298,6 +304,8 @@ final class FactionFactory {
         }
 
         foreach ($this->adminClaims as $adminClaimRegion) {
+            if ($adminClaimRegion->getName() === HCFUtils::REGION_WILDERNESS) continue;
+
             if (!$adminClaimRegion->getCuboid()->isInside($position)) {
                 continue;
             }
@@ -309,12 +317,21 @@ final class FactionFactory {
     }
 
     /**
-     * @param Position $position
+     * @param string $name
      *
-     * @return bool
+     * @return ClaimRegion|null
      */
-    public function isInsideSpawn(Position $position): bool {
-        return ($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position);
+    public function getKothClaim(string $name): ?ClaimRegion {
+        return $this->kothClaims[$name . '_koth'] ?? null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return ClaimRegion|null
+     */
+    public function getAdminClaim(string $name): ?ClaimRegion {
+        return $this->adminClaims[$name] ?? null;
     }
 
     /**

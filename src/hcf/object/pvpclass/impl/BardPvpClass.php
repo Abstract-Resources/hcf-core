@@ -6,7 +6,6 @@ namespace hcf\object\pvpclass\impl;
 
 use hcf\object\profile\Profile;
 use hcf\object\pvpclass\PvpClass;
-use pocketmine\player\Player;
 
 final class BardPvpClass extends PvpClass {
 

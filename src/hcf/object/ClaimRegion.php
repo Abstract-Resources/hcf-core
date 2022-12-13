@@ -8,12 +8,14 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
+use function in_array;
 
 final class ClaimRegion {
 
     public const BLOCK_BREAK_FLAG = 'block_break_disabled';
     public const BLOCK_PLACE_FLAG = 'block_place_disabled';
     public const ENTITY_DAMAGE_FLAG = 'entity_damage_disabled';
+    public const KOTH = 'koth';
 
     /** @var array<string, ClaimCuboid> */
     private static array $claimingSessions = [];

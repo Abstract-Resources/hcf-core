@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace hcf\object\profile;
 
 use hcf\factory\FactionFactory;
+use hcf\factory\KothFactory;
 use hcf\factory\PvpClassFactory;
 use hcf\HCFCore;
 use hcf\object\ClaimRegion;
@@ -31,9 +32,6 @@ final class Profile {
 
     /** @var array<string, ProfileTimer> */
     private array $timers;
-
-	/** @var bool */
-	private bool $alreadySaving = false;
 
     /** @var string|null */
     private ?string $pvpClassName = null;
@@ -93,6 +91,8 @@ final class Profile {
 
             $pvpClass->onEquip($this);
         });
+
+        PvpClassFactory::getInstance()->attemptEquip($this, $instance->getArmorInventory()->getContents(true));
     }
 
     /**
@@ -186,20 +186,6 @@ final class Profile {
         $this->balance = $balance;
     }
 
-	/**
-	 * @return bool
-	 */
-	public function isAlreadySaving(): bool {
-		return $this->alreadySaving;
-	}
-
-	/**
-	 * @param bool $alreadySaving
-	 */
-	public function setAlreadySaving(bool $alreadySaving): void {
-		$this->alreadySaving = $alreadySaving;
-	}
-
     /**
      * @param ClaimRegion $claimRegion
      */
@@ -272,12 +258,14 @@ final class Profile {
         if (!is_array($scoreboardLines = HCFCore::getInstance()->getConfig()->getNested('scoreboard.lines'))) return;
         if (($instance = $this->getInstance()) === null || !$instance->isConnected()) return;
 
+        $args = ['current_claim' => $this->getClaimRegion()->getCustomName()];
         $allowedPlaceholders = [];
-        $args = [
-        	'koth_name' => '',
-        	'koth_time_remaining' => '',
-        	'current_claim' => $this->getClaimRegion()->getCustomName()
-        ];
+
+        if (($kothName = KothFactory::getInstance()->getKothName()) !== null) {
+            $allowedPlaceholders[] = 'koth_lines';
+
+            $args = array_merge($args, ['koth_name' => $kothName, 'koth_time_remaining' => HCFUtils::dateString(KothFactory::getInstance()->getCapturingTime())]);
+        }
 
         if (($pvpClass = $this->getPvpClass()) !== null) {
             $allowedPlaceholders[] = 'active_class_lines';
@@ -295,6 +283,12 @@ final class Profile {
 
             $allowedPlaceholders[] = $timer->getName() . '_lines';
             $args[$timer->getName() . '_timer'] = HCFUtils::dateString($remainingTime);
+        }
+
+        if (HCFUtils::isSotwRunning()) {
+            $allowedPlaceholders[] = 'sotw_lines';
+
+            $args['sotw_remaining'] = HCFUtils::dateString(HCFUtils::getSotwTimeRemaining());
         }
 
         $originalLines = [];
@@ -329,8 +323,6 @@ final class Profile {
      * @param bool $stored
      */
 	public function forceSave(bool $joinedBefore, bool $stored = true): void {
-		$this->alreadySaving = true;
-
 		ThreadPool::getInstance()->submit(new SaveProfileQuery(new ProfileData(
 			$this->xuid,
 			$this->name,

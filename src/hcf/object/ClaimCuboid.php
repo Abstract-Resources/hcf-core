@@ -69,37 +69,34 @@ final class ClaimCuboid {
     }
 
     public function recalculate(): void {
-        $this->firstCorner = new Position(
-            min($this->firstCorner->getFloorX(), $this->secondCorner->getFloorX()),
-            min($this->firstCorner->getFloorY(), $this->secondCorner->getFloorY()),
-            min($this->firstCorner->getFloorZ(), $this->secondCorner->getFloorZ()),
-            $this->firstCorner->getWorld()
-        );
-
-        $this->secondCorner = new Position(
-            max($this->firstCorner->getFloorX(), $this->secondCorner->getFloorX()),
-            max($this->firstCorner->getFloorY(), $this->secondCorner->getFloorY()),
-            max($this->firstCorner->getFloorZ(), $this->secondCorner->getFloorZ()),
-            $this->firstCorner->getWorld()
-        );
+        $firstCorner = $this->firstCorner;
+        $secondCorner = $this->secondCorner;
 
         $this->bb = new AxisAlignedBB(
-            $this->firstCorner->getFloorX(),
-            World::Y_MIN,
-            $this->firstCorner->getFloorZ(),
-            $this->secondCorner->getFloorX(),
-            World::Y_MAX,
-            $this->secondCorner->getFloorZ()
+            min($firstCorner->getFloorX(), $secondCorner->getFloorX()),
+            min($firstCorner->getFloorY(), $secondCorner->getFloorY()),
+            min($firstCorner->getFloorZ(), $secondCorner->getFloorZ()),
+            max($firstCorner->getFloorX(), $secondCorner->getFloorX()),
+            max($firstCorner->getFloorY(), $secondCorner->getFloorY()),
+            max($firstCorner->getFloorZ(), $secondCorner->getFloorZ())
         );
     }
 
     /**
-     * @param Position $position
+     * @return AxisAlignedBB
+     */
+    public function getAxisAligned(): AxisAlignedBB {
+        return $this->bb;
+    }
+    /**
+     * @param Position $vector
      *
      * @return bool
      */
-    public function isInside(Position $position): bool {
-        return $this->bb->isVectorInside($position) && $position->world === $this->firstCorner->world;
+    public function isInside(Position $vector): bool {
+        if ($vector->world !== $this->firstCorner->world) return false;
+
+        return $this->bb->isVectorInXZ($vector);
     }
 
     /**

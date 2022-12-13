@@ -8,7 +8,6 @@ use hcf\object\profile\Profile;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\player\Player;
 
 abstract class PvpClass {
 
