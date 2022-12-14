@@ -6,6 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\FactionFactory;
 use hcf\factory\ProfileFactory;
+use hcf\HCFCore;
 use hcf\object\profile\ProfileTimer;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\Listener;
@@ -54,6 +55,11 @@ final class PlayerDeathListener implements Listener {
 
         $killerProfile->setKills($killerProfile->getKills() + 1);
         $killerProfile->forceSave(true);
+
+        if (($faction = FactionFactory::getInstance()->getPlayerFaction($killer)) !== null) {
+            $faction->setPoints($faction->getPoints() + HCFCore::getConfigInt('factions.points-increase-kill', 1));
+            $faction->forceSave(true);
+        }
 
         $ev->setDeathMessage(TextFormat::colorize(sprintf('&c%s&4[%s]&e was slain by &c%s&4[%s]&e.',
             $player->getName(),

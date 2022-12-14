@@ -6,6 +6,7 @@ namespace hcf\command\faction;
 
 use abstractplugin\command\BaseCommand;
 use hcf\command\faction\arguments\admin\AdminClaimArgument;
+use hcf\command\faction\arguments\admin\SetBalanceArgument;
 use hcf\command\faction\arguments\admin\SotwArgument;
 use hcf\command\faction\arguments\CreateArgument;
 use hcf\command\faction\arguments\JoinArgument;
@@ -15,7 +16,9 @@ use hcf\command\faction\arguments\ListArgument;
 use hcf\command\faction\arguments\member\DepositArgument;
 use hcf\command\faction\arguments\member\LeaveArgument;
 use hcf\command\faction\arguments\officer\InviteArgument;
+use hcf\command\faction\arguments\officer\KickArgument;
 use hcf\command\faction\arguments\officer\SetHomeArgument;
+use hcf\command\faction\arguments\TopArgument;
 use hcf\command\faction\arguments\WhoArgument;
 
 final class FactionCommand extends BaseCommand {
@@ -34,7 +37,10 @@ final class FactionCommand extends BaseCommand {
             new JoinArgument('join'),
             new WhoArgument('who'),
             new ListArgument('list'),
+            new TopArgument('top'),
+            new KickArgument('kick'),
             new AdminClaimArgument('adminclaim', 'faction.admin'),
+            new SetBalanceArgument('setbalance', 'faction.admin'),
             new SotwArgument('sotw', 'faction.admin')
         );
     }

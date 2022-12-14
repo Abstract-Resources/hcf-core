@@ -10,6 +10,7 @@ use hcf\thread\datasource\Query;
 use hcf\utils\HCFUtils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use function array_chunk;
 use function count;
 use function igbinary_unserialize;
@@ -19,7 +20,12 @@ use function min;
 
 final class FactionListThreaded implements Query {
 
+    /** @var array<int, array> */
     private array $results = [];
+    /** @var bool */
+    private bool $found = false;
+    /** @var int */
+    private int $maxPages;
 
     /**
      * @param string $factionsSerialized
@@ -53,13 +59,20 @@ final class FactionListThreaded implements Query {
         ksort($factions, SORT_NATURAL | SORT_FLAG_CASE);
 
         $factions = array_chunk($factions, 10);
+
+        if ($this->pageNumber > ($this->maxPages = count($factions))) {
+            $this->results[] = [TextFormat::RED . 'There ' . ($this->maxPages === 1 ? 'is only ' . $this->maxPages . ' page' : 'are only ' . $this->maxPages . ' pages') . '.', []];
+
+            return;
+        }
+
         $pageNumber = min(count($factions), $this->pageNumber);
         if($pageNumber < 1){
-            $pageNumber = 1;
+            $this->pageNumber = $pageNumber = 1;
         }
 
         if (count($factions = $factions[$pageNumber - 1] ?? []) <= 0) {
-            $this->results[] = ['NON_FACTIONS_FOUND'];
+            $this->results[] = ['NON_FACTIONS_FOUND', []];
 
             return;
         }
@@ -68,6 +81,8 @@ final class FactionListThreaded implements Query {
         foreach ($factions as $index => $faction) {
             $this->results[] = ['FACTION_LIST_ARGUMENT', ['index' => (string) ($index + 1), 'name' => $faction->getName()]];
         }
+
+        $this->found = true;
     }
 
     /**
@@ -80,10 +95,23 @@ final class FactionListThreaded implements Query {
             $target = new ConsoleCommandSender(Server::getInstance(), Server::getInstance()->getLanguage());
         }
 
+        $message = '';
+        if ($this->found) {
+            $message .= TextFormat::colorize("&7&m--------------------------------------\n&7 Faction List &f(Page " . $this->pageNumber . '/' . $this->maxPages . ')') . "\n\n";
+        }
+
         foreach ($this->results as $result) {
             [$key, $args] = $result;
 
-            $target->sendMessage(HCFUtils::replacePlaceholders($key, $args));
+            $message .= HCFUtils::replacePlaceholders($key, $args) . "\n";
         }
+
+        if ($this->found) {
+            $message .= TextFormat::GOLD . "\n You are currently on " . TextFormat::WHITE . 'Page ' . $this->pageNumber . '/' . $this->maxPages . TextFormat::GOLD . ".\n";
+            $message .= TextFormat::GOLD . ' To view other pages, use ' . TextFormat::YELLOW . '/faction list <page#>' . TextFormat::GOLD . ".\n";
+            $message .= TextFormat::colorize('&7&m--------------------------------------');
+        }
+
+        $target->sendMessage($message);
     }
 }

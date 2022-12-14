@@ -202,6 +202,13 @@ final class Faction {
     }
 
     /**
+     * @param int $points
+     */
+    public function setPoints(int $points): void {
+        $this->points = $points;
+    }
+
+    /**
      * @param string $xuid
      * @param string $name
      * @param int    $role

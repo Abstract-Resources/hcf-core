@@ -52,7 +52,7 @@ final class WhoArgument extends Argument {
         	'hq' => ($loc = $faction->getHqLocation()) === null ? 'None' : $loc->getFloorX() . ', ' . $loc->getFloorZ(),
         	'leaders' => implode(TextFormat::GRAY . ',', $m[ProfileData::LEADER_ROLE]),
         	'officers' => isset($m[ProfileData::OFFICER_ROLE]) ? implode(TextFormat::GRAY . ',', $m[ProfileData::OFFICER_ROLE] ?? []) : 'None',
-        	'members' => isset($m[ProfileData::OFFICER_ROLE]) ? implode(TextFormat::GRAY . ',', $m[ProfileData::MEMBER_ROLE] ?? []) : 'None',
+        	'members' => isset($m[ProfileData::MEMBER_ROLE]) ? implode(TextFormat::GRAY . ',', $m[ProfileData::MEMBER_ROLE] ?? []) : 'None',
         	'balance' => (string) $faction->getBalance(),
         	'deaths_until_raidable' => (string) $faction->getDeathsUntilRaidable(true),
         	'points' => (string) $faction->getPoints(),

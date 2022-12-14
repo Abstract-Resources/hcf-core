@@ -138,6 +138,9 @@ final class KothFactory {
 
         if ($this->capturingTime-- > 1) return;
 
+        $faction->setPoints($faction->getPoints() + HCFCore::getConfigInt('factions.points-increase-koth', 1));
+        $faction->forceSave(true);
+
         Server::getInstance()->broadcastMessage(HCFUtils::replacePlaceholders('KOTH_CAPTURING_END', [$target->getName(), $faction->getName(), $this->currentKoth]));
 
         $this->setCurrentKoth(null);

@@ -10,7 +10,16 @@ FACTION_WHO_PLAYER:
   - '&eTime Until Regen: &6<time_until_regen>'
   - '&7&m--------------------------------------'
 
-FACTION_LIST_ARGUMENT: '&e<index> &7- &3<name>'
+FACTION_TOP_INFO:
+  - '&7&m--------------------------------------'
+  - '&9Faction Top'
+  - '<message>'
+  - '&7&m--------------------------------------'
+FACTION_TOP_ARGUMENT: '&7<index>. &e<faction>: &f<points> Points'
+
+FACTION_LIST_ARGUMENT: ' &e<index> &7- &3<name>'
+
+PLAYER_FACTION_CREATED: '&eTeam &9<faction>&e has been&a created&e by &7<player>'
 PLAYER_CLAIM_ENTER: '&eNow entering: <claim_name> &e(<death_ban_status>&e)'
 PLAYER_CLAIM_LEAVE: '&eNow leaving: <claim_name> &e(<death_ban_status>&e)'
 

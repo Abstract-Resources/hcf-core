@@ -11,6 +11,9 @@ factions:
   default-balance: 0
   default-points: 0
 
+  points-increase-koth: 1
+  points-increase-kill: 1
+
   min-name: 3
   max-name: 16
   max-members: 10
