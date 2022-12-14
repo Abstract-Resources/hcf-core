@@ -8,6 +8,7 @@ use hcf\factory\FactionFactory;
 use hcf\object\ClaimRegion;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;
+use pocketmine\Server;
 
 final class BlockBreakListener implements Listener {
 
@@ -19,9 +20,10 @@ final class BlockBreakListener implements Listener {
     public function onBlockBreakEvent(BlockBreakEvent $ev): void {
         $player = $ev->getPlayer();
 
-        $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());
+        if ($player->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)) return;
 
-        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->isFlagEnabled(ClaimRegion::BLOCK_BREAK_FLAG)) {
+        $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());
+        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->hasFlag(ClaimRegion::DISALLOW_BLOCK_BREAK)) {
             $ev->cancel();
 
             return;

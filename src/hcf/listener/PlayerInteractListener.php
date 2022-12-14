@@ -9,6 +9,7 @@ use hcf\factory\ProfileFactory;
 use hcf\object\ClaimRegion;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\Server;
 
 final class PlayerInteractListener implements Listener {
 
@@ -28,8 +29,10 @@ final class PlayerInteractListener implements Listener {
 
         if (($pvpClass = $profile->getPvpClass()) !== null) $pvpClass->onItemInteract($profile);
 
+        if ($player->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)) return;
+
         $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());
-        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->isFlagEnabled(ClaimRegion::BLOCK_BREAK_FLAG)) {
+        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->hasFlag(ClaimRegion::DISALLOW_BLOCK_BREAK)) {
             $ev->cancel();
 
             return;

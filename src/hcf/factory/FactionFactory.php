@@ -180,7 +180,7 @@ final class FactionFactory {
      * @param bool        $overwrite
      */
     public function registerAdminClaim(ClaimRegion $claimRegion, bool $overwrite): void {
-        if ($claimRegion->isFlagEnabled(ClaimRegion::KOTH)) {
+        if ($claimRegion->hasFlag(ClaimRegion::KOTH)) {
             $this->kothClaims[$claimRegion->getName()] = $claimRegion;
         } else {
             $this->registerClaim($claimRegion, $claimRegion->getName(), false);

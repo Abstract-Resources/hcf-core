@@ -8,6 +8,7 @@ use hcf\factory\FactionFactory;
 use hcf\object\ClaimRegion;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\Listener;
+use pocketmine\Server;
 
 final class BlockPlaceListener implements Listener {
 
@@ -19,8 +20,10 @@ final class BlockPlaceListener implements Listener {
     public function onBlockPlaceEvent(BlockPlaceEvent $ev): void {
         $player = $ev->getPlayer();
 
+        if ($player->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)) return;
+
         $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());
-        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->isFlagEnabled(ClaimRegion::BLOCK_PLACE_FLAG)) {
+        if (($faction = FactionFactory::getInstance()->getFactionName($regionAt->getName())) === null && $regionAt->hasFlag(ClaimRegion::DISALLOW_BLOCK_PLACE)) {
             $ev->cancel();
 
             return;

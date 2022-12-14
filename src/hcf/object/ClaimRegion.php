@@ -12,9 +12,9 @@ use function in_array;
 
 final class ClaimRegion {
 
-    public const BLOCK_BREAK_FLAG = 'block_break_disabled';
-    public const BLOCK_PLACE_FLAG = 'block_place_disabled';
-    public const ENTITY_DAMAGE_FLAG = 'entity_damage_disabled';
+    public const DISALLOW_BLOCK_BREAK = 'block_break_disabled';
+    public const DISALLOW_BLOCK_PLACE = 'block_place_disabled';
+    public const DISALLOW_ENTITY_DAMAGE = 'entity_damage_disabled';
     public const KOTH = 'koth';
 
     /** @var array<string, ClaimCuboid> */
@@ -57,7 +57,7 @@ final class ClaimRegion {
      *
      * @return bool
      */
-    public function isFlagEnabled(string $flagName): bool {
+    public function hasFlag(string $flagName): bool {
         return in_array($flagName, $this->flags, true);
     }
 
@@ -65,7 +65,7 @@ final class ClaimRegion {
      * @return bool
      */
     public function isDeathBan(): bool {
-        return !$this->isFlagEnabled(self::ENTITY_DAMAGE_FLAG);
+        return !$this->hasFlag(self::DISALLOW_ENTITY_DAMAGE);
     }
 
     /**
