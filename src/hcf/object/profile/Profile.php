@@ -70,7 +70,8 @@ final class Profile {
 
         $this->timers = [
         	ProfileTimer::COMBAT_TAG => new ProfileTimer(ProfileTimer::COMBAT_TAG, 30),
-        	ProfileTimer::PVP_TAG => new ProfileTimer(ProfileTimer::PVP_TAG, 60 * 60)
+        	ProfileTimer::PVP_TAG => new ProfileTimer(ProfileTimer::PVP_TAG, 60 * 60),
+            ProfileTimer::HOME_TAG => new ProfileTimer(ProfileTimer::HOME_TAG, 20)
         ];
 
         foreach (HCFUtils::fetchProfileTimers($this->xuid) as $timerData) {

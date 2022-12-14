@@ -26,7 +26,7 @@ final class PlayerRespawnListener implements Listener {
 
         $ev->setRespawnPosition($to = HCFUtils::getDefaultWorld()->getSpawnLocation());
 
-        $profile->toggleProfileTimer(ProfileTimer::PVP_TAG, 60 * 60);
+        $profile->toggleProfileTimer(ProfileTimer::PVP_TAG);
 
         (new PlayerMoveEvent($player, $player->getLocation(), Location::fromObject($to, $to->getWorld())))->call();
     }

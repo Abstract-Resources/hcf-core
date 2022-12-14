@@ -14,6 +14,7 @@ use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\command\faction\arguments\leader\DisbandArgument;
 use hcf\command\faction\arguments\ListArgument;
 use hcf\command\faction\arguments\member\DepositArgument;
+use hcf\command\faction\arguments\member\HomeArgument;
 use hcf\command\faction\arguments\member\LeaveArgument;
 use hcf\command\faction\arguments\officer\InviteArgument;
 use hcf\command\faction\arguments\officer\KickArgument;
@@ -39,6 +40,7 @@ final class FactionCommand extends BaseCommand {
             new ListArgument('list'),
             new TopArgument('top'),
             new KickArgument('kick'),
+            new HomeArgument('home'),
             new AdminClaimArgument('adminclaim', 'faction.admin'),
             new SetBalanceArgument('setbalance', 'faction.admin'),
             new SotwArgument('sotw', 'faction.admin')
