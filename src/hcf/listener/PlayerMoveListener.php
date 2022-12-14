@@ -28,6 +28,10 @@ final class PlayerMoveListener implements Listener {
         if ($from->equals($to)) return;
         if (($profile = ProfileFactory::getInstance()->getIfLoaded($player->getXuid())) === null) return;
 
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::HOME_TAG)) !== null && $profileTimer->isRunning()) {
+            $profileTimer->cancel();
+        }
+
         $targetClaim = FactionFactory::getInstance()->getRegionAt($to);
         $currentClaim = $profile->getClaimRegion();
 

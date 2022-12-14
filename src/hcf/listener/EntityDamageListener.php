@@ -84,6 +84,10 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::HOME_TAG)) !== null && $profileTimer->isRunning()) {
+            $profileTimer->cancel();
+        }
+
         $profile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
         $attackerProfile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
     }
