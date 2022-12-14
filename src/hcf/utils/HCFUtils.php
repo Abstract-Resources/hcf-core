@@ -33,8 +33,6 @@ final class HCFUtils {
 
     /** @var int */
     private static int $sotwEndAt = 0;
-    /** @var int */
-    private static int $eotwEndAt = 0;
 
     public static function load(): void {
         self::$placeHolders = (new Config(HCFCore::getInstance()->getDataFolder() . 'messages.yml'))->getAll();
@@ -42,7 +40,6 @@ final class HCFUtils {
         self::$timersConfig = new Config(HCFCore::getInstance()->getDataFolder() . 'timers.yml');
 
         self::setSotwTime(HCFCore::getConfigInt('map.sotw-remaining'), false);
-        self::$sotwEndAt = time() + HCFCore::getConfigInt('map.eotw-remaining');
     }
 
     /**

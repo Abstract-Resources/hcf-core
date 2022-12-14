@@ -11,6 +11,12 @@ use hcf\utils\HCFUtils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function arsort;
+use function count;
+use function igbinary_unserialize;
+use function implode;
+use function is_array;
 
 final class FactionTopThreaded implements Query {
 

@@ -10,6 +10,7 @@ use hcf\factory\FactionFactory;
 use hcf\thread\ThreadPool;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
+use function igbinary_serialize;
 
 final class TopArgument extends Argument {
 

@@ -17,6 +17,7 @@ use pocketmine\utils\TextFormat;
 use function count;
 use function implode;
 use function sprintf;
+use function strval;
 
 final class WhoArgument extends Argument {
 

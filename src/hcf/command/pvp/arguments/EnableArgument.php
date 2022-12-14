@@ -10,6 +10,7 @@ use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileTimer;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use function sprintf;
 
 final class EnableArgument extends Argument {
     use ProfileArgumentTrait;

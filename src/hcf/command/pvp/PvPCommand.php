@@ -6,7 +6,6 @@ namespace hcf\command\pvp;
 
 use abstractplugin\command\BaseCommand;
 use hcf\command\pvp\arguments\EnableArgument;
-use pocketmine\lang\Translatable;
 
 final class PvPCommand extends BaseCommand {
 
