@@ -30,9 +30,7 @@ use hcf\task\ProfileTickUpdateTask;
 use hcf\thread\ThreadPool;
 use hcf\utils\HCFUtils;
 use pocketmine\plugin\PluginBase;
-use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
-use function is_file;
 use function is_float;
 use function is_int;
 use function is_string;
@@ -42,16 +40,6 @@ final class HCFCore extends PluginBase {
 
     public function onEnable(): void {
         self::setInstance($this);
-
-        // Initialize the composer autoload
-        /*if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . $this->getName() . '.phar/vendor/autoload.php')) {
-            $this->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
-            $this->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
-
-            exit(1);
-        }
-
-        require_once($bootstrap);*/
 
         $this->saveDefaultConfig();
         $this->saveResource('messages.yml');
