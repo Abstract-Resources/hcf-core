@@ -18,6 +18,8 @@ use hcf\listener\claim\ClaimPlayerInteractListener;
 use hcf\listener\EntityDamageListener;
 use hcf\listener\EntityTeleportListener;
 use hcf\listener\PlayerDeathListener;
+use hcf\listener\PlayerInteractListener;
+use hcf\listener\PlayerItemHeldListener;
 use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerMoveListener;
@@ -81,6 +83,8 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new PlayerRespawnListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerMoveListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityTeleportListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerInteractListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerItemHeldListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);

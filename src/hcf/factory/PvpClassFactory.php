@@ -38,7 +38,7 @@ final class PvpClassFactory {
             if (!is_string($pvpClassName) || !is_array($data)) continue;
 
             /** @phpstan-var class-string<PvpClass> $className */
-            $className = $classesStored[$pvpClassName] ?? null;
+            $className = $classesStored[$data['class_name']] ?? null;
 
             if ($className === null) continue;
 

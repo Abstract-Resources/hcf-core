@@ -1,4 +1,5 @@
 Bard:
+  class_name: 'Bard'
   custom_name: '&6Bard'
   armor_contents:
     0:
