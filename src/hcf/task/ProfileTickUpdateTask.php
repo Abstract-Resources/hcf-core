@@ -20,7 +20,7 @@ final class ProfileTickUpdateTask extends Task {
 
             /** @var $pvpClass EnergyPvpClass */
             if (($pvpClass = $profile->getPvpClass()) instanceof EnergyPvpClass && $pvpClass->getMaxEnergy() > $profile->getEnergy()) {
-                $profile->setEnergy($profile->getEnergy() + 1);
+                $profile->increaseEnergy(1);
             }
 
             $profile->updateScoreboard();

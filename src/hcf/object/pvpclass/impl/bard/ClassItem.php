@@ -10,18 +10,18 @@ use pocketmine\item\Item;
 final class ClassItem {
 
     /**
-     * @param string         $displayName
-     * @param Item           $item
-     * @param int            $energy
-     * @param bool           $applyOnBard
+     * @param string           $displayName
+     * @param Item             $item
+     * @param int              $energy
+     * @param bool             $applyOnSelf
      * @param EffectInstance[] $effects
      */
     public function __construct(
         private string $displayName,
-        private Item $item,
-        private int $energy,
-        private bool $applyOnBard,
-        private array $effects
+        private Item   $item,
+        private int    $energy,
+        private bool   $applyOnSelf,
+        private array  $effects
     ) {}
 
     /**
@@ -48,8 +48,8 @@ final class ClassItem {
     /**
      * @return bool
      */
-    public function isApplyOnBard(): bool {
-        return $this->applyOnBard;
+    public function isApplyOnSelf(): bool {
+        return $this->applyOnSelf;
     }
 
     /**

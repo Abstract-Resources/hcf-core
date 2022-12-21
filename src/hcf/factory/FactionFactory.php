@@ -176,6 +176,18 @@ final class FactionFactory {
     }
 
     /**
+     * @param ClaimCuboid $cuboid
+     * @param string      $factionId
+     */
+    public function unregisterClaim(ClaimCuboid $cuboid, string $factionId): void {
+        for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
+            for ($z = $cuboid->getFirstCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $cuboid->getSecondCorner()->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
+                unset($this->claimsPerChunk[World::chunkHash($x, $z)][$factionId]);
+            }
+        }
+    }
+
+    /**
      * @param ClaimRegion $claimRegion
      * @param bool        $overwrite
      */

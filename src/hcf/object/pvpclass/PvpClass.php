@@ -39,7 +39,7 @@ abstract class PvpClass {
     ) {}
 
     public function init(): void {
-        $bardItems = $this->extra['bard_items'] ?? [];
+        $bardItems = $this->extra['items'] ?? [];
 
         if (!is_array($bardItems) || count($bardItems) <= 0) return;
 
@@ -50,7 +50,7 @@ abstract class PvpClass {
                 TextFormat::colorize($itemData['display_name']),
                 $item,
                 $itemData['energy'],
-                $itemData['apply_on_bard'] ?? true,
+                $itemData['apply_on_self'] ?? true,
                 PvpClass::parseEffects($itemData['effects'])
             );
         }

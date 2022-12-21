@@ -106,7 +106,7 @@ final class EntityDamageListener implements Listener {
         $ev->setBaseDamage($baseDamage + ServerUtils::calculatePercentage(HCFCore::getConfigInt('countdowns.archer_tag', 10), (int) $baseDamage));
 
         foreach ($kit->getClassItems() as $classItem) {
-            if ($classItem->isApplyOnBard()) continue;
+            if ($classItem->isApplyOnSelf()) continue;
 
             foreach ($classItem->getEffects() as $effectInstance) {
                 $entity->getEffects()->add($effectInstance);

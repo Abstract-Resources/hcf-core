@@ -28,8 +28,6 @@ final class PlayerInteractListener implements Listener {
             return;
         }
 
-        if (($pvpClass = $profile->getPvpClass()) !== null) $pvpClass->onItemInteract($profile, $ev->getItem());
-
         if ($player->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)) return;
 
         $regionAt = FactionFactory::getInstance()->getRegionAt($ev->getBlock()->getPosition());

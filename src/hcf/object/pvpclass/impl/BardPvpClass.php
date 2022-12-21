@@ -32,16 +32,17 @@ final class BardPvpClass extends PvpClass {
             return;
         }
 
-        $profile->setEnergy($profile->getEnergy() - $classItem->getEnergy());
+        $profile->decreaseEnergy($classItem->getEnergy());
         $instance->getInventory()->setItemInHand($itemHand->setCount($itemHand->getCount() - 1));
 
         foreach ($faction->getMembers() as $factionMember) {
             if (($target = Server::getInstance()->getPlayerExact($factionMember->getName())) === null || !$target->isConnected()) continue;
+            if ($target->getPosition()->distance($instance->getPosition()) > 25) continue;
 
             foreach ($classItem->getEffects() as $effectInstance) $target->getEffects()->add($effectInstance);
         }
 
-        if (!$classItem->isApplyOnBard()) return;
+        if (!$classItem->isApplyOnSelf()) return;
 
         foreach ($classItem->getEffects() as $effectInstance) $instance->getEffects()->add($effectInstance);
     }

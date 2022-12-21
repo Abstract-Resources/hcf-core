@@ -20,6 +20,7 @@ use hcf\listener\EntityTeleportListener;
 use hcf\listener\PlayerDeathListener;
 use hcf\listener\PlayerInteractListener;
 use hcf\listener\PlayerItemHeldListener;
+use hcf\listener\PlayerItemUseListener;
 use hcf\listener\PlayerJoinListener;
 use hcf\listener\PlayerLoginListener;
 use hcf\listener\PlayerMoveListener;
@@ -72,7 +73,8 @@ final class HCFCore extends PluginBase {
         $this->getServer()->getPluginManager()->registerEvents(new PlayerMoveListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityTeleportListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerInteractListener(), $this);
-        $this->getServer()->getPluginManager()->registerEvents(new PlayerItemHeldListener(), $this);
+        //$this->getServer()->getPluginManager()->registerEvents(new PlayerItemHeldListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerItemUseListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerQuitListener(), $this);
 
         $this->getServer()->getPluginManager()->registerEvents(new ClaimPlayerInteractListener(), $this);
@@ -86,7 +88,8 @@ final class HCFCore extends PluginBase {
 
         ThreadPool::getInstance()->close();
 
-        ServerUtils::setSotwTime(ServerUtils::getSotwTimeRemaining(), true);
+        if (ServerUtils::isSotwRunning()) ServerUtils::setSotwTime(ServerUtils::getSotwTimeRemaining(), true);
+        if (ServerUtils::isPurgeRunning()) ServerUtils::setPurgeTime(ServerUtils::getPurgeTimeRemaining(), true);
     }
 
     /**

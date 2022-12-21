@@ -21,7 +21,7 @@ final class ArcherPvpClass extends PvpClass implements EnergyPvpClass {
         if (($classItem = $this->getValidItem($itemHand)) === null) return;
         if (($instance = $profile->getInstance()) === null || !$instance->isConnected()) return;
 
-        if (!$classItem->isApplyOnBard()) return;
+        if (!$classItem->isApplyOnSelf()) return;
 
         if ($classItem->getEnergy() > $profile->getEnergy()) {
             $instance->sendMessage(ServerUtils::replacePlaceholders('NOT_ENOUGH_ENERGY', [
@@ -32,7 +32,7 @@ final class ArcherPvpClass extends PvpClass implements EnergyPvpClass {
             return;
         }
 
-        $profile->setEnergy($profile->getEnergy() - $classItem->getEnergy());
+        $profile->decreaseEnergy($classItem->getEnergy());
         $instance->getInventory()->setItemInHand($itemHand->setCount($itemHand->getCount() - 1));
 
         foreach ($classItem->getEffects() as $effectInstance) {

@@ -232,10 +232,17 @@ final class Profile {
     }
 
     /**
-     * @param int $energy
+     * @param int $energyDecreased
      */
-    public function setEnergy(int $energy): void {
-        $this->energy = $energy;
+    public function decreaseEnergy(int $energyDecreased): void {
+        $this->energy -= $energyDecreased;
+    }
+
+    /**
+     * @param int $energyIncreased
+     */
+    public function increaseEnergy(int $energyIncreased): void {
+        $this->energy += $energyIncreased;
     }
 
     /**
