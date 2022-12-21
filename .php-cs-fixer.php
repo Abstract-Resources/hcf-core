@@ -9,7 +9,6 @@ return (new PhpCsFixer\Config)
 		'align_multiline_comment' => [
 			'comment_type' => 'phpdocs_only'
 		],
-		'array_indentation' => true,
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
