@@ -33,6 +33,8 @@ final class ServerUtils {
 
     /** @var int */
     private static int $sotwEndAt = 0;
+    /** @var int */
+    private static int $purgeEndAt = 0;
 
     public static function load(): void {
         // Initialize the composer autoload
@@ -50,6 +52,7 @@ final class ServerUtils {
         self::$timersConfig = new Config(HCFCore::getInstance()->getDataFolder() . 'timers.yml');
 
         self::setSotwTime(HCFCore::getConfigInt('map.sotw-remaining'), false);
+        self::setPurgeTime(HCFCore::getConfigInt('map.purge-remaining'), false);
     }
 
     /**
@@ -147,6 +150,39 @@ final class ServerUtils {
      */
     public static function getSotwTimeRemaining(): int {
         return self::$sotwEndAt - time();
+    }
+
+    /**
+     * @param int  $time
+     * @param bool $overwrite
+     */
+    public static function setPurgeTime(int $time, bool $overwrite): void {
+        self::$sotwEndAt = time() + $time;
+
+        if (!$overwrite) return;
+
+        try {
+            $config = HCFCore::getInstance()->getConfig();
+
+            $config->setNested('map.purge-remaining', $time);
+            $config->save();
+        } catch (Exception $e) {
+            Server::getInstance()->getLogger()->logException($e);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isPurgeRunning(): bool {
+        return self::getPurgeTimeRemaining() > 0;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getPurgeTimeRemaining(): int {
+        return self::$purgeEndAt - time();
     }
 
     /**

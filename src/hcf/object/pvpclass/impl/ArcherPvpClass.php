@@ -9,6 +9,7 @@ use hcf\object\pvpclass\EnergyPvpClass;
 use hcf\object\pvpclass\PvpClass;
 use hcf\utils\ServerUtils;
 use pocketmine\item\Item;
+use function array_merge;
 
 final class ArcherPvpClass extends PvpClass implements EnergyPvpClass {
 
@@ -45,6 +46,24 @@ final class ArcherPvpClass extends PvpClass implements EnergyPvpClass {
      */
     public function onHeldItem(Profile $profile, Item $itemHand): void {
         $this->onItemInteract($profile, $itemHand);
+    }
+
+    /**
+     * @return string
+     */
+    public function getScoreboardPlaceholder(): string {
+        return 'archer_class_lines';
+    }
+
+    /**
+     * @param Profile $profile
+     *
+     * @return array<string, string>
+     */
+    public function getScoreboardLines(Profile $profile): array {
+        return array_merge(parent::getScoreboardLines($profile), [
+            'archer_energy' => (string) $profile->getEnergy()
+        ]);
     }
 
     /**

@@ -64,7 +64,7 @@ final class BardPvpClass extends PvpClass {
      */
     public function getScoreboardLines(Profile $profile): array {
         return array_merge(parent::getScoreboardLines($profile), [
-        	'bard_energy' => 0
+        	'bard_energy' => (string) $profile->getEnergy()
         ]);
     }
 

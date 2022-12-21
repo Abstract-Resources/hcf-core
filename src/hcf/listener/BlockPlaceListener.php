@@ -6,6 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\FactionFactory;
 use hcf\object\ClaimRegion;
+use hcf\utils\ServerUtils;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\Listener;
 use pocketmine\Server;
@@ -31,7 +32,7 @@ final class BlockPlaceListener implements Listener {
 
         if ($faction === null) return;
 
-        if ($faction->getMember($player->getXuid()) !== null || $faction->getDeathsUntilRaidable(true) <= 0.0) {
+        if ($faction->getMember($player->getXuid()) !== null || $faction->getDeathsUntilRaidable(true) <= 0.0 || ServerUtils::isPurgeRunning()) {
             return;
         }
 

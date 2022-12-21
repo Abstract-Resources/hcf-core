@@ -296,6 +296,12 @@ final class Profile {
             $placeholders['sotw_remaining'] = ServerUtils::dateString($remainingTime);
         }
 
+        if (($remainingTime = ServerUtils::getPurgeTimeRemaining()) > 0) {
+            $pendingScoreboardLines[] = 'purge_lines';
+
+            $placeholders['purge_remaining'] = ServerUtils::dateString($remainingTime);
+        }
+
         foreach ($this->timers as $timer) {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
 

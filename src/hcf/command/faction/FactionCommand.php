@@ -49,7 +49,10 @@ final class FactionCommand extends BaseCommand {
             new HomeArgument('home'),
             new AdminClaimArgument('adminclaim', 'faction.admin'),
             new SetBalanceArgument('setbalance', 'faction.admin'),
-            new SotwArgument('sotw', 'faction.admin')
+            new SotwArgument('sotw', 'faction.admin'),
+            new SotwArgument('purge', 'faction.admin'),
+            new SotwArgument('forcedisband', 'faction.admin'),
+            new SotwArgument('disbandall', 'faction.admin')
         );
     }
 }
