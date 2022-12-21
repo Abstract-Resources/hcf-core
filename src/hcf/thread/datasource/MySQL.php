@@ -2,13 +2,18 @@
 
 declare(strict_types=1);
 
-namespace hcf\utils;
+namespace hcf\thread\datasource;
 
 use mysqli;
 use mysqli_stmt;
 use RuntimeException;
+use function array_fill;
+use function count;
+use function is_bool;
+use function preg_replace;
+use function str_replace;
 
-class MySQL extends mysqli {
+final class MySQL extends mysqli {
 
     /** @var string */
     private string $queryPrepare;

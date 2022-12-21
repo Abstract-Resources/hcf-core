@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace hcf\thread;
 
 use hcf\HCFCore;
-use hcf\thread\query\Query;
+use hcf\thread\datasource\MySQLCredentials;
+use hcf\thread\datasource\Query;
 use pocketmine\network\mcpe\raklib\PthreadsChannelReader;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\SingletonTrait;
 use Threaded;
+use function is_int;
+use function is_string;
+use function unserialize;
 
 final class ThreadPool {
     use SingletonTrait;
 
-    /** @var CoreThread[] */
+    /** @var SQLDataSourceThread[] */
     private array $threads = [];
     /** @var SleeperNotifier|null */
     private ?SleeperNotifier $notifier;
@@ -24,12 +28,25 @@ final class ThreadPool {
      * @param int $threadsIdle
      */
     public function init(int $threadsIdle): void {
+        [$address, $port] = MySQLCredentials::parseHost(HCFCore::getConfigString('mysql.host'));
+
+        $credentials = new MySQLCredentials(
+            is_string($address) ? $address : '127.0.0.1',
+            is_int($port) ? $port : 3306,
+            HCFCore::getConfigString('mysql.username'),
+            HCFCore::getConfigString('mysql.password'),
+            HCFCore::getConfigString('mysql.dbname')
+        );
+
         $threadToMainBuffer = new Threaded();
         $this->notifier = new SleeperNotifier();
+        $logger = Server::getInstance()->getLogger();
 
         for ($i = 0; $i < $threadsIdle; $i++) {
-            $thread = new CoreThread(
-                Server::getInstance()->getLogger(),
+            $thread = new SQLDataSourceThread(
+                $i,
+                $credentials,
+                $logger,
                 $threadToMainBuffer,
                 $this->notifier
             );
@@ -44,16 +61,20 @@ final class ThreadPool {
             while (($payload = $threadToMainReader->read()) !== null) {
                 $query = unserialize($payload, ['allowed_classes' => true]);
 
-                if ($query instanceof Query) $query->onComplete();
+                if (!$query instanceof Query) continue;
+
+                $query->onComplete();
             }
         });
     }
 
     /**
      * @param Query $query
+     *
+     * @return bool
      */
-    public function submit(Query $query): void {
-        /** @var CoreThread|null $betterThread */
+    public function submit(Query $query): bool {
+        /** @var SQLDataSourceThread|null $betterThread */
         $betterThread = null;
 
         $attempts = 0;
@@ -77,12 +98,14 @@ final class ThreadPool {
         if ($betterThread === null) {
             HCFCore::debug('No available thread found.');
 
-            return;
+            return false;
         }
 
         HCFCore::debug('An available \'Thread\' was found after ' . $attempts . ' attempts');
 
         $betterThread->submit($query);
+
+        return true;
     }
 
     public function close(): void {

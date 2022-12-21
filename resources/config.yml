@@ -1,0 +1,72 @@
+mysql:
+  host: 127.0.0.1
+  username: "root"
+  password: ""
+  dbname: "hcf-core"
+
+thread-idle: 5
+
+factions:
+  default-dtr: 1.0
+  default-balance: 0
+  default-points: 0
+
+  points-increase-koth: 1
+  points-increase-kill: 1
+
+  min-name: 3
+  max-name: 16
+  max-members: 10
+  dtr-freeze: 1 # MINUTES dtr freeze
+  dtr-regen-time: 5 #SECONDS dtr to regen #dtr-increment
+  dtr-increment: 0.1
+  dtr-per-player: 1.1
+  max-dtr: 6.5
+
+  claim_distance: 50
+  amount_per_block: 5.0
+  price-multiplier-area: 500
+
+  invalid-names:
+    - 'Road'
+    - 'Spawn'
+
+countdowns:
+  archer_tag: 10
+
+map:
+  admin_claims:
+    Warzone:
+      flags: []
+      value: 400
+    Wilderness:
+      flags: []
+      value: 2000
+
+scoreboard:
+  title: '&a&lHCF'
+  lines:
+    default-lines:
+      - '&f'
+      - '&b&lClaim: &r&a<current_claim>'
+      - '%sotw_lines%'
+      - '%active_class_lines%'
+      - '%bard_class_lines%'
+      - '%combat_tag_lines%'
+      - '%pvp_tag_lines'
+      - '%koth_lines%'
+      - '&d'
+      - '&7mc.serverhcf.net'
+
+    combat_tag_lines:
+      - '&c&lCombatTag: &r&c<combat_tag_timer>'
+    pvp_tag_lines:
+      - '&a&lPvP Timer: &r&f<pvp_tag_timer>'
+    active_class_lines:
+      - '&e&lActive Class: &r<class_name>'
+    bard_class_lines:
+      - '&d&lEnergy: &r&6<bard_energy>'
+    koth_lines:
+      - '<koth_name>&7: &8<koth_time_remaining>'
+    sotw_lines:
+      - '&a&lSOTW Time: &r&c<sotw_remaining>'

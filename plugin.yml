@@ -4,4 +4,11 @@ author: Abstract
 version: "1.0"
 api: 4.0.0
 main: hcf\HCFCore
+softdepend:
+- AbstractBoss
+permissions:
+  faction.admin:
+    default: op
+  koth.start:
+    default: op
 ...

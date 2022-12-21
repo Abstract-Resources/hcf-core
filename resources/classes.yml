@@ -1,0 +1,29 @@
+Bard:
+  class_name: 'Bard'
+  custom_name: '&6Bard'
+  armor_contents:
+    0:
+      id: "golden_helmet"
+      enchantments:
+        - ["PROTECTION", 1]
+        - ["FIRE_PROTECTION", 1]
+    1:
+      id: "golden_chestplate"
+      enchantments:
+        - ["PROTECTION", 1]
+        - ["FIRE_PROTECTION", 1]
+    2:
+      id: "golden_leggings"
+      enchantments:
+        - ["PROTECTION", 1]
+        - ["FIRE_PROTECTION", 1]
+    3:
+      id: "golden_boots"
+      enchantments:
+        - ["PROTECTION", 1]
+        - ["FIRE_PROTECTION", 1]
+  effects:
+    -
+      id: fire_resistance
+      amplifier: 0
+      duration: -1
