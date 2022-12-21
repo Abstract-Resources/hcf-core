@@ -321,20 +321,15 @@ final class FactionFactory {
             return $claimRegion;
         }
 
-        // First do this check because maybe Warzone is returned
-        /*if (($claimRegion = $this->adminClaims[ServerUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
-            return $claimRegion;
-        }
-
         foreach ($this->adminClaims as $adminClaimRegion) {
-            if ($adminClaimRegion->getName() === ServerUtils::REGION_WILDERNESS) continue;
+            if (in_array($adminClaimRegion->getName(), [ServerUtils::REGION_WILDERNESS, ServerUtils::REGION_WARZONE, ServerUtils::REGION_SPAWN], true)) continue;
 
             if (!$adminClaimRegion->getCuboid()->isInside($position)) {
                 continue;
             }
 
             return $adminClaimRegion;
-        }*/
+        }
 
         return $this->adminClaims[ServerUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
     }
