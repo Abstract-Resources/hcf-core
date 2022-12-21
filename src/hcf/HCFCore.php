@@ -28,7 +28,7 @@ use hcf\listener\PlayerRespawnListener;
 use hcf\object\faction\query\LoadFactionsQuery;
 use hcf\task\ProfileTickUpdateTask;
 use hcf\thread\ThreadPool;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use function is_float;
@@ -45,7 +45,7 @@ final class HCFCore extends PluginBase {
         $this->saveResource('messages.yml');
         $this->saveResource('classes.yml');
 
-        HCFUtils::load();
+        ServerUtils::load();
 
         PvpClassFactory::getInstance()->init();
         FactionFactory::getInstance()->init();
@@ -86,7 +86,7 @@ final class HCFCore extends PluginBase {
 
         ThreadPool::getInstance()->close();
 
-        HCFUtils::setSotwTime(HCFUtils::getSotwTimeRemaining(), true);
+        ServerUtils::setSotwTime(ServerUtils::getSotwTimeRemaining(), true);
     }
 
     /**

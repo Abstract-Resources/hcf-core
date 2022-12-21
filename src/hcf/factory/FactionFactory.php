@@ -14,7 +14,7 @@ use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\object\profile\query\BatchSaveProfileQuery;
 use hcf\thread\ThreadPool;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use hcf\utils\UnexpectedException;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
@@ -118,8 +118,8 @@ final class FactionFactory {
                     -1,
                     -1,
                     -1,
-                    HCFUtils::dateNow(),
-                    HCFUtils::dateNow(),
+                    ServerUtils::dateNow(),
+                    ServerUtils::dateNow(),
                     true
                 );
 
@@ -133,7 +133,7 @@ final class FactionFactory {
 
             if (($instance = $profile->getInstance()) === null) continue;
 
-            $instance->sendMessage(HCFUtils::replacePlaceholders('LEADER_DISBANDED_THE_FACTION', ['player' => $leader->getName()]));
+            $instance->sendMessage(ServerUtils::replacePlaceholders('LEADER_DISBANDED_THE_FACTION', ['player' => $leader->getName()]));
         }
 
         ThreadPool::getInstance()->submit(new BatchSaveProfileQuery($offlineProfiles));
@@ -165,7 +165,7 @@ final class FactionFactory {
             $this->adminClaims[$factionId] = $claimRegion;
         }
 
-        if (in_array($factionId, [HCFUtils::REGION_WARZONE, HCFUtils::REGION_WILDERNESS], true)) return;
+        if (in_array($factionId, [ServerUtils::REGION_WARZONE, ServerUtils::REGION_WILDERNESS], true)) return;
 
         $cuboid = $claimRegion->getCuboid();
         for ($x = $cuboid->getFirstCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $cuboid->getSecondCorner()->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
@@ -305,17 +305,17 @@ final class FactionFactory {
             return $claimRegion;
         }
 
-        if (($claimRegion = $this->adminClaims[HCFUtils::REGION_WARZONE] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
+        if (($claimRegion = $this->adminClaims[ServerUtils::REGION_WARZONE] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
             return $claimRegion;
         }
 
         // First do this check because maybe Warzone is returned
-        /*if (($claimRegion = $this->adminClaims[HCFUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
+        /*if (($claimRegion = $this->adminClaims[ServerUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
             return $claimRegion;
         }
 
         foreach ($this->adminClaims as $adminClaimRegion) {
-            if ($adminClaimRegion->getName() === HCFUtils::REGION_WILDERNESS) continue;
+            if ($adminClaimRegion->getName() === ServerUtils::REGION_WILDERNESS) continue;
 
             if (!$adminClaimRegion->getCuboid()->isInside($position)) {
                 continue;
@@ -324,7 +324,7 @@ final class FactionFactory {
             return $adminClaimRegion;
         }*/
 
-        return $this->adminClaims[HCFUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
+        return $this->adminClaims[ServerUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
     }
 
     /**

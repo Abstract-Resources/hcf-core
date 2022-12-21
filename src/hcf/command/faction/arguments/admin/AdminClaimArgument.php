@@ -9,7 +9,7 @@ use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\command\faction\ProfileArgumentTrait;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\Profile;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -30,7 +30,7 @@ final class AdminClaimArgument extends Argument {
             return;
         }
 
-        $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
+        $sender->sendMessage(ServerUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
 
         $item = ClaimArgument::getClaimingWand(ClaimArgument::ADMIN_CLAIMING, $args[0]);
         if (!$found && !$sender->getInventory()->canAddItem($item)) {

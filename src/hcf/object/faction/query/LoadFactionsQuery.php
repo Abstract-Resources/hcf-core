@@ -11,7 +11,7 @@ use hcf\object\ClaimRegion;
 use hcf\object\faction\Faction;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use mysqli_result;
 use pocketmine\entity\Location;
 use pocketmine\Server;
@@ -99,8 +99,8 @@ final class LoadFactionsQuery implements Query {
             if (!is_array($data = $config->get($faction->getId()))) continue;
 
             FactionFactory::getInstance()->registerClaim(new ClaimRegion($faction->getName(), new ClaimCuboid(
-                new Position($data['firstX'], $data['firstY'], $data['firstZ'], HCFUtils::getDefaultWorld()),
-                new Position($data['secondX'], $data['secondY'], $data['secondZ'], HCFUtils::getDefaultWorld())
+                new Position($data['firstX'], $data['firstY'], $data['firstZ'], ServerUtils::getDefaultWorld()),
+                new Position($data['secondX'], $data['secondY'], $data['secondZ'], ServerUtils::getDefaultWorld())
             )), $faction->getId());
         }
     }

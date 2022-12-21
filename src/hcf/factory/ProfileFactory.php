@@ -6,7 +6,7 @@ namespace hcf\factory;
 
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileTimer;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use function array_filter;
@@ -63,7 +63,7 @@ final class ProfileFactory {
 
         $profile->hideScoreboard();
 
-        HCFUtils::storeProfileTimers($profile->getXuid(), array_map(fn(ProfileTimer $timer) => [
+        ServerUtils::storeProfileTimers($profile->getXuid(), array_map(fn(ProfileTimer $timer) => [
         	'name' => $timer->getName(),
         	'remaining' => $timer->getRemainingTime()
         ], array_filter($profile->getStoredTimers(), fn(ProfileTimer $timer) => $timer->getName() !== ProfileTimer::COMBAT_TAG)));

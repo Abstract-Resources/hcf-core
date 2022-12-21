@@ -10,7 +10,7 @@ use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileTimer;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\TextFormat;
@@ -26,31 +26,31 @@ final class HomeArgument extends Argument {
      */
     public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
 
         if (($profileTimer = $profile->getProfileTimer(ProfileTimer::COMBAT_TAG)) !== null && $profileTimer->isRunning()) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_HOME_SPAWN_TIMER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_HOME_SPAWN_TIMER'));
 
             return;
         }
 
         if (($profileTimer = $profile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && $profileTimer->isRunning()) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_HOME_PVP_TIMER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_HOME_PVP_TIMER'));
 
             return;
         }
 
         if (($profileTimer = $profile->getProfileTimer(ProfileTimer::HOME_TAG)) !== null && $profileTimer->isRunning()) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_HOME_PVP_TIMER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_HOME_PVP_TIMER'));
 
             return;
         }
 
         if (($loc = $faction->getHqLocation()) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_HOME_NOT_SET'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_HOME_NOT_SET'));
 
             return;
         }

@@ -10,7 +10,7 @@ use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\Config;
 
@@ -25,19 +25,19 @@ final class SetHomeArgument extends Argument {
      */
     public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
 
         if (!ProfileData::isAtLeast($profile->getFactionRole(), ProfileData::OFFICER_ROLE)) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
 
             return;
         }
 
         if (($factionAt = FactionFactory::getInstance()->getFactionAt($loc = $sender->getLocation())) !== null && $factionAt->getId() !== $faction->getId()) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('YOU_CANNOT_DO_THIS_HERE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('YOU_CANNOT_DO_THIS_HERE'));
 
             return;
         }
@@ -53,7 +53,7 @@ final class SetHomeArgument extends Argument {
         ]);
         $config->save();
 
-        $faction->broadcastMessage(HCFUtils::replacePlaceholders('FACTION_HOME_CHANGED', [
+        $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_HOME_CHANGED', [
         	'player' => $sender->getName()
         ]));
     }

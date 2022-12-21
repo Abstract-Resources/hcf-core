@@ -6,7 +6,7 @@ namespace hcf\command\faction\arguments\admin;
 
 use abstractplugin\command\Argument;
 use hcf\factory\FactionFactory;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -34,7 +34,7 @@ final class SetBalanceArgument extends Argument {
         }
 
         if (!is_numeric($args[1])) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('AMOUNT_MUST_BE_POSITIVE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('AMOUNT_MUST_BE_POSITIVE'));
 
             return;
         }

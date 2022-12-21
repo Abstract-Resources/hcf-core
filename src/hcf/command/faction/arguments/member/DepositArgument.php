@@ -8,7 +8,7 @@ use abstractplugin\command\Argument;
 use hcf\command\faction\ProfileArgumentTrait;
 use hcf\factory\FactionFactory;
 use hcf\object\profile\Profile;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -32,7 +32,7 @@ final class DepositArgument extends Argument {
         }
 
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
@@ -40,13 +40,13 @@ final class DepositArgument extends Argument {
         $amount = $args[0] === 'all' ? $profile->getBalance() : (is_numeric($args[0]) ? intval($args[0]) : 0);
 
         if ($amount <= 0) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('AMOUNT_MUST_BE_POSITIVE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('AMOUNT_MUST_BE_POSITIVE'));
 
             return;
         }
 
         if ($amount > $profile->getBalance()) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('NOT_ENOUGH_BALANCE', [
+            $sender->sendMessage(ServerUtils::replacePlaceholders('NOT_ENOUGH_BALANCE', [
             	'amount' => (string) $amount,
             	'current_amount' => (string) $profile->getBalance()
             ]));
@@ -60,7 +60,7 @@ final class DepositArgument extends Argument {
         $profile->forceSave(true);
         $faction->forceSave(true);
 
-        $faction->broadcastMessage(HCFUtils::replacePlaceholders('FACTION_MEMBER_DEPOSITED', [
+        $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_MEMBER_DEPOSITED', [
         	'player' => $sender->getName(),
         	'amount' => (string) $amount
         ]));

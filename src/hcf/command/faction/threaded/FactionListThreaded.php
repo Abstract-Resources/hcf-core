@@ -7,7 +7,7 @@ namespace hcf\command\faction\threaded;
 use hcf\object\faction\Faction;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -103,7 +103,7 @@ final class FactionListThreaded implements Query {
         foreach ($this->results as $result) {
             [$key, $args] = $result;
 
-            $message .= HCFUtils::replacePlaceholders($key, $args) . "\n";
+            $message .= ServerUtils::replacePlaceholders($key, $args) . "\n";
         }
 
         if ($this->found) {

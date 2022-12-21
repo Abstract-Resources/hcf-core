@@ -7,7 +7,7 @@ namespace hcf\factory;
 use Exception;
 use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
@@ -84,7 +84,7 @@ final class KothFactory {
     public function getKothName(): ?string {
         if ($this->currentKoth === null) return null;
 
-        return HCFUtils::replacePlaceholders('KOTH_' . mb_strtoupper($this->currentKoth) . '_NAME', [$this->currentKoth]);
+        return ServerUtils::replacePlaceholders('KOTH_' . mb_strtoupper($this->currentKoth) . '_NAME', [$this->currentKoth]);
     }
 
     /**
@@ -109,9 +109,9 @@ final class KothFactory {
 
                 $this->targetName = $targetEntity->getName();
 
-                $targetEntity->sendMessage(HCFUtils::replacePlaceholders('PLAYER_KOTH_CONTROLLING', [$this->currentKoth]));
+                $targetEntity->sendMessage(ServerUtils::replacePlaceholders('PLAYER_KOTH_CONTROLLING', [$this->currentKoth]));
 
-                Server::getInstance()->broadcastMessage(HCFUtils::replacePlaceholders('KOTH_SOMEONE_CONTROLLING', [$targetEntity->getName(), $this->currentKoth]));
+                Server::getInstance()->broadcastMessage(ServerUtils::replacePlaceholders('KOTH_SOMEONE_CONTROLLING', [$targetEntity->getName(), $this->currentKoth]));
 
                 break;
             }
@@ -125,9 +125,9 @@ final class KothFactory {
             ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null ||
             !$cuboid->isInside($target->getPosition())
         ) {
-            $target->sendMessage(HCFUtils::replacePlaceholders('PLAYER_KOTH_CONTROLLING_LOST', [$this->currentKoth]));
+            $target->sendMessage(ServerUtils::replacePlaceholders('PLAYER_KOTH_CONTROLLING_LOST', [$this->currentKoth]));
 
-            Server::getInstance()->broadcastMessage(HCFUtils::replacePlaceholders('KOTH_CONTROLLING_LOST', [$target->getName(), $this->currentKoth]));
+            Server::getInstance()->broadcastMessage(ServerUtils::replacePlaceholders('KOTH_CONTROLLING_LOST', [$target->getName(), $this->currentKoth]));
 
             $this->targetName = null;
 
@@ -141,7 +141,7 @@ final class KothFactory {
         $faction->setPoints($faction->getPoints() + HCFCore::getConfigInt('factions.points-increase-koth', 1));
         $faction->forceSave(true);
 
-        Server::getInstance()->broadcastMessage(HCFUtils::replacePlaceholders('KOTH_CAPTURING_END', [$target->getName(), $faction->getName(), $this->currentKoth]));
+        Server::getInstance()->broadcastMessage(ServerUtils::replacePlaceholders('KOTH_CAPTURING_END', [$target->getName(), $faction->getName(), $this->currentKoth]));
 
         $this->setCurrentKoth(null);
     }
@@ -161,7 +161,7 @@ final class KothFactory {
 
         return [
         	'koth_name' => $kothName,
-        	'koth_time_remaining' => HCFUtils::dateString($this->capturingTime)
+        	'koth_time_remaining' => ServerUtils::dateString($this->capturingTime)
         ];
     }
 }

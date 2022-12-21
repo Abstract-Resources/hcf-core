@@ -12,7 +12,7 @@ use hcf\HCFLanguage;
 use hcf\object\faction\Faction;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -62,7 +62,7 @@ final class CreateArgument extends Argument {
         FactionFactory::getInstance()->registerFaction($faction);
         FactionFactory::getInstance()->joinFaction($profile, $faction, ProfileData::LEADER_ROLE);
 
-        Server::getInstance()->broadcastMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_CREATED', [
+        Server::getInstance()->broadcastMessage(ServerUtils::replacePlaceholders('PLAYER_FACTION_CREATED', [
         	'player' => $sender->getName(),
         	'faction' => $faction->getName()
         ]));

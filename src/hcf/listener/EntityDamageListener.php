@@ -6,7 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileTimer;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
@@ -30,7 +30,7 @@ final class EntityDamageListener implements Listener {
             return;
         }
 
-        if (HCFUtils::isSotwRunning()) {
+        if (ServerUtils::isSotwRunning()) {
             $ev->cancel();
 
             return;
@@ -69,7 +69,7 @@ final class EntityDamageListener implements Listener {
         }
 
         if (($profileTimer = $profile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && ($remainingTime = $profileTimer->getRemainingTime()) > 0) {
-            $attacker->sendMessage(TextFormat::RED . $profile->getName() . ' has their ' . $profileTimer->getNameColoured() . TextFormat::RED . ' timer for another ' . TextFormat::BOLD . HCFUtils::dateString($remainingTime));
+            $attacker->sendMessage(TextFormat::RED . $profile->getName() . ' has their ' . $profileTimer->getNameColoured() . TextFormat::RED . ' timer for another ' . TextFormat::BOLD . ServerUtils::dateString($remainingTime));
 
             $ev->cancel();
 
@@ -77,7 +77,7 @@ final class EntityDamageListener implements Listener {
         }
 
         if (($profileTimer = $attackerProfile->getProfileTimer(ProfileTimer::PVP_TAG)) !== null && ($remainingTime = $profileTimer->getRemainingTime()) > 0) {
-            $attacker->sendMessage(TextFormat::colorize(sprintf('&cYou cannot attack players whilst your %s&c timer is active [&l%s&r&c remaining]. Use \'&7/pvp enable&c\' to allow pvp.', $profileTimer->getNameColoured(), HCFUtils::dateString($remainingTime))));
+            $attacker->sendMessage(TextFormat::colorize(sprintf('&cYou cannot attack players whilst your %s&c timer is active [&l%s&r&c remaining]. Use \'&7/pvp enable&c\' to allow pvp.', $profileTimer->getNameColoured(), ServerUtils::dateString($remainingTime))));
 
             $ev->cancel();
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\object;
 
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
@@ -74,7 +74,7 @@ final class ClaimCuboid {
      * @return bool
      */
     public function hasBothPositionsSet(World $world): bool {
-        return !($zero = HCFUtils::posZero($world))->equals($this->firstCorner) && !$zero->equals($this->secondCorner);
+        return !($zero = ServerUtils::posZero($world))->equals($this->firstCorner) && !$zero->equals($this->secondCorner);
     }
 
     public function recalculate(): void {
@@ -135,8 +135,8 @@ final class ClaimCuboid {
      */
     public static function fromNumber(int $number): ClaimCuboid {
         $cuboid = new self (
-            new Position(-$number, World::Y_MIN, -$number, HCFUtils::getDefaultWorld()),
-            new Position($number, World::Y_MAX, $number, HCFUtils::getDefaultWorld())
+            new Position(-$number, World::Y_MIN, -$number, ServerUtils::getDefaultWorld()),
+            new Position($number, World::Y_MAX, $number, ServerUtils::getDefaultWorld())
         );
         $cuboid->recalculate();
 
@@ -150,8 +150,8 @@ final class ClaimCuboid {
      */
     public static function fromStorage(array $storage): ClaimCuboid {
         $cuboid = new self(
-            new Position($storage['firstX'], $storage['firstY'], $storage['firstZ'], HCFUtils::getDefaultWorld()),
-            new Position($storage['secondX'], $storage['secondY'], $storage['secondZ'], HCFUtils::getDefaultWorld())
+            new Position($storage['firstX'], $storage['firstY'], $storage['firstZ'], ServerUtils::getDefaultWorld()),
+            new Position($storage['secondX'], $storage['secondY'], $storage['secondZ'], ServerUtils::getDefaultWorld())
         );
         $cuboid->recalculate();
 

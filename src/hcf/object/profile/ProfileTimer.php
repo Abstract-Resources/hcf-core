@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace hcf\object\profile;
 
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use function strtoupper;
 use function time;
 
@@ -39,7 +39,7 @@ final class ProfileTimer {
      * @return string
      */
     public function getNameColoured(): string {
-        return HCFUtils::replacePlaceholders('TIMER_' . strtoupper($this->name));
+        return ServerUtils::replacePlaceholders('TIMER_' . strtoupper($this->name));
     }
 
     /**

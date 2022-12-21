@@ -6,7 +6,7 @@ namespace hcf\listener;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\ProfileTimer;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\entity\Location;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
@@ -24,7 +24,7 @@ final class PlayerRespawnListener implements Listener {
 
         if (($profile = ProfileFactory::getInstance()->getIfLoaded($player->getXuid())) === null) return;
 
-        $ev->setRespawnPosition($to = HCFUtils::getDefaultWorld()->getSpawnLocation());
+        $ev->setRespawnPosition($to = ServerUtils::getDefaultWorld()->getSpawnLocation());
 
         $profile->toggleProfileTimer(ProfileTimer::PVP_TAG);
 

@@ -9,7 +9,7 @@ use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use mysqli_result;
 use pocketmine\plugin\PluginException;
 use function is_array;
@@ -74,7 +74,7 @@ final class LoadProfileQuery implements Query {
      */
     public function onComplete(): void {
         ProfileFactory::getInstance()->registerNewProfile(
-            $this->profileData === null ? new Profile($this->xuid, $this->name, $now = HCFUtils::dateNow(), $now) : Profile::fromProfileData($this->profileData),
+            $this->profileData === null ? new Profile($this->xuid, $this->name, $now = ServerUtils::dateNow(), $now) : Profile::fromProfileData($this->profileData),
             $this->profileData !== null
         );
     }

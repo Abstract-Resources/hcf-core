@@ -7,7 +7,7 @@ namespace hcf\command\faction\threaded;
 use hcf\object\faction\Faction;
 use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
@@ -77,8 +77,8 @@ final class FactionTopThreaded implements Query {
             $target = new ConsoleCommandSender(Server::getInstance(), Server::getInstance()->getLanguage());
         }
 
-        $target->sendMessage(HCFUtils::replacePlaceholders('FACTION_TOP_INFO', ['message' => implode("\n", array_map(function (array $result): string {
-            return HCFUtils::replacePlaceholders($result[0], $result[1]);
+        $target->sendMessage(ServerUtils::replacePlaceholders('FACTION_TOP_INFO', ['message' => implode("\n", array_map(function (array $result): string {
+            return ServerUtils::replacePlaceholders($result[0], $result[1]);
         },$this->result))]));
     }
 }

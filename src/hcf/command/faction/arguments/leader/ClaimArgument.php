@@ -11,7 +11,7 @@ use hcf\HCFLanguage;
 use hcf\object\ClaimRegion;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
@@ -43,7 +43,7 @@ final class ClaimArgument extends Argument {
             return;
         }
 
-        if (in_array($profile->getClaimRegion()->getName(), [HCFUtils::REGION_SPAWN, HCFUtils::REGION_WARZONE], true)) {
+        if (in_array($profile->getClaimRegion()->getName(), [ServerUtils::REGION_SPAWN, ServerUtils::REGION_WARZONE], true)) {
             $sender->sendMessage(HCFLanguage::YOU_CANT_CLAIM_HERE()->build());
 
             return;
@@ -55,7 +55,7 @@ final class ClaimArgument extends Argument {
             return;
         }
 
-        $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
+        $sender->sendMessage(ServerUtils::replacePlaceholders('PLAYER_FACTION_' . (($found = ClaimRegion::getIfClaiming($sender) !== null) ? 'STOPPED' : 'STARTED') . '_CLAIMING'));
 
         $item = self::getClaimingWand(self::FACTION_CLAIMING);
         if (!$found && !$sender->getInventory()->canAddItem($item)) {

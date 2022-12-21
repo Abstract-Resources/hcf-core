@@ -9,7 +9,7 @@ use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerChatEvent;
@@ -43,7 +43,7 @@ final class ClaimPlayerChatListener implements Listener {
 
         $ev->cancel();
 
-        $zero = HCFUtils::posZero($player->getWorld());
+        $zero = ServerUtils::posZero($player->getWorld());
         if (!$zero->equals($firstCorner = $cuboid->getFirstCorner())) {
             ClaimCuboid::growTower($player, VanillaBlocks::AIR(), $firstCorner);
         }
@@ -77,7 +77,7 @@ final class ClaimPlayerChatListener implements Listener {
         $price = ClaimPlayerInteractListener::calculateClaimPrice($cuboid);
 
         if ($price > $faction->getBalance()) {
-            $player->sendMessage(HCFUtils::replacePlaceholders('FACTION_HAVE_NOT_BALANCE_ENOUGH'));
+            $player->sendMessage(ServerUtils::replacePlaceholders('FACTION_HAVE_NOT_BALANCE_ENOUGH'));
 
             return;
         }
@@ -88,9 +88,9 @@ final class ClaimPlayerChatListener implements Listener {
             for ($z = $firstCorner->getFloorZ(); $z <= $secondCorner->getFloorZ(); $z++) {
                 $claimRegion = FactionFactory::getInstance()->getRegionAt(new Position($x, World::Y_MAX, $z, $player->getWorld()));
 
-                if ($claimRegion->getName() === HCFUtils::REGION_WILDERNESS) continue;
+                if ($claimRegion->getName() === ServerUtils::REGION_WILDERNESS) continue;
 
-                $player->sendMessage(HCFUtils::replacePlaceholders('INVALID_CLAIM_POSITION'));
+                $player->sendMessage(ServerUtils::replacePlaceholders('INVALID_CLAIM_POSITION'));
 
                 return;
             }

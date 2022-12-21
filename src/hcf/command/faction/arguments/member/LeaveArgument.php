@@ -9,7 +9,7 @@ use hcf\command\faction\ProfileArgumentTrait;
 use hcf\factory\FactionFactory;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
@@ -24,7 +24,7 @@ final class LeaveArgument extends Argument {
      */
     public function onPlayerExecute(Player $sender, Profile $profile, string $label, array $args): void {
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
@@ -36,13 +36,13 @@ final class LeaveArgument extends Argument {
         }
 
         if (($claimRegion = FactionFactory::getInstance()->getFactionClaim($faction)) !== null && $claimRegion->getCuboid()->isInside($sender->getPosition())) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('MUST_LEAVE_FACTION_TERRITORY'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('MUST_LEAVE_FACTION_TERRITORY'));
 
             return;
         }
 
-        $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_FACTION_LEFT'));
-        $faction->broadcastMessage(HCFUtils::replacePlaceholders('FACTION_PLAYER_LEFT', [
+        $sender->sendMessage(ServerUtils::replacePlaceholders('PLAYER_FACTION_LEFT'));
+        $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_PLAYER_LEFT', [
         	'player' => $sender->getName()
         ]));
 

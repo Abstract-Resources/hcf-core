@@ -10,7 +10,7 @@ use hcf\HCFCore;
 use hcf\HCFLanguage;
 use hcf\object\ClaimCuboid;
 use hcf\object\ClaimRegion;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -29,7 +29,7 @@ final class ClaimPlayerInteractListener implements Listener {
         if (($tag = $ev->getItem()->getNamedTag()->getTag('claim_type')) === null) return;
         if (($cuboid = ClaimRegion::getIfClaiming($player)) === null) return;
 
-        if (FactionFactory::getInstance()->getRegionAt($vec = $ev->getBlock()->getPosition())->getName() !== HCFUtils::REGION_WILDERNESS && $tag->getValue() === ClaimArgument::FACTION_CLAIMING) return;
+        if (FactionFactory::getInstance()->getRegionAt($vec = $ev->getBlock()->getPosition())->getName() !== ServerUtils::REGION_WILDERNESS && $tag->getValue() === ClaimArgument::FACTION_CLAIMING) return;
 
         if ($ev->getAction() === PlayerInteractEvent::LEFT_CLICK_BLOCK) {
             $cuboid->setFirstCorner($vec);

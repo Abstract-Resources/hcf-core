@@ -12,7 +12,7 @@ use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
 use hcf\object\pvpclass\PvpClass;
 use hcf\thread\ThreadPool;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use hcf\utils\ScoreboardBuilder;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -74,7 +74,7 @@ final class Profile {
         	ProfileTimer::HOME_TAG => new ProfileTimer(ProfileTimer::HOME_TAG, 20)
         ];
 
-        foreach (HCFUtils::fetchProfileTimers($this->xuid) as $timerData) {
+        foreach (ServerUtils::fetchProfileTimers($this->xuid) as $timerData) {
             $this->toggleProfileTimer($timerData['name'], $timerData['remaining'], !$this->getClaimRegion()->isDeathBan());
         }
 
@@ -273,17 +273,17 @@ final class Profile {
             $placeholders = array_merge($placeholders, $pvpClass->getScoreboardLines($this));
         }
 
-        if (($remainingTime = HCFUtils::getSotwTimeRemaining()) > 0) {
+        if (($remainingTime = ServerUtils::getSotwTimeRemaining()) > 0) {
             $pendingScoreboardLines[] = 'sotw_lines';
 
-            $placeholders['sotw_remaining'] = HCFUtils::dateString($remainingTime);
+            $placeholders['sotw_remaining'] = ServerUtils::dateString($remainingTime);
         }
 
         foreach ($this->timers as $timer) {
             if (($remainingTime = $timer->getRemainingTime()) <= 0) continue;
 
             $pendingScoreboardLines[] = $timer->getName() . '_lines';
-            $placeholders[$timer->getName() . '_timer'] = HCFUtils::dateString($remainingTime);
+            $placeholders[$timer->getName() . '_timer'] = ServerUtils::dateString($remainingTime);
         }
 
         $originalLines = [];
@@ -301,7 +301,7 @@ final class Profile {
         }
 
         foreach ($originalLines as $line => $scoreboardText) {
-            foreach ($this->scoreboardBuilder->fetchLine($line, HCFUtils::replacePlaceholders($scoreboardText, $placeholders)) as $packet) {
+            foreach ($this->scoreboardBuilder->fetchLine($line, ServerUtils::replacePlaceholders($scoreboardText, $placeholders)) as $packet) {
                 $instance->getNetworkSession()->sendDataPacket($packet);
             }
         }
@@ -327,7 +327,7 @@ final class Profile {
 			$this->deaths,
             $this->balance,
             $this->firstSeen,
-            $stored ? HCFUtils::dateNow() : $this->lastSeen,
+            $stored ? ServerUtils::dateNow() : $this->lastSeen,
 			$joinedBefore
 		)));
 	}
