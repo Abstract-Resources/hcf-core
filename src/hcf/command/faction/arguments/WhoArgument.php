@@ -10,7 +10,7 @@ use hcf\HCFLanguage;
 use hcf\object\faction\Faction;
 use hcf\object\faction\FactionData;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -47,7 +47,7 @@ final class WhoArgument extends Argument {
             $m[$factionMember->getRole()][] = ($factionMember->isOnline() ? TextFormat::GREEN : TextFormat::GRAY) . $factionMember->getName() . sprintf('&e[&a%s&e]', strval($factionMember->getKills()));
         }
 
-        $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_WHO_PLAYER', [
+        $sender->sendMessage(ServerUtils::replacePlaceholders('FACTION_WHO_PLAYER', [
         	'faction' => $faction->getName(),
         	'players_count' => (string) count($faction->getMembers()),
         	'hq' => ($loc = $faction->getHqLocation()) === null ? 'None' : $loc->getFloorX() . ', ' . $loc->getFloorZ(),
@@ -57,7 +57,7 @@ final class WhoArgument extends Argument {
         	'balance' => (string) $faction->getBalance(),
         	'deaths_until_raidable' => (string) $faction->getDeathsUntilRaidable(true),
         	'points' => (string) $faction->getPoints(),
-        	'time_until_regen' => $faction->getRegenStatus() === FactionData::STATUS_REGENERATING ? '&4Regenerating' : (($remainingRegenerating = $faction->getRemainingRegenerationTime()) <= 0 ? 'None' : HCFUtils::dateString($remainingRegenerating))
+        	'time_until_regen' => $faction->getRegenStatus() === FactionData::STATUS_REGENERATING ? '&4Regenerating' : (($remainingRegenerating = $faction->getRemainingRegenerationTime()) <= 0 ? 'None' : ServerUtils::dateString($remainingRegenerating))
         ]));
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace hcf\command\faction\arguments\admin;
 
 use abstractplugin\command\Argument;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -32,8 +32,8 @@ final class SotwArgument extends Argument {
             return;
         }
 
-        HCFUtils::setSotwTime(intval($args[0]), true);
+        ServerUtils::setSotwTime(intval($args[0]), true);
 
-        $sender->sendMessage(TextFormat::GREEN . 'SOTW Time set to ' . HCFUtils::dateString(HCFUtils::getSotwTimeRemaining()));
+        $sender->sendMessage(TextFormat::GREEN . 'SOTW Time set to ' . ServerUtils::dateString(ServerUtils::getSotwTimeRemaining()));
     }
 }

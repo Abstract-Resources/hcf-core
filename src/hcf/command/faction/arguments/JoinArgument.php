@@ -11,7 +11,7 @@ use hcf\HCFLanguage;
 use hcf\object\faction\FactionData;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -51,7 +51,7 @@ final class JoinArgument extends Argument {
         }
 
         if ($faction->getRegenStatus() === FactionData::STATUS_PAUSED) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('PLAYER_ATTEMPT_JOIN_ON_FREEZE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('PLAYER_ATTEMPT_JOIN_ON_FREEZE'));
 
             return;
         }

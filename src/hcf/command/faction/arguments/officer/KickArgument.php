@@ -14,7 +14,7 @@ use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
 use hcf\object\profile\query\BatchSaveProfileQuery;
 use hcf\thread\ThreadPool;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -36,19 +36,19 @@ final class KickArgument extends Argument {
         }
 
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
 
         if (!ProfileData::isAtLeast($profile->getFactionRole(), ProfileData::OFFICER_ROLE)) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
 
             return;
         }
 
         if ($faction->getDeathsUntilRaidable(true) <= 0.0) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_RAIDABLE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_RAIDABLE'));
 
             return;
         }
@@ -78,8 +78,8 @@ final class KickArgument extends Argument {
             -1,
             -1,
             -1,
-            HCFUtils::dateNow(),
-            HCFUtils::dateNow(),
+            ServerUtils::dateNow(),
+            ServerUtils::dateNow(),
             true
         )]))) {
             $sender->sendMessage(TextFormat::RED . 'An error occurred while save the profile data...');
@@ -87,7 +87,7 @@ final class KickArgument extends Argument {
             return;
         }
 
-        $faction->broadcastMessage(HCFUtils::replacePlaceholders('FACTION_PLAYER_LEFT', [
+        $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_PLAYER_LEFT', [
         	'player' => $factionMember->getName()
         ]));
 

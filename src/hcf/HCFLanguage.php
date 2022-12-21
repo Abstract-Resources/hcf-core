@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace hcf;
 
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -74,6 +74,6 @@ final class HCFLanguage {
 
         foreach ($args as $i => $arg) $parameters[$this->parameters[$i]] = $arg;
 
-        return HCFUtils::replacePlaceholders($this->key, $parameters);
+        return ServerUtils::replacePlaceholders($this->key, $parameters);
     }
 }

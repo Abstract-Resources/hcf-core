@@ -20,7 +20,7 @@ use function str_replace;
 use function strval;
 use function time;
 
-final class HCFUtils {
+final class ServerUtils {
 
     public const REGION_SPAWN = 'Spawn';
     public const REGION_WARZONE = 'Warzone';

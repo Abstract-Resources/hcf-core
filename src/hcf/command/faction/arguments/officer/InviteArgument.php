@@ -12,7 +12,7 @@ use hcf\HCFCore;
 use hcf\HCFLanguage;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileData;
-use hcf\utils\HCFUtils;
+use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -34,19 +34,19 @@ final class InviteArgument extends Argument {
         }
 
         if ($profile->getFactionId() === null || ($faction = FactionFactory::getInstance()->getFaction($profile->getFactionId())) === null) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_IN'));
 
             return;
         }
 
         if (!ProfileData::isAtLeast($profile->getFactionRole(), ProfileData::OFFICER_ROLE)) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_NOT_OFFICER'));
 
             return;
         }
 
         if ($faction->getDeathsUntilRaidable(true) <= 0.0) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('COMMAND_FACTION_RAIDABLE'));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('COMMAND_FACTION_RAIDABLE'));
 
             return;
         }
@@ -77,7 +77,7 @@ final class InviteArgument extends Argument {
 
         // TODO: Change this to check what is the max members size
         if (count($faction->getMembers()) > 5) {
-            $sender->sendMessage(HCFUtils::replacePlaceholders('FACTION_FULL', ['faction' => $faction->getName()]));
+            $sender->sendMessage(ServerUtils::replacePlaceholders('FACTION_FULL', ['faction' => $faction->getName()]));
 
             return;
         }
