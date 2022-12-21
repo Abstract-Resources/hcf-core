@@ -12,6 +12,7 @@ use hcf\command\faction\arguments\admin\PurgeArgument;
 use hcf\command\faction\arguments\admin\SetBalanceArgument;
 use hcf\command\faction\arguments\admin\SotwArgument;
 use hcf\command\faction\arguments\CreateArgument;
+use hcf\command\faction\arguments\HelpArgument;
 use hcf\command\faction\arguments\JoinArgument;
 use hcf\command\faction\arguments\leader\ClaimArgument;
 use hcf\command\faction\arguments\leader\DemoteArgument;
@@ -36,6 +37,7 @@ final class FactionCommand extends BaseCommand {
 
         $this->registerParent(
             new CreateArgument('create'),
+            new HelpArgument('help'),
             new InviteArgument('invite'),
             new ClaimArgument('claim'),
             new UnclaimArgument('unclaim'),

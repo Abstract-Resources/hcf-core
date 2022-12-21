@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace hcf\object;
 
 use hcf\utils\ServerUtils;
-use pocketmine\block\Air;
 use pocketmine\block\Block;
+use pocketmine\block\DiamondOre;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -108,24 +108,28 @@ final class ClaimCuboid {
         return $this->bb->isVectorInXZ($vector);
     }
 
+    public static function growTower(Player $player, Block $block, Vector3 $vector): void {
+        $glass = false;
+
+        for($i = $vector->getFloorY() + 1; $i <= World::Y_MAX; $i++) {
+            self::sendBlockChange($player, $glass && $block instanceof DiamondOre ? VanillaBlocks::GLASS() : $block, $vector->add(0, 1, 0));
+
+            $glass = !$glass;
+        }
+    }
+
     /**
      * @param Player  $player
      * @param Block   $block
      * @param Vector3 $vector
      */
-    public static function growTower(Player $player, Block $block, Vector3 $vector): void {
-        $glass = false;
-
-        for($i = $vector->getFloorY() + 1; $i <= World::Y_MAX; $i++) {
-            $player->getNetworkSession()->sendDataPacket(UpdateBlockPacket::create(
-                BlockPosition::fromVector3(new Vector3($vector->getX(), $i, $vector->getZ())),
-                RuntimeBlockMapping::getInstance()->toRuntimeId(($glass && !$block instanceof Air ? VanillaBlocks::GLASS() : $block)->getFullId()),
-                UpdateBlockPacket::FLAG_NETWORK,
-                UpdateBlockPacket::DATA_LAYER_NORMAL
-            ));
-
-            $glass = !$glass;
-        }
+    public static function sendBlockChange(Player $player, Block $block, Vector3 $vector): void {
+        $player->getNetworkSession()->sendDataPacket(UpdateBlockPacket::create(
+            BlockPosition::fromVector3($vector),
+            RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId()),
+            UpdateBlockPacket::FLAG_NETWORK,
+            UpdateBlockPacket::DATA_LAYER_NORMAL
+        ));
     }
 
     /**

@@ -13,6 +13,7 @@ use hcf\object\profile\ProfileData;
 use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
 
 final class SetHomeArgument extends Argument {
     use ProfileArgumentTrait;
@@ -52,6 +53,14 @@ final class SetHomeArgument extends Argument {
         	'pitch' => $loc->pitch
         ]);
         $config->save();
+
+        if (!is_array($hq = $config->get($faction->getId()))) {
+            $sender->sendMessage(TextFormat::RED . 'An error occurred');
+
+            return;
+        }
+
+        $faction->setHq($hq);
 
         $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_HOME_CHANGED', [
         	'player' => $sender->getName()

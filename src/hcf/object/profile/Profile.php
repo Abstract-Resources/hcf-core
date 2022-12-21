@@ -20,6 +20,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\Position;
 use function array_merge;
 use function count;
 use function in_array;
@@ -41,6 +42,9 @@ final class Profile {
     private ScoreboardBuilder $scoreboardBuilder;
     /** @var int */
     private int $energy = 0;
+
+    /** @var array<int, Position> */
+    public array $glassCached = [];
 
     /**
      * @param string      $xuid

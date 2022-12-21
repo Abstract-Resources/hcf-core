@@ -13,8 +13,6 @@ use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\Query;
 use hcf\utils\ServerUtils;
 use mysqli_result;
-use pocketmine\entity\Location;
-use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\world\Position;
 use RuntimeException;
@@ -90,8 +88,8 @@ final class LoadFactionsQuery implements Query {
         while ($faction = $this->factions->shift()) {
             if (!$faction instanceof Faction) continue;
 
-            if (is_array($hqData = $config0->get($faction->getId())) && ($world = Server::getInstance()->getWorldManager()->getWorldByName($hqData['world'])) !== null) {
-                $faction->setHqLocation(new Location($hqData['x'], $hqData['y'], $hqData['z'], $world, $hqData['yaw'], $hqData['pitch']));
+            if (is_array($hqData = $config0->get($faction->getId()))) {
+                $faction->setHq($hqData);
             }
 
             FactionFactory::getInstance()->registerFaction($faction);

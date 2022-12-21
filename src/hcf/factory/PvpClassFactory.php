@@ -8,6 +8,7 @@ use hcf\HCFCore;
 use hcf\object\profile\Profile;
 use hcf\object\pvpclass\impl\ArcherPvpClass;
 use hcf\object\pvpclass\impl\BardPvpClass;
+use hcf\object\pvpclass\impl\NormalPvpClass;
 use hcf\object\pvpclass\PvpClass;
 use pocketmine\item\Item;
 use pocketmine\utils\Config;
@@ -24,7 +25,8 @@ final class PvpClassFactory {
     public function init(): void {
         $classesStored = [
             'Bard' => BardPvpClass::class,
-            'Archer' => ArcherPvpClass::class
+            'Archer' => ArcherPvpClass::class,
+            'Normal' => NormalPvpClass::class
         ];
 
         $config = new Config(HCFCore::getInstance()->getDataFolder() . 'classes.yml');
