@@ -42,7 +42,7 @@ final class PvpClassFactory {
                 $data['custom_name'],
                 PvpClass::parseItems($data['armor_contents'] ?? []),
                 PvpClass::parseEffects($data['effects'] ?? []),
-                $data['extra']
+                $data['extra'] ?? []
             ));
         }
     }
