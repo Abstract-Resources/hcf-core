@@ -4,75 +4,50 @@ declare(strict_types=1);
 
 namespace hcf\object\pvpclass\impl;
 
+use hcf\factory\FactionFactory;
 use hcf\object\profile\Profile;
-use hcf\object\pvpclass\impl\bard\BardItem;
 use hcf\object\pvpclass\PvpClass;
-use pocketmine\entity\effect\EffectInstance;
+use hcf\utils\ServerUtils;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use pocketmine\utils\TextFormat;
+use pocketmine\Server;
 use function array_merge;
-use function count;
-use function is_array;
-use function mb_strtoupper;
 
 final class BardPvpClass extends PvpClass {
-
-    /** @var BardItem[] */
-    private array $bardItems = [];
-
-    public function init(): void {
-        $bardItems = $this->extra['bard_items'] ?? [];
-
-        if (!is_array($bardItems) || count($bardItems) <= 0) return;
-
-        foreach ($bardItems as $itemData) {
-            if (($item = VanillaItems::getAll()[mb_strtoupper($itemData['id'])] ?? null) === null) continue;
-
-            $this->bardItems[] = new BardItem(
-                TextFormat::colorize($itemData['display_name']),
-                $item,
-                $itemData['energy'],
-                $itemData['apply_on_bard'] ?? true,
-                $itemData['other_factions'],
-                PvpClass::parseEffects($itemData['effects'])
-            );
-        }
-    }
 
     /**
      * @param Profile $profile
      * @param Item    $itemHand
      */
     public function onItemInteract(Profile $profile, Item $itemHand): void {
-        if (($bardItem = $this->getValidItem($itemHand)) === null) return;
-        // TODO: Give effects uwu
+        if (($factionId = $profile->getFactionId()) === null || ($faction = FactionFactory::getInstance()->getFaction($factionId)) === null) return;
+        if (($classItem = $this->getValidItem($itemHand)) === null) return;
+        if (($instance = $profile->getInstance()) === null || !$instance->isConnected()) return;
 
-        // TODO: Need get nearest players who not are faction members
-    }
+        if ($classItem->getEnergy() > $profile->getEnergy()) {
+            $instance->sendMessage(ServerUtils::replacePlaceholders('NOT_ENOUGH_ENERGY', [
+                'energy' => (string) $classItem->getEnergy(),
+                'current_energy' => (string) $profile->getEnergy()
+            ]));
 
-    /**
-     * @param Profile $profile
-     * @param Item $itemHand
-     */
-    public function onHeldItem(Profile $profile, Item $itemHand): void {
-        if (($bardItem = $this->getValidItem($itemHand)) === null) return;
-
-    }
-
-    /**
-     * @param Item $item
-     *
-     * @return BardItem|null
-     */
-    private function getValidItem(Item $item): ?BardItem {
-        foreach ($this->bardItems as $bardItem) {
-            if (!$bardItem->getItem()->equals($item)) continue;
-
-            return $bardItem;
+            return;
         }
 
-        return null;
+        $profile->setEnergy($profile->getEnergy() - $classItem->getEnergy());
+        $instance->getInventory()->setItemInHand($itemHand->setCount($itemHand->getCount() - 1));
+
+        foreach ($faction->getMembers() as $factionMember) {
+            if (($target = Server::getInstance()->getPlayerExact($factionMember->getName())) === null || !$target->isConnected()) continue;
+
+            foreach ($classItem->getEffects() as $effectInstance) $target->getEffects()->add($effectInstance);
+        }
+
+        if (!$classItem->isApplyOnBard()) return;
+
+        foreach ($classItem->getEffects() as $effectInstance) $instance->getEffects()->add($effectInstance);
+    }
+
+    public function onHeldItem(Profile $profile, Item $itemHand): void {
+        $this->onItemInteract($profile, $itemHand);
     }
 
     /**
@@ -91,5 +66,12 @@ final class BardPvpClass extends PvpClass {
         return array_merge(parent::getScoreboardLines($profile), [
         	'bard_energy' => 0
         ]);
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxEnergy(): int {
+        return 120;
     }
 }

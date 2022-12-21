@@ -82,6 +82,13 @@ final class Faction {
     }
 
     /**
+     * @param string $leaderXuid
+     */
+    public function setLeaderXuid(string $leaderXuid): void {
+        $this->leaderXuid = $leaderXuid;
+    }
+
+    /**
      * @param bool $updateLastCheck
      *
      * @return float

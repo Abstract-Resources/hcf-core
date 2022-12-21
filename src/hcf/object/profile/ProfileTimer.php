@@ -13,6 +13,7 @@ final class ProfileTimer {
     public const COMBAT_TAG = 'combat_tag';
     public const PVP_TAG = 'pvp_tag';
     public const HOME_TAG = 'home_tag';
+    public const ARCHER_TAG = 'archer_tag';
 
     /** @var int */
     private int $endAt = 0;

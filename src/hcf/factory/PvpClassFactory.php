@@ -8,18 +8,11 @@ use hcf\HCFCore;
 use hcf\object\profile\Profile;
 use hcf\object\pvpclass\impl\BardPvpClass;
 use hcf\object\pvpclass\PvpClass;
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\utils\Config;
-use pocketmine\utils\Limits;
 use pocketmine\utils\SingletonTrait;
 use function is_array;
 use function is_string;
-use function mb_strtoupper;
 
 final class PvpClassFactory {
     use SingletonTrait;

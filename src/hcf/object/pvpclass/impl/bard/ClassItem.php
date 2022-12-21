@@ -7,14 +7,13 @@ namespace hcf\object\pvpclass\impl\bard;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\Item;
 
-final class BardItem {
+final class ClassItem {
 
     /**
      * @param string         $displayName
      * @param Item           $item
      * @param int            $energy
      * @param bool           $applyOnBard
-     * @param bool           $otherFaction
      * @param EffectInstance[] $effects
      */
     public function __construct(
@@ -22,7 +21,6 @@ final class BardItem {
         private Item $item,
         private int $energy,
         private bool $applyOnBard,
-        private bool $otherFaction,
         private array $effects
     ) {}
 
@@ -52,13 +50,6 @@ final class BardItem {
      */
     public function isApplyOnBard(): bool {
         return $this->applyOnBard;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isOtherFaction(): bool {
-        return $this->otherFaction;
     }
 
     /**

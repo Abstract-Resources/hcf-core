@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace hcf\object\pvpclass;
 
 use hcf\object\profile\Profile;
+use hcf\object\pvpclass\impl\bard\ClassItem;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -12,8 +13,15 @@ use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\Limits;
+use pocketmine\utils\TextFormat;
+use function count;
+use function is_array;
+use function mb_strtoupper;
 
 abstract class PvpClass {
+
+    /** @var ClassItem[] */
+    private array $classItems = [];
 
     /**
      * @param string         $name
@@ -30,7 +38,23 @@ abstract class PvpClass {
         protected array $extra
     ) {}
 
-    abstract public function init(): void;
+    public function init(): void {
+        $bardItems = $this->extra['bard_items'] ?? [];
+
+        if (!is_array($bardItems) || count($bardItems) <= 0) return;
+
+        foreach ($bardItems as $itemData) {
+            if (($item = VanillaItems::getAll()[mb_strtoupper($itemData['id'])] ?? null) === null) continue;
+
+            $this->classItems[] = new ClassItem(
+                TextFormat::colorize($itemData['display_name']),
+                $item,
+                $itemData['energy'],
+                $itemData['apply_on_bard'] ?? true,
+                PvpClass::parseEffects($itemData['effects'])
+            );
+        }
+    }
 
     /**
      * @return string
@@ -44,6 +68,13 @@ abstract class PvpClass {
      */
     public function getCustomName(): string {
         return $this->customName;
+    }
+
+    /**
+     * @return ClassItem[]
+     */
+    public function getClassItems(): array {
+        return $this->classItems;
     }
 
     /**
@@ -124,6 +155,21 @@ abstract class PvpClass {
      * @param Item $itemHand
      */
     abstract public function onHeldItem(Profile $profile, Item $itemHand): void;
+
+    /**
+     * @param Item $item
+     *
+     * @return ClassItem|null
+     */
+    protected function getValidItem(Item $item): ?ClassItem {
+        foreach ($this->classItems as $classItem) {
+            if (!$classItem->getItem()->equals($item)) continue;
+
+            return $classItem;
+        }
+
+        return null;
+    }
 
     /**
      * @param array $itemsData

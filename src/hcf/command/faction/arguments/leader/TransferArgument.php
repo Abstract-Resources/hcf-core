@@ -17,6 +17,7 @@ use hcf\thread\ThreadPool;
 use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use function count;
 
 final class TransferArgument extends Argument {
     use ProfileArgumentTrait;
@@ -81,7 +82,11 @@ final class TransferArgument extends Argument {
         $faction->registerMember($sender->getXuid(), $sender->getName(), ProfileData::OFFICER_ROLE, $profile->getKills());
         $faction->flushMember($factionMember->getXuid(), $factionMember->getName());
 
+        $faction->setLeaderXuid($factionMember->getXuid());
+        $faction->forceSave(true);
+
         $profile->setFactionRole(ProfileData::OFFICER_ROLE);
+        $profile->forceSave(true);
 
         $faction->broadcastMessage(ServerUtils::replacePlaceholders('FACTION_TRANSFERRED', [
             'player' => $factionMember->getName(),

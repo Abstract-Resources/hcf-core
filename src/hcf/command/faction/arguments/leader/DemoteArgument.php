@@ -17,6 +17,7 @@ use hcf\thread\ThreadPool;
 use hcf\utils\ServerUtils;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use function count;
 
 final class DemoteArgument extends Argument {
     use ProfileArgumentTrait;

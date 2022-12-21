@@ -12,8 +12,8 @@ use hcf\object\ClaimRegion;
 use hcf\object\profile\query\SaveProfileQuery;
 use hcf\object\pvpclass\PvpClass;
 use hcf\thread\ThreadPool;
-use hcf\utils\ServerUtils;
 use hcf\utils\ScoreboardBuilder;
+use hcf\utils\ServerUtils;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -39,6 +39,8 @@ final class Profile {
     private ClaimRegion $claimRegion;
 
     private ScoreboardBuilder $scoreboardBuilder;
+    /** @var int */
+    private int $energy = 0;
 
     /**
      * @param string      $xuid
@@ -71,7 +73,8 @@ final class Profile {
         $this->timers = [
         	ProfileTimer::COMBAT_TAG => new ProfileTimer(ProfileTimer::COMBAT_TAG, 30),
         	ProfileTimer::PVP_TAG => new ProfileTimer(ProfileTimer::PVP_TAG, 60 * 60),
-        	ProfileTimer::HOME_TAG => new ProfileTimer(ProfileTimer::HOME_TAG, 20)
+        	ProfileTimer::HOME_TAG => new ProfileTimer(ProfileTimer::HOME_TAG, 20),
+            ProfileTimer::ARCHER_TAG => new ProfileTimer(ProfileTimer::ARCHER_TAG, 8)
         ];
 
         foreach (ServerUtils::fetchProfileTimers($this->xuid) as $timerData) {
@@ -219,6 +222,20 @@ final class Profile {
      */
     public function getPvpClass(): ?PvpClass {
         return $this->pvpClassName !== null ? PvpClassFactory::getInstance()->getPvpClass($this->pvpClassName) : null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getEnergy(): int {
+        return $this->energy;
+    }
+
+    /**
+     * @param int $energy
+     */
+    public function setEnergy(int $energy): void {
+        $this->energy = $energy;
     }
 
     /**

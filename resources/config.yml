@@ -31,6 +31,9 @@ factions:
     - 'Road'
     - 'Spawn'
 
+countdowns:
+  archer_tag: 10
+
 map:
   admin_claims:
     Warzone:

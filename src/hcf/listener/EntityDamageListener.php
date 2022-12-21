@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace hcf\listener;
 
 use hcf\factory\ProfileFactory;
+use hcf\HCFCore;
 use hcf\object\profile\ProfileTimer;
+use hcf\object\pvpclass\impl\ArcherPvpClass;
 use hcf\utils\ServerUtils;
+use pocketmine\entity\projectile\Arrow;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\Listener;
@@ -90,5 +94,23 @@ final class EntityDamageListener implements Listener {
 
         $profile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
         $attackerProfile->toggleProfileTimer(ProfileTimer::COMBAT_TAG);
+
+        if (!$ev instanceof EntityDamageByChildEntityEvent || !$ev->getChild() instanceof Arrow) return;
+        if (!($kit = $attackerProfile->getPvpClass()) instanceof ArcherPvpClass) return;
+        if ($kit === $profile->getPvpClass()) return;
+        if (($profileTimer = $profile->getProfileTimer(ProfileTimer::ARCHER_TAG)) === null) return;
+
+        $profileTimer->start();
+
+        $baseDamage = $ev->getBaseDamage();
+        $ev->setBaseDamage($baseDamage + ServerUtils::calculatePercentage(HCFCore::getConfigInt('countdowns.archer_tag', 10), (int) $baseDamage));
+
+        foreach ($kit->getClassItems() as $classItem) {
+            if ($classItem->isApplyOnBard()) continue;
+
+            foreach ($classItem->getEffects() as $effectInstance) {
+                $entity->getEffects()->add($effectInstance);
+            }
+        }
     }
 }

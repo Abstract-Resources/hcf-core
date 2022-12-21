@@ -91,6 +91,16 @@ final class ServerUtils {
     }
 
     /**
+     * @param int $percentage
+     * @param int $number
+     *
+     * @return int
+     */
+    public static function calculatePercentage(int $percentage, int $number): int {
+        return (int) ($percentage * $number / 100);
+    }
+
+    /**
      * @param World $world
      *
      * @return Position
