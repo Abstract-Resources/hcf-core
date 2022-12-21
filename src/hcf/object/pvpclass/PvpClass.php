@@ -6,23 +6,31 @@ namespace hcf\object\pvpclass;
 
 use hcf\object\profile\Profile;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\utils\Limits;
 
 abstract class PvpClass {
 
     /**
      * @param string         $name
      * @param string         $customName
-     * @param Item[]          $armorContents
+     * @param Item[]           $armorContents
      * @param EffectInstance[] $effects
+     * @param array          $extra
      */
     public function __construct(
         private string $name,
         private string $customName,
         private array $armorContents,
-        private array $effects
+        private array $effects,
+        protected array $extra
     ) {}
+
+    abstract public function init(): void;
 
     /**
      * @return string
@@ -107,11 +115,57 @@ abstract class PvpClass {
 
     /**
      * @param Profile $profile
+     * @param Item    $itemHand
      */
-    abstract public function onItemInteract(Profile $profile): void;
+    abstract public function onItemInteract(Profile $profile, Item $itemHand): void;
 
     /**
      * @param Profile $profile
+     * @param Item $itemHand
      */
-    abstract public function onHeldItem(Profile $profile): void;
+    abstract public function onHeldItem(Profile $profile, Item $itemHand): void;
+
+    /**
+     * @param array $itemsData
+     *
+     * @return Item[]
+     */
+    public static function parseItems(array $itemsData): array {
+        /** @var Item[] $items */
+        $items = [];
+
+        foreach ($itemsData as $slot => $itemData) {
+            $item = VanillaItems::getAll()[mb_strtoupper($itemData['id'])] ?? null;
+
+            if ($item === null) continue;
+
+            foreach ($itemData['enchantments'] ?? [] as $enchantmentData) {
+                if (($enchantment = VanillaEnchantments::getAll()[$enchantmentData[0]] ?? null) === null) continue;
+
+                $item->addEnchantment(new EnchantmentInstance($enchantment, $enchantmentData[1]));
+            }
+
+            $items[$slot] = $item;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param array $effectsData
+     *
+     * @return EffectInstance[]
+     */
+    public static function parseEffects(array $effectsData): array {
+        /** @var EffectInstance[] $effects */
+        $effects = [];
+
+        foreach ($effectsData as $effectData) {
+            if (($effect = VanillaEffects::getAll()[$effectData['id']] ?? null) === null) continue;
+
+            $effects[] = new EffectInstance($effect, $effectData['duration'] === -1 ? Limits::INT32_MAX : $effectData['duration'], $effectData['amplifier']);
+        }
+
+        return $effects;
+    }
 }

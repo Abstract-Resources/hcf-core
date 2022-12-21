@@ -27,6 +27,6 @@ final class PlayerItemHeldListener implements Listener {
 
         if (($pvpClass = $profile->getPvpClass()) === null) return;
 
-        $pvpClass->onHeldItem($profile);
+        $pvpClass->onHeldItem($profile, $ev->getItem());
     }
 }

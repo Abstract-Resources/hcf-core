@@ -43,7 +43,6 @@ final class SetHomeArgument extends Argument {
         }
 
         $config = new Config(HCFCore::getInstance()->getDataFolder() . 'hq.json');
-
         $config->set($faction->getId(), [
         	'x' => $loc->getFloorX(),
         	'y' => $loc->getFloorY(),

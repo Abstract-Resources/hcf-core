@@ -42,33 +42,12 @@ final class PvpClassFactory {
 
             if ($className === null) continue;
 
-            $armorContents = [];
-            foreach ($data['armor_contents'] as $slot => $armorData) {
-                $item = VanillaItems::getAll()[mb_strtoupper($armorData['id'])] ?? null;
-
-                if ($item === null) continue;
-
-                foreach ($armorData['enchantments'] as $enchantmentData) {
-                    if (($enchantment = VanillaEnchantments::getAll()[$enchantmentData[0]] ?? null) === null) continue;
-
-                    $item->addEnchantment(new EnchantmentInstance($enchantment, $enchantmentData[1]));
-                }
-
-                $armorContents[$slot] = $item;
-            }
-
-            $effects = [];
-            foreach ($data['effects'] as $effectData) {
-                if (($effect = VanillaEffects::getAll()[$effectData['id']] ?? null) === null) continue;
-
-                $effects[] = new EffectInstance($effect, $effectData['duration'] === -1 ? Limits::INT32_MAX : $effectData['duration'], $effectData['amplifier']);
-            }
-
             $this->registerPvpClass(new $className(
                 $pvpClassName,
                 $data['custom_name'],
-                $armorContents,
-                $effects
+                PvpClass::parseItems($data['armor_contents'] ?? []),
+                PvpClass::parseEffects($data['effects'] ?? []),
+                $data['extra']
             ));
         }
     }
@@ -79,6 +58,8 @@ final class PvpClassFactory {
     private function registerPvpClass(PvpClass...$pvpClasses): void {
         foreach ($pvpClasses as $pvpClass) {
             $this->pvpClasses[$pvpClass->getName()] = $pvpClass;
+
+            $pvpClass->init();
         }
     }
 

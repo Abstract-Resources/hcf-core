@@ -11,7 +11,10 @@ use hcf\command\faction\arguments\admin\SotwArgument;
 use hcf\command\faction\arguments\CreateArgument;
 use hcf\command\faction\arguments\JoinArgument;
 use hcf\command\faction\arguments\leader\ClaimArgument;
+use hcf\command\faction\arguments\leader\DemoteArgument;
 use hcf\command\faction\arguments\leader\DisbandArgument;
+use hcf\command\faction\arguments\leader\PromoteArgument;
+use hcf\command\faction\arguments\leader\TransferArgument;
 use hcf\command\faction\arguments\ListArgument;
 use hcf\command\faction\arguments\member\DepositArgument;
 use hcf\command\faction\arguments\member\HomeArgument;
@@ -32,6 +35,9 @@ final class FactionCommand extends BaseCommand {
             new InviteArgument('invite'),
             new ClaimArgument('claim'),
             new SetHomeArgument('sethome'),
+            new PromoteArgument('promote'),
+            new DemoteArgument('demote'),
+            new TransferArgument('transfer'),
             new DisbandArgument('disband'),
             new DepositArgument('deposit'),
             new LeaveArgument('leave'),
