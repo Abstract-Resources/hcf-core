@@ -6,6 +6,9 @@ namespace hcf\command\faction;
 
 use abstractplugin\command\BaseCommand;
 use hcf\command\faction\arguments\admin\AdminClaimArgument;
+use hcf\command\faction\arguments\admin\DisbandAllArgument;
+use hcf\command\faction\arguments\admin\ForceDisbandArgument;
+use hcf\command\faction\arguments\admin\PurgeArgument;
 use hcf\command\faction\arguments\admin\SetBalanceArgument;
 use hcf\command\faction\arguments\admin\SotwArgument;
 use hcf\command\faction\arguments\CreateArgument;
@@ -50,9 +53,9 @@ final class FactionCommand extends BaseCommand {
             new AdminClaimArgument('adminclaim', 'faction.admin'),
             new SetBalanceArgument('setbalance', 'faction.admin'),
             new SotwArgument('sotw', 'faction.admin'),
-            new SotwArgument('purge', 'faction.admin'),
-            new SotwArgument('forcedisband', 'faction.admin'),
-            new SotwArgument('disbandall', 'faction.admin')
+            new PurgeArgument('purge', 'faction.admin'),
+            new ForceDisbandArgument('forcedisband', 'faction.admin'),
+            new DisbandAllArgument('disbandall', 'faction.admin')
         );
     }
 }
