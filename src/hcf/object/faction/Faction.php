@@ -99,7 +99,7 @@ final class Faction {
         return $this->deathsUntilRaidable;
     }
 
-    private function updateDeathsUntilRaidable(): void {
+    public function updateDeathsUntilRaidable(): void {
         if ($this->getRegenStatus() !== FactionData::STATUS_REGENERATING) return;
 
         $timePassed = ($now = time()) - $this->getLastDtrUpdate();

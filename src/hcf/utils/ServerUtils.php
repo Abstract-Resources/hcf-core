@@ -38,14 +38,14 @@ final class ServerUtils {
 
     public static function load(): void {
         // Initialize the composer autoload
-        /*if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . ($instance = HCFCore::getInstance())->getName() . '.phar/vendor/autoload.php')) {
+        if (!is_file($bootstrap = 'phar://' . Server::getInstance()->getPluginPath() . ($instance = HCFCore::getInstance())->getName() . '.phar/vendor/autoload.php')) {
             $instance->getLogger()->error('Composer autoloader not found at ' . $bootstrap);
             $instance->getLogger()->warning('Please install/update Composer dependencies or use provided build.');
 
             exit(1);
         }
 
-        require_once($bootstrap);*/
+        require_once($bootstrap);
 
         self::$placeHolders = (new Config(HCFCore::getInstance()->getDataFolder() . 'messages.yml'))->getAll();
 

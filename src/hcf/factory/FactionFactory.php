@@ -56,7 +56,7 @@ final class FactionFactory {
                 if ($time >= time()) continue;
 
                 if (($faction = $this->getFaction($factionId)) !== null) {
-                    $faction->getDeathsUntilRaidable(true); // Update the dtr
+                    $faction->updateDeathsUntilRaidable(); // Update the dtr
                     $faction->forceSave(true);
                 }
 
@@ -344,7 +344,15 @@ final class FactionFactory {
     public function getClaimsAt(Vector3 $firstVector, Vector3 $secondVector): array {
         $claims = [];
 
-        for ($x = $firstVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $secondVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
+        foreach ([[$firstVector->getFloorX(), $firstVector->getFloorZ()], [$secondVector->getFloorX(), $secondVector->getFloorZ()]] as $values) {
+            $claimsAt = $this->claimsPerChunk[World::chunkHash($values[0] >> Chunk::COORD_BIT_SIZE, $values[1] >> Chunk::COORD_BIT_SIZE)] ?? [];
+
+            if (count($claimsAt) === 0) continue;
+
+            $claims = array_merge($claims, $claimsAt);
+        }
+
+        /*for ($x = $firstVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $secondVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
             for ($z = $firstVector->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $secondVector->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
                 $claimsAt = $this->claimsPerChunk[World::chunkHash($x, $z)] ?? [];
 
@@ -352,7 +360,7 @@ final class FactionFactory {
 
                 $claims = array_merge($claims, $claimsAt);
             }
-        }
+        }*/
 
         return $claims;
     }

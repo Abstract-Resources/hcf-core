@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace hcf\command\faction;
+namespace hcf\command;
 
 use hcf\factory\ProfileFactory;
 use hcf\object\profile\Profile;
