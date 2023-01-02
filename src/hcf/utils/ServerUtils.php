@@ -131,7 +131,7 @@ final class ServerUtils {
         try {
             $config = HCFCore::getInstance()->getConfig();
 
-            $config->setNested('map.sotw-remaining', $time);
+            $config->setNested('map.sotw-remaining', self::$sotwEndAt);
             $config->save();
         } catch (Exception $e) {
             Server::getInstance()->getLogger()->logException($e);
@@ -157,14 +157,14 @@ final class ServerUtils {
      * @param bool $overwrite
      */
     public static function setPurgeTime(int $time, bool $overwrite): void {
-        self::$sotwEndAt = time() + $time;
+        self::$purgeEndAt = time() + $time;
 
         if (!$overwrite) return;
 
         try {
             $config = HCFCore::getInstance()->getConfig();
 
-            $config->setNested('map.purge-remaining', $time);
+            $config->setNested('map.purge-remaining', self::$purgeEndAt);
             $config->save();
         } catch (Exception $e) {
             Server::getInstance()->getLogger()->logException($e);

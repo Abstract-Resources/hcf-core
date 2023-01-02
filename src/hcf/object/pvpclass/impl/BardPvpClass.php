@@ -6,13 +6,14 @@ namespace hcf\object\pvpclass\impl;
 
 use hcf\factory\FactionFactory;
 use hcf\object\profile\Profile;
+use hcf\object\pvpclass\EnergyPvpClass;
 use hcf\object\pvpclass\PvpClass;
 use hcf\utils\ServerUtils;
 use pocketmine\item\Item;
 use pocketmine\Server;
 use function array_merge;
 
-final class BardPvpClass extends PvpClass {
+final class BardPvpClass extends PvpClass implements EnergyPvpClass {
 
     /**
      * @param Profile $profile

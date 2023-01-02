@@ -28,6 +28,7 @@ final class ClaimPlayerChatListener implements Listener {
      * @param PlayerChatEvent $ev
      *
      * @priority NORMAL
+     * @throws \JsonException
      */
     public function onPlayerChatEvent(PlayerChatEvent $ev): void {
         $player = $ev->getPlayer();
@@ -62,14 +63,20 @@ final class ClaimPlayerChatListener implements Listener {
 
         if (!$cuboid->hasBothPositionsSet($player->getWorld())) return;
 
-        if ($faction === null) {
+        if (($claimTag = $item->getNamedTag()->getTag('claim_name')) !== null) {
             FactionFactory::getInstance()->registerAdminClaim(new ClaimRegion(
-                $item->getNamedTag()->getString('claim_name'),
+                is_string($claimName = $claimTag->getValue()) ? $claimName : ServerUtils::REGION_SPAWN,
                 $cuboid,
                 []
             ), true);
 
             $player->sendMessage(TextFormat::GREEN . 'Admin claim was successfully saved!');
+
+            return;
+        }
+
+        if ($faction === null) {
+            $player->sendMessage(TextFormat::RED . 'An error occurred');
 
             return;
         }
