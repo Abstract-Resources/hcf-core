@@ -74,7 +74,7 @@ final class ClaimPlayerInteractListener implements Listener {
                 $multiplier++;
             }
 
-            $price += HCFCore::getConfigInt('factions.amount_per_block');
+            $price += HCFCore::getConfigInt('factions.amount_per_block') * $multiplier;
         }
 
         return $price;

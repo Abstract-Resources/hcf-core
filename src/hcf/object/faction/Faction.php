@@ -31,15 +31,15 @@ final class Faction {
     private bool $open = false; // This is a feature
 
     /**
-     * @param string        $id
-     * @param string        $name
-     * @param string        $leaderXuid
-     * @param float         $deathsUntilRaidable
-     * @param int           $regenCooldown
-     * @param int           $lastDtrUpdate
-     * @param int           $balance
-     * @param int           $points
-     * @param Location|null $hqLocation
+     * @param string $id
+     * @param string $name
+     * @param string $leaderXuid
+     * @param float  $deathsUntilRaidable
+     * @param int    $regenCooldown
+     * @param int    $lastDtrUpdate
+     * @param int    $balance
+     * @param int    $points
+     * @param array  $hq
      */
 	public function __construct(
 		private string $id,
@@ -50,7 +50,7 @@ final class Faction {
         private int $lastDtrUpdate,
         private int $balance,
         private int $points,
-        private ?Location $hqLocation = null
+        private array $hq = []
 	) {}
 
 	/**
@@ -99,7 +99,7 @@ final class Faction {
         return $this->deathsUntilRaidable;
     }
 
-    private function updateDeathsUntilRaidable(): void {
+    public function updateDeathsUntilRaidable(): void {
         if ($this->getRegenStatus() !== FactionData::STATUS_REGENERATING) return;
 
         $timePassed = ($now = time()) - $this->getLastDtrUpdate();
@@ -303,14 +303,17 @@ final class Faction {
      * @return Location|null
      */
     public function getHqLocation(): ?Location {
-        return $this->hqLocation;
+        if (count($hq = $this->hq) === 0) return null;
+        if (($world = Server::getInstance()->getWorldManager()->getWorldByName($hq['world'])) === null) return null;
+
+        return new Location($hq['x'], $hq['y'], $hq['z'], $world, $hq['yaw'], $hq['pitch']);
     }
 
     /**
-     * @param Location|null $hqLocation
+     * @param array $hq
      */
-    public function setHqLocation(?Location $hqLocation): void {
-        $this->hqLocation = $hqLocation;
+    public function setHq(array $hq): void {
+        $this->hq = $hq;
     }
 
     /**

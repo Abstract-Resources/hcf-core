@@ -17,8 +17,6 @@
 
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^v3.12.0",
-    "sof3/await-generator": "^v3.4.3",
-    "sof3/await-std": "dev-master",
     "phpstan/phpstan": "^1.2.0",
     "phpstan/phpstan-strict-rules": "^1.1.0",
     "pocketmine/pocketmine-mp": "^4.2.4"

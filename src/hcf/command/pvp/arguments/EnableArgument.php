@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace hcf\command\pvp\arguments;
 
 use abstractplugin\command\Argument;
-use hcf\command\faction\ProfileArgumentTrait;
+use hcf\command\ProfileArgumentTrait;
 use hcf\object\profile\Profile;
 use hcf\object\profile\ProfileTimer;
 use pocketmine\player\Player;

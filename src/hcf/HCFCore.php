@@ -130,6 +130,6 @@ final class HCFCore extends PluginBase {
      * @return bool
      */
     public static function released(): bool {
-        return false;
+        return true;
     }
 }

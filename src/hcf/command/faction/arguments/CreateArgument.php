@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace hcf\command\faction\arguments;
 
 use abstractplugin\command\Argument;
-use hcf\command\faction\ProfileArgumentTrait;
+use hcf\command\ProfileArgumentTrait;
 use hcf\factory\FactionFactory;
 use hcf\HCFCore;
 use hcf\HCFLanguage;

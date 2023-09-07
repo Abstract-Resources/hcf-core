@@ -16,6 +16,7 @@ use hcf\object\profile\query\BatchSaveProfileQuery;
 use hcf\thread\ThreadPool;
 use hcf\utils\ServerUtils;
 use hcf\utils\UnexpectedException;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
@@ -23,7 +24,7 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use function array_values;
+use function array_merge;
 use function count;
 use function in_array;
 use function is_array;
@@ -55,7 +56,7 @@ final class FactionFactory {
                 if ($time >= time()) continue;
 
                 if (($faction = $this->getFaction($factionId)) !== null) {
-                    $faction->getDeathsUntilRaidable(true); // Update the dtr
+                    $faction->updateDeathsUntilRaidable(); // Update the dtr
                     $faction->forceSave(true);
                 }
 
@@ -299,7 +300,7 @@ final class FactionFactory {
      * @return Faction[]
      */
     public function getFactionsStored(): array {
-        return array_values($this->factions);
+        return $this->factions;
     }
 
     /**
@@ -321,13 +322,8 @@ final class FactionFactory {
             return $claimRegion;
         }
 
-        // First do this check because maybe Warzone is returned
-        /*if (($claimRegion = $this->adminClaims[ServerUtils::REGION_SPAWN] ?? null) !== null && $claimRegion->getCuboid()->isInside($position)) {
-            return $claimRegion;
-        }
-
-        foreach ($this->adminClaims as $adminClaimRegion) {
-            if ($adminClaimRegion->getName() === ServerUtils::REGION_WILDERNESS) continue;
+        /*foreach ($this->adminClaims as $adminClaimRegion) {
+            if (in_array($adminClaimRegion->getName(), [ServerUtils::REGION_WILDERNESS, ServerUtils::REGION_WARZONE, ServerUtils::REGION_SPAWN], true)) continue;
 
             if (!$adminClaimRegion->getCuboid()->isInside($position)) {
                 continue;
@@ -337,6 +333,36 @@ final class FactionFactory {
         }*/
 
         return $this->adminClaims[ServerUtils::REGION_WILDERNESS] ?? throw new UnexpectedException('Region \'Wilderness\' not found...');
+    }
+
+    /**
+     * @param Vector3 $firstVector
+     * @param Vector3 $secondVector
+     *
+     * @return ClaimRegion[]
+     */
+    public function getClaimsAt(Vector3 $firstVector, Vector3 $secondVector): array {
+        $claims = [];
+
+        foreach ([[$firstVector->getFloorX(), $firstVector->getFloorZ()], [$secondVector->getFloorX(), $secondVector->getFloorZ()]] as $values) {
+            $claimsAt = $this->claimsPerChunk[World::chunkHash($values[0] >> Chunk::COORD_BIT_SIZE, $values[1] >> Chunk::COORD_BIT_SIZE)] ?? [];
+
+            if (count($claimsAt) === 0) continue;
+
+            $claims = array_merge($claims, $claimsAt);
+        }
+
+        /*for ($x = $firstVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x <= $secondVector->getFloorX() >> Chunk::COORD_BIT_SIZE; $x++) {
+            for ($z = $firstVector->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z <= $secondVector->getFloorZ() >> Chunk::COORD_BIT_SIZE; $z++) {
+                $claimsAt = $this->claimsPerChunk[World::chunkHash($x, $z)] ?? [];
+
+                if (count($claimsAt) <= 0) continue;
+
+                $claims = array_merge($claims, $claimsAt);
+            }
+        }*/
+
+        return $claims;
     }
 
     /**
