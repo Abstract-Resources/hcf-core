@@ -139,13 +139,19 @@ final class PlayerMoveListener implements Listener {
             if ($updateZ) {
                 for ($y = -5; $y < 5; ++$y) {
                     for ($x = -5; $x < 5; ++$x) {
-                        if (!$this->between($firstCorner->getFloorX(), $secondCorner->getFloorX(), $to->getFloorX() + $x)) continue;
+                        if (!$this->between($firstCorner->getFloorX(), $secondCorner->getFloorX(), $to->getFloorX() + $x)) {
+                            continue;
+                        }
 
-                        if (in_array($targetVector = new Vector3($to->getFloorX() + $x, $to->getFloorY() + $y, $closerZ), $toUpdate, true)) continue;
+                        if (in_array($targetVector = new Vector3($to->getFloorX() + $x, $to->getFloorY() + $y, $closerZ), $toUpdate, true)) {
+                            continue;
+                        }
 
                         $block = $to->getWorld()->getBlock($targetVector);
 
-                        if (!$block instanceof Air && !$block instanceof Water && !$block instanceof Planks) continue;
+                        if (!$block instanceof Air && !$block instanceof Water && !$block instanceof Planks) {
+                            continue;
+                        }
 
                         $profile->glassCached[] = $targetVector = Position::fromObject($targetVector, $to->getWorld());
                         $toUpdate[] = $targetVector;

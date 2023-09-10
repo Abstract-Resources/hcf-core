@@ -16,4 +16,11 @@ final class KothCommand extends BaseCommand {
             new StartArgument('start', 'koth.start')
         );
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPermission(): ?string {
+        return null;
+    }
 }

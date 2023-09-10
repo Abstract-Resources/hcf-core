@@ -9,8 +9,10 @@ use hcf\thread\datasource\MySQL;
 use hcf\thread\datasource\MySQLCredentials;
 use hcf\thread\datasource\Query;
 use hcf\thread\datasource\SqlException;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\network\mcpe\raklib\SnoozeAwarePthreadsChannelWriter;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Thread;
 use Threaded;
 use ThreadedLogger;
@@ -44,15 +46,15 @@ final class SQLDataSourceThread extends Thread {
     /**
      * @param int              $threadId
      * @param MySQLCredentials $credentials
-     * @param ThreadedLogger   $logger
-     * @param Threaded         $threadToMainBuffer
+     * @param ThreadSafeLogger $logger
+     * @param ThreadSafeArray  $threadToMainBuffer
      * @param SleeperNotifier  $notifier
      */
     public function __construct(
         private int $threadId,
         private MySQLCredentials $credentials,
-        private ThreadedLogger $logger,
-        Threaded $threadToMainBuffer,
+        private ThreadSafeLogger $logger,
+        \pmmp\thread\ThreadSafeArray $threadToMainBuffer,
         SleeperNotifier $notifier
     ) {
         $this->threadToMainWriter = new SnoozeAwarePthreadsChannelWriter($threadToMainBuffer, $notifier);

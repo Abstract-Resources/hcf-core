@@ -76,13 +76,15 @@ final class InviteArgument extends Argument {
         }
 
         // TODO: Change this to check what is the max members size
-        if (count($faction->getMembers()) > 5) {
+        if (count($faction->getMembers()) > HCFCore::getConfigInt('faction.max-members')) {
             $sender->sendMessage(ServerUtils::replacePlaceholders('FACTION_FULL', ['faction' => $faction->getName()]));
 
             return;
         }
 
-        if (($instance = $targetProfile->getInstance()) === null) return;
+        if (($instance = $targetProfile->getInstance()) === null) {
+            return;
+        }
 
         $faction->addPendingInvite($targetProfile->getXuid());
         $faction->broadcastMessage(HCFLanguage::FACTION_INVITATION_SENT()->build($targetProfile->getName(), $sender->getName()));

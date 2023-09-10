@@ -14,4 +14,11 @@ final class PvPCommand extends BaseCommand {
 
         $this->registerParent(new EnableArgument('enable'));
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPermission(): ?string {
+        return null;
+    }
 }

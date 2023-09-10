@@ -62,4 +62,11 @@ final class FactionCommand extends BaseCommand {
             new DisbandAllArgument('disbandall', 'faction.admin')
         );
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPermission(): ?string {
+        return null;
+    }
 }
